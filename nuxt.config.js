@@ -55,7 +55,16 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    "@nuxtjs/vuetify",
   ],
+  
+  /*
+  ** Nuxt.js Vuetify options
+  */
+  vuetify: {
+    customVariables: ["~/assets/variables.scss"],
+    optionsPath: "./vuetify.options.js"
+  },
 
   /*
   ** Nuxt.js modules
