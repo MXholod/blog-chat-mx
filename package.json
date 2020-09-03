@@ -16,7 +16,9 @@
     "@nuxt/http": "latest",
     "@nuxtjs/vuetify": "^1.11.2",
     "element-ui": "^2.13.2",
-    "nuxt": "latest"
+    "nuxt": "latest",
+    "socket.io": "^2.3.0",
+    "vue-socket.io": "^3.0.10"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^3.0.0",
