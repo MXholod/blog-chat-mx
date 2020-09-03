@@ -40,7 +40,9 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    '@/plugins/all-globals'
+    '@/plugins/all-globals',
+    // There is no need server side rendering and render it only on client side
+     { src: '@/plugins/socket', ssr: false }
   ],
 
   /*
