@@ -73,8 +73,16 @@ export default {
   */
   modules: [
     // Doc: https://http.nuxtjs.org
-    '@nuxt/http'
+    '@nuxt/http',
+    '@nuxtjs/axios',
   ],
+
+  /*
+  ** Axios Nuxt.js
+  */
+  axios: {
+    // proxyHeaders: false
+  },
 
   /*
   ** Server Middleware
