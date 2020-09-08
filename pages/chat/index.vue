@@ -52,8 +52,12 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   layout: 'chat/empty',
+  head: {
+    title: 'Sports Chat'
+  },
   sockets: {
     connect () {
       console.log('socket connected')
@@ -76,8 +80,18 @@ export default {
     ]
   }),
   methods: {
+    ...mapMutations(['addUser']),
     submit () {
-      this.$refs.form.validate()
+      if (this.$refs.form.validate()) {
+        const user = {
+          name: this.name,
+          room: this.room
+        }
+        // Use mutation from Vuex
+        this.addUser(user)
+        // Redirect User to the Chat
+        this.$router.push('/chat/base-chat')
+      }
     },
     message () {
       // console.log('Ok')
