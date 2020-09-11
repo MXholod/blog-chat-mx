@@ -42,24 +42,30 @@
                             </v-list>
                         </v-navigation-drawer>
                     </v-col>
-                    <v-col xs="9" sm="9" md="12" lg="9" xl="9">
+                    <v-col xs="9" sm="9" md="12" :lg="cols" :xl="cols">
                         <v-container fluid style="padding:0px;padding-right:6px;">
-                            <v-row>
+                            <v-row
+                                :style="withSidebar"
+                            >
                                 <v-col>
                                     <v-toolbar style="top:-10px !important;">
                                         <v-container>
                                             <v-row v-bind:no-gutters="true">
                                                 <v-col xs="6" sm="6" md="6" lg="6" xl="6">
                                                     <v-app-bar-nav-icon
-                                                        style="top:20px;"
-                                                        @click="drawer = !drawer"
+                                                        style="top:0px;"
+                                                        @click="()=>{
+                                                            drawer = !drawer
+                                                            drawer ? cols = 9 : cols = 12
+                                                        }"
                                                     ></v-app-bar-nav-icon>
                                                 </v-col>
                                                 <v-col xs="6" sm="6" md="6" lg="6" xl="6">
                                                     <v-btn
+                                                        :outlined="true"
                                                         icon
                                                         :absolute="true"
-                                                        style="right:25px;top:5px;"
+                                                        style="right:25px;top:5px;background:aliceblue;"
                                                         @click="exit"
                                                         class="hidden-xs-only">
                                                         <v-icon>mdi-run-fast</v-icon>
@@ -67,22 +73,40 @@
                                                 </v-col>
                                             </v-row>
                                             <v-row :no-gutters="true">
-                                                <v-col xs="12" sm="12" md="12" lg="12" xl="12">
-                                                    <v-toolbar-title
-                                                        style="text-align:center;padding-bottom:10px;"
-                                                    >Chat room name is: {{ user.room }}</v-toolbar-title>
+                                                <v-col xs="6" sm="6" md="6" lg="6" xl="6">
+                                                    <v-btn
+                                                        class="ma-2"
+                                                        color="primary"
+                                                        dark
+                                                        :height="20"
+                                                        :absolute="true"
+                                                        style="cursor:auto;bottom:1%;left:10%;"
+                                                    >
+                                                        <v-icon dark :left="true">mdi-human-greeting</v-icon>
+                                                        Visitor name is: {{ user.name }}
+                                                    </v-btn>
+                                                </v-col>
+                                                <v-col xs="6" sm="6" md="6" lg="6" xl="6">
+                                                    <v-btn
+                                                        class="ma-2"
+                                                        color="#1553B6"
+                                                        dark
+                                                        :height="20"
+                                                        :absolute="true"
+                                                        style="cursor:auto;bottom:1%;right:10%;">
+                                                        <v-icon dark :left="true">mdi-door-open</v-icon>
+                                                        Chat room name is: {{ user.room }}
+                                                    </v-btn>
                                                 </v-col>
                                             </v-row>
                                         </v-container>
                                     </v-toolbar>
                                 </v-col>
                             </v-row>
-                            <v-row>
-                                <v-col>
+                            <v-row justify="center" align="center">
+                                <v-col xs="10" sm="10" md="10" lg="10" xl="10">
                                     <v-main>
-                                        <div>
-                                            <Nuxt />
-                                        </div>
+                                        <Nuxt />
                                     </v-main>
                                 </v-col>
                             </v-row>
@@ -98,16 +122,22 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import Navigation from './../../components/site/Navigation'
 export default {
   components: {
     Navigation
   },
-  computed: mapState(['user']),
+  computed: {
+    ...mapState(['user']),
+    withSidebar () {
+      return this.drawer ? 'margin-left:-12px' : 'margin-left:-6px'
+    }
+  },
   data () {
     return {
       drawer: true,
+      cols: 9,
       users: [
         { id: 1, name: 'User 1' },
         { id: 2, name: 'User 2' },
@@ -117,9 +147,11 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['clearData']),
     exit () {
-      console.log('Exit')
-      // this.$router.push('/')
+      // Use mutation to reset state.user
+      this.clearData()
+      this.$router.push('/?message=leftChat')
     }
   }
 }
