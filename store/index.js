@@ -1,6 +1,7 @@
 export const state = () => ({
   user: {},
   messages: [
+    /*
     { header: 'Today' },
     {
       avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
@@ -30,7 +31,7 @@ export const state = () => ({
       avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
       title: 'Recipe to try',
       subtitle: "<span class='text--primary'>Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos."
-    }
+    } */
   ]
 })
 
@@ -41,11 +42,19 @@ export const mutations = {
   clearData (state) {
     state.user = {}
     state.messages = []
+  },
+  // It will be called automatically by installed package 'vue-socket.io'
+  SOCKET_newMessage (state, message) {
+    message.avatar = 'https://cdn.vuetifyjs.com/images/lists/1.jpg'
+    message.title = 'Brunch this weekend?'
+    message.subtitle = "<span class='text--primary'>Ali Connors</span>"
+    state.messages.push(message)
   }
 }
 
-export const actions = {
+/* export const actions = {
+  // It will be called automatically by installed package 'vue-socket.io'
   SOCKET_newMessage (ctx, data) {
     console.log('Message recieved ', data)
   }
-}
+} */

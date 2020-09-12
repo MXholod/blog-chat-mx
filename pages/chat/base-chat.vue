@@ -8,19 +8,19 @@
                 <template v-for="(item, index) in messages">
                   <v-subheader
                     v-if="item.header"
-                    :key="item.header"
+                    :key="(item.title + index)"
                     v-text="item.header"
                   ></v-subheader>
 
                   <v-divider
                     v-else-if="item.divider"
-                    :key="index"
+                    :key="(item.title + index)"
                     :inset="item.inset"
                   ></v-divider>
 
                   <v-list-item
                     v-else
-                    :key="item.title"
+                    :key="(item.title + index)"
                     @click.prevent=""
                   >
                     <v-list-item-avatar>
@@ -30,6 +30,8 @@
                     <v-list-item-content>
                       <v-list-item-title v-html="item.title"></v-list-item-title>
                       <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+                      <v-list-item-subtitle v-html="item.name"></v-list-item-subtitle>
+                      <v-list-item-subtitle v-html="item.text"></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </template>

@@ -44,7 +44,7 @@
                     <v-btn color="success">Success</v-btn>
                     <v-btn color="error">Error</v-btn>
                     <v-btn color="warning">Warning</v-btn>
-                    <v-btn color="info" @click="message">Info</v-btn>
+                    <v-btn color="info">Info</v-btn>
                 </div>
             </v-card>
         </v-col>
@@ -87,16 +87,27 @@ export default {
           name: this.name,
           room: this.room
         }
-        // Use mutation from Vuex
-        this.addUser(user)
-        // Redirect User to the Chat
-        this.$router.push('/chat/base-chat')
+        // Send data by socket to the server to get an unique ID of the user connection
+        this.$socket.emit('userJoined', user, (data) => {
+          // Server response if request was bad
+          if (typeof data === 'string') {
+            console.error(data)
+          } else {
+            // Good response
+            // Sets the user id according to the socket
+            user.id = data.userId
+            // Use mutation from Vuex
+            this.addUser(user)
+            // Redirect User to the Chat
+            this.$router.push('/chat/base-chat')
+          }
+        })
       }
-    },
+    } /*,
     message () {
       // console.log('Ok')
       this.$socket.emit('createMessage', { text: 'From client' })
-    }
+    } */
   }
 }
 </script>
