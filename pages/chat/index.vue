@@ -37,17 +37,6 @@
                 </v-card-text>
             </v-card>
         </v-col>
-        <v-col xs="12" md="4" lg="12">
-            <v-card>
-                <p>Hello</p>
-                <div>
-                    <v-btn color="success">Success</v-btn>
-                    <v-btn color="error">Error</v-btn>
-                    <v-btn color="warning">Warning</v-btn>
-                    <v-btn color="info">Info</v-btn>
-                </div>
-            </v-card>
-        </v-col>
     </v-row>
 </template>
 
