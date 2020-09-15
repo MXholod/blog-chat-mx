@@ -1,50 +1,39 @@
 <template>
-    <div>
-            <v-card
-              max-width="800"
-              class="mx-auto"
-            >
-              <v-list three-line>
-                <template v-for="(item, index) in messages">
-                  <v-subheader
-                    v-if="item.header"
-                    :key="(item.title + index)"
-                    v-text="item.header"
-                  ></v-subheader>
-
-                  <v-divider
-                    v-else-if="item.divider"
-                    :key="(item.title + index)"
-                    :inset="item.inset"
-                  ></v-divider>
-
-                  <v-list-item
-                    v-else
-                    :key="(item.title + index)"
-                    @click.prevent=""
-                  >
-                    <v-list-item-avatar>
-                      <v-img :src="item.avatar"></v-img>
-                    </v-list-item-avatar>
-
-                    <v-list-item-content>
-                      <v-list-item-title v-html="item.title"></v-list-item-title>
-                      <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
-                      <v-list-item-subtitle v-html="item.name"></v-list-item-subtitle>
-                      <v-list-item-subtitle v-html="item.text"></v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </template>
-              </v-list>
-            </v-card>
+  <div class="chat-sport-content__main">
+    <div class="chat-sport-content__messages">
+      <Message
+        v-for="(message,ind) of messages"
+        :key="message.title + ind"
+        :owner="true"
+        :name="message.name"
+        :text="message.text"
+        :title="message.title"
+        :subtitle="message.subtitle"
+        :avatar="message.avatar"
+        :divider="false"
+        :inset="false"
+        />
+    </div>
+    <div class="chat-sport-content__control">
+      <div class="chat-sport-content__msg">
+        <message-form></message-form>
+      </div>
+      <div class="chat-sport-content__btn">
+        <message-button></message-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import Message from '@/components/site/chat/Message'
+import MessageForm from '@/components/site/chat/Message-Form'
+import MessageButton from '@/components/site/chat/Message-Button'
 export default {
   layout: 'chat/base-chat',
   middleware: ['chat'],
+  components: { Message, MessageForm, MessageButton },
   computed: mapState(['user', 'messages']),
   head () {
     return {
@@ -53,3 +42,28 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  .chat-sport-content__main{
+    height:100%;
+    background-color: violet;
+  }
+  .chat-sport-content__messages{
+    height:75%;
+    background-color: blue;
+    overflow-y: auto;
+  }
+  .chat-sport-content__control{
+    display: flex;
+    flex-direction: row;
+    height:25%;
+    background-color:yellowgreen;
+    .chat-sport-content__msg{
+      width:75%;
+      background-color:brown;
+    }
+    .chat-sport-content__btn{
+      width:25%;
+      background-color:chocolate;
+    }
+  }
+</style>

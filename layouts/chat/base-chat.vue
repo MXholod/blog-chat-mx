@@ -107,8 +107,14 @@
                             </v-col>
                         </v-row>
                         <v-row justify="center" align="center">
-                            <v-col xs="10" sm="10" md="10" lg="10" xl="10">
-                                <v-main>
+                            <v-col
+                                xs="10"
+                                sm="10"
+                                md="10"
+                                lg="10"
+                                xl="10"
+                                class="chat-sport-cols">
+                                <v-main class="chat-sport-content">
                                     <Nuxt />
                                 </v-main>
                             </v-col>
@@ -139,13 +145,7 @@ export default {
   data () {
     return {
       drawer: true,
-      cols: 9,
-      users: [
-        { id: 1, name: 'User 1' },
-        { id: 2, name: 'User 2' },
-        { id: 3, name: 'User 3' },
-        { id: 4, name: 'User 4' }
-      ]
+      cols: 9
     }
   },
   methods: {
@@ -160,8 +160,13 @@ export default {
 </script>
 
 <style lang="scss">
-.el-footer-base-layout{
-  padding:0;
+.chat-sport-cols{
+  padding-top: 0px;
+}
+.chat-sport-content{
+  height: 50vh;
+  border: 1px solid green;
   background-color:#225AA4;
+  padding-bottom: 0px !important;
  }
 </style>

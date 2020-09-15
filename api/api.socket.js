@@ -33,6 +33,11 @@ io.on('connection', socket => {
       })
     })
     
+    socket.on('createMessage', (data)=>{
+      setTimeout(()=>{
+         socket.emit('newMessage', { text: data.text + ' SERVER' } )
+      },1000)
+    })
     /*
     // console.log("IO Connected")
     socket.emit('newMessage', { text: 'Hello from socket' } )
