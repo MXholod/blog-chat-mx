@@ -1,6 +1,10 @@
 export const state = () => ({
   user: {},
-  messages: []
+  messages: [],
+  systemMessage: {
+    title: '',
+    text: ''
+  }
 })
 
 export const mutations = {
@@ -10,6 +14,9 @@ export const mutations = {
   clearData (state) {
     state.user = {}
     state.messages = []
+  },
+  SOCKET_systemMessage (state, systemMessage) {
+    state.systemMessage = systemMessage
   },
   // It will be called automatically by installed package 'vue-socket.io'
   SOCKET_newMessage (state, message) {

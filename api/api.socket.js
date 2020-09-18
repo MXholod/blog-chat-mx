@@ -4,6 +4,8 @@ const app = require('express')()
 const httpServer = require('http').createServer(app)
 // SocketIO based on HTTP server
 const io = require('socket.io')(httpServer)
+//
+const users = require('./Users')()
 
 io.on('connection', socket => {
   /* When the user first came (create new User) */
@@ -16,37 +18,49 @@ io.on('connection', socket => {
       }
       // Add User to a Room programmatically (id Room)
       socket.join(dataUser.room)
+      // Add a user to the class Users but remove before
+      users.remove(socket.id)
+      users.add({
+        id: socket.id,
+        name: dataUser.name,
+        room: dataUser.room
+      })
       // If validation is good
       callback({
         // Socket ID is to define the User on the front-end
         userId: socket.id
       })
-      // 
-      socket.emit('newMessage',{
-        name: 'admin',
-        text: `Hello ${dataUser.name}`
+      // System message
+      socket.emit('systemMessage',{
+        title: '-- New guest --',
+        text: `Welcome to the chat ${dataUser.name}`
       })
       // Notify all the Usres except of the current that the User has joined the chat
-      socket.broadcast.to(dataUser.room).emit('newMessage',{
-        name: 'admin',
-        text: `User ${dataUser.name} has entered to chat`
+      socket.broadcast.to(dataUser.room).emit('systemMessage',{
+        title: '-- New guest has joined --',
+        text: `User ${dataUser.name} has joined to the chat`
       })
     })
-    
-    socket.on('createMessage', (data)=>{
-      setTimeout(()=>{
-         socket.emit('newMessage', { text: data.text + ' SERVER' } )
-      },1000)
+    // Create a new chat event and send a message to all the users in the room
+    // and even for the current user.
+    socket.on('createMessage', (data, callback)=>{
+      if (!data.text) {
+        return callback('A message can\'t be empty')
+      }
+      //
+      const user = users.get(data.id)
+      if (user) {
+        // to( 'room number' ) - which room a message is being sent to.
+        // Event for all users in a specific room
+        io.to(user.room).emit('newMessage', {
+          id: data.id,
+          name: user.name,
+          text: data.text
+        }) 
+        // Call the callback() to clean the form text field 
+        callback()
+      }
     })
-    /*
-    // console.log("IO Connected")
-    socket.emit('newMessage', { text: 'Hello from socket' } )
-    // 
-    socket.on('createMessage', (data)=>{
-      setTimeout(()=>{
-         socket.emit('newMessage', { text: data.text + ' SERVER' } )
-      },1000)
-    }) */
 })
 
 module.exports = {
