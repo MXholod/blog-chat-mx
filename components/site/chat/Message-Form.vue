@@ -31,6 +31,17 @@ export default {
         }
       })
     }
+  },
+  created () {
+    // This listener is not needed in SSR-mode - if (process.client) {}
+    this.$eventBus.$on('addMessage', () => {
+      // Add a message by button's click
+      this.addMessage()
+    })
+  },
+  beforeDestroy () {
+    // make sure to always unsubscribe from events when no longer needed
+    this.$eventBus.$off('addMessage')
   }
 }
 </script>

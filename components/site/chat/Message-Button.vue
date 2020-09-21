@@ -13,7 +13,7 @@
 export default {
   methods: {
     addMessage () {
-      console.log('Button add message')
+      this.$eventBus.$emit('addMessage')
     }
   }
 }
