@@ -30,6 +30,8 @@ io.on('connection', socket => {
         // Socket ID is to define the User on the front-end
         userId: socket.id
       })
+      // Update list of all users in the room 
+      io.to(dataUser.room).emit('updateUsers', users.getByRoom(dataUser.room))
       // System message
       socket.emit('systemMessage',{
         title: '-- New guest --',
@@ -59,6 +61,31 @@ io.on('connection', socket => {
         }) 
         // Call the callback() to clean the form text field 
         callback()
+      }
+    })
+    // User left the chat
+    socket.on('userLeft', (userId, callback) => {
+      const user = users.remove(userId)
+      if (user) {
+        // Update list of all users in the room 
+        io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
+        io.to(user.room).emit('systemMessage',{
+          title: '-- User left --',
+          text: `User ${user.name} left the chat`
+        })
+      }
+      callback()
+    })
+    // User closed the chat window
+    socket.on('disconnect', () => {
+      const user = users.remove(socket.id)
+      if (user) {
+        // Update list of all users in the room 
+        io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
+        io.to(user.room).emit('systemMessage',{
+          title: '-- User left --',
+          text: `User ${user.name} left the chat`
+        })
       }
     })
 })
