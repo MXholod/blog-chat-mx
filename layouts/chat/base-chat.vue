@@ -154,7 +154,7 @@ export default {
       this.$socket.emit('userLeft', this.user.id, () => {
         // Use mutation to reset state.user
         this.clearData()
-        this.$router.push('/?message=leftChat')
+        this.$router.push('/chat/?message=leftChat')
       })
     }
   }

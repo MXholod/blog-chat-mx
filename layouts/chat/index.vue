@@ -13,9 +13,7 @@
             <v-row>
                 <v-col xs="12" md="12" lg="12">
                     <v-container>
-                        <v-main>
-                            <Nuxt />
-                        </v-main>
+                        <Nuxt />
                     </v-container>
                 </v-col>
             </v-row>
