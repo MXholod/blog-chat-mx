@@ -1,7 +1,7 @@
 <template>
   <div class="chat-sport-content__main">
     <message-system :systemMessage="systemMessage"></message-system>
-    <div class="chat-sport-content__messages">
+    <div class="chat-sport-content__messages" ref="blockScroll">
       <Message
         v-for="(message,ind) of messages"
         :key="ind"
@@ -38,6 +38,18 @@ export default {
   head () {
     return {
       title: `The room name is ${this.user.room}`
+    }
+  },
+  watch: {
+    messages () {
+      // setTimeout is needed to make a little pause before message will be inserted
+      // setTimeout(() => {
+      this.$nextTick(() => {
+        // scrollToop - amount of pixeles from the top of the element
+        // scrollHeight - all scrolled contentof the element
+        this.$refs.blockScroll.scrollTop = this.$refs.blockScroll.scrollHeight
+      // })
+      })
     }
   }
 }
