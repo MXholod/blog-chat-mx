@@ -1,59 +1,49 @@
 <template>
-  <section class="container">
-    <div>
-      <h1 class="title">
-        {{ error.statusCode }}
-      </h1>
-      <h2 class="info">
-        {{ error.message }}
-      </h2>
-      <nuxt-link class="button" to="/" v-if="error.statusCode === 404">
-        Homepage
-      </nuxt-link>
+    <div class="el-error-page">
+      <div class="el-error-page__error">
+        <h1 v-if="error.statusCode === 404">404 <br /> Page not found</h1>
+        <h1 v-else>An error occurred</h1>
+      </div>
+      <div class="el-error-page__description">
+        <h2 class="info">
+          {{ error.message }}
+        </h2>
+      </div>
+      <div class="el-error-page__home">
+        <nuxt-link class="el-error-page__button" to="/" v-if="error.statusCode === 404">
+          Go to the homepage
+        </nuxt-link>
+      </div>
     </div>
-  </section>
 </template>
 <script>
 export default {
+  layout: 'base-error',
   props: ['error']
 }
 </script>
 
 <style scoped>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
+.el-error-page{
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+}
+.el-error-page__error{
   text-align: center;
+  font-size: 1.2rem;
 }
-
-.title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+.el-error-page__description{
+  background-color: #89bafa;
+  padding: 5%;
+  border-radius: 20%;
 }
-.info
-{
-  font-weight: 300;
-  color: #9aabb1;
-  margin: 0;
+.el-error-page__home{
+  min-height: 100px;
+  padding-top: 5%;
 }
-.button
-{
-  margin-top: 50px;
+.el-error-page__button{
+  font-size: 1.2rem;
 }
 </style>
