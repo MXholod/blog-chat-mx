@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="el-wrapper-base-layout">
     <el-header height="80px" class="el-header-base-layout">
       <Navigation />
     </el-header>
@@ -40,6 +40,9 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+}
+.el-wrapper-base-layout{
+  height: 100vh;
 }
 .el-header-base-layout{
   padding:0;
