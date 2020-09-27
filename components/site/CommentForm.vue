@@ -20,9 +20,9 @@
         <el-form-item>
             <el-button
               type="primary"
-              @click="onSubmit"
               native-type="submit"
               plain
+              :loading="loading"
             >
               Add comment
             </el-button>
@@ -34,6 +34,7 @@
 export default {
   data () {
     return {
+      loading: false,
       ruleForm: {
         name: '',
         text: ''
@@ -53,9 +54,25 @@ export default {
     onSubmit () {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          console.log('Form is valid')
+          this.loading = true
+          // Prepare form data
+          const formData = {
+            postId: '',
+            name: this.ruleForm.name,
+            text: this.ruleForm.text
+          }
+          try {
+            setTimeout(() => {
+              this.$message.success('Comment has been added')
+              // Referring to the parent with event
+              this.$emit('commentAdded')
+            }, 2000)
+          } catch (e) {
+            this.loading = false
+          }
+          console.log('Form is valid ', formData)
         } else {
-          console.log('Form is invalid')
+          // console.log('Form is invalid')
         }
       })
     }
