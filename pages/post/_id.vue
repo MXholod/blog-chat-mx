@@ -30,6 +30,7 @@
             </p>
         </main>
         <footer class="post-details__comments">
+            <blog-comment-form />
             <div v-if="true">
                 <blog-comment
                     v-for="(comment, ind) in 2"
@@ -46,9 +47,11 @@
 
 <script>
 import BlogComment from '@/components/site/Comment'
+import BlogCommentForm from '@/components/site/CommentForm'
 export default {
   components: {
-    BlogComment
+    BlogComment,
+    BlogCommentForm
   },
   validate ({ params }) {
     return Boolean(params.id)
