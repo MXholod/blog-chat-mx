@@ -82,6 +82,13 @@ export default {
         message: 'You must first login',
         type: 'error'
       })
+    } else if (message === 'admin-logout') {
+      // Call element-ui method 'success'
+      this.$message({
+        showClose: true,
+        message: 'You\'ve left the admin page',
+        type: 'success'
+      })
     }
   }
 }
