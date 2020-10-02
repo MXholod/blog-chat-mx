@@ -71,6 +71,18 @@ export default {
         }
       })
     }
+  },
+  mounted () { // This method is only called on the client side
+    // Get query parameter 'message'
+    const { message } = this.$route.query
+    if (message === 'unauthenticated') {
+      // Call element-ui method 'error'
+      this.$message({
+        showClose: true,
+        message: 'You must first login',
+        type: 'error'
+      })
+    }
   }
 }
 </script>
