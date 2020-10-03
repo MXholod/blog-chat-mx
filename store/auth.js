@@ -14,10 +14,17 @@ export const mutations = {
 export const actions = {
   // Authorize in the system
   async login ({ commit, dispatch }, data) {
-    const token = await new Promise((resolve) => {
-      setTimeout(() => resolve('test-token'), 2000)
-    })
-    dispatch('setToken', token)
+    try {
+      const token = await new Promise((resolve, reject) => {
+        /* eslint-disable */
+        setTimeout(() => resolve('test-token'), 2000)
+      })
+      dispatch('setToken', token)
+    } catch (e) {
+      // Commit mutation
+      commit('error/setError', e, {root: true})
+      throw e
+    }
   },
   setToken ({ commit }, token) {
     commit('setToken', token)

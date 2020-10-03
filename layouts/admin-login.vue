@@ -6,7 +6,21 @@
 
 <script>
 export default {
-  name: 'admin-login'
+  name: 'admin-login',
+  computed: {
+    error () {
+      return this.$store.getters['error/error']
+    }
+  },
+  watch: {
+    error (val) {
+      this.$message({
+        showClose: true,
+        message: val,
+        type: 'error'
+      })
+    }
+  }
 }
 </script>
 

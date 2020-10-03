@@ -18,7 +18,21 @@
 <script>
 import MenuAside from '@/components/admin/MenuAside'
 export default {
-  components: { MenuAside }
+  components: { MenuAside },
+  computed: {
+    error () {
+      return this.$store.getters['error/error']
+    }
+  },
+  watch: {
+    error (val) {
+      this.$message({
+        showClose: true,
+        message: val,
+        type: 'error'
+      })
+    }
+  }
 }
 </script>
 
