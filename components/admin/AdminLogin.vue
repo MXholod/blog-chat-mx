@@ -41,7 +41,7 @@ export default {
         ],
         pass: [
           { required: true, message: 'Please input a password', trigger: 'blur' },
-          { min: 6, message: 'The password must be at least 5 characters long', trigger: 'blur' }
+          { min: 6, message: 'The password must be at least 6 characters long', trigger: 'blur' }
         ]
       }
     }
