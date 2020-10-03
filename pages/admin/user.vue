@@ -1,10 +1,12 @@
 <template>
-    <h1>Users</h1>
+    <admin-user-create />
 </template>
 
 <script>
+import AdminUserCreate from '@/components/admin/AdminUserCreate'
 export default {
   layout: 'admin',
-  middleware: ['admin-auth']
+  middleware: ['admin-auth'],
+  components: { AdminUserCreate }
 }
 </script>
