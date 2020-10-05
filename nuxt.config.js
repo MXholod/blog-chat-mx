@@ -41,7 +41,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    '@/plugins/all-globals',
+    '@/plugins/element-ui',
     // There is no need server side rendering and render it only on client side
      { src: '@/plugins/socket', ssr: false },
     // EventBus registration
@@ -78,6 +78,7 @@ export default {
     // Doc: https://http.nuxtjs.org
     '@nuxt/http',
     '@nuxtjs/axios',
+    '@nuxtjs/markdownit'
   ],
 
   /*
@@ -85,6 +86,20 @@ export default {
   */
   axios: {
     // proxyHeaders: false
+  },
+
+  /*
+  ** Mark Down Nuxt.js
+  */
+  // [optional] markdownit options
+  // See https://github.com/markdown-it/markdown-it
+  markdownit: {
+    injected: true,
+    preset: 'default',
+    linkify: true,
+    breaks: true,
+    html: true,
+    typographer: true
   },
 
   /*
