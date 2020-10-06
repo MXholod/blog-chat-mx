@@ -52,7 +52,7 @@ export default {
   layout: 'admin',
   middleware: ['admin-auth'],
   async asyncData ({ store }) {
-    const posts = await store.dispatch('post/adminPosts')
+    const posts = await store.dispatch('post/displayAdminPosts')
     // It will be merged with 'data' if 'data' is present
     return { posts }
   },
@@ -72,7 +72,7 @@ export default {
           type: 'warning'
         })
         // Delete a post from the store
-        // await this.store.dispatch('post/deletePost', id)
+        // await this.store.dispatch('post/deleteAdminPost', id)
         // Delete post localy
         this.posts = this.posts.filter(p => p._id !== id)
         this.$message.success('The post has been deleted')
