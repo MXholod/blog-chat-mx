@@ -13,12 +13,11 @@ export const mutations = {
 
 export const actions = {
   // Authorize in the system
-  async login ({ commit, dispatch }, data) {
+  login ({ commit, dispatch }, data) {
     try {
-      const token = await new Promise((resolve, reject) => {
-        /* eslint-disable */
-        setTimeout(() => resolve('test-token'), 2000)
-      })
+      const { token } = this.$axios.$post('/api/auth/admin/login', data)
+      console.log('Token ', token)
+      /* eslint-disable */
       dispatch('setToken', token)
     } catch (e) {
       // Commit mutation
