@@ -1,12 +1,26 @@
 const { app, http } = require('./api.socket')
+// Parse incoming request bodies in a middleware before handlers, available under the req.body property
+const bodyParser = require('body-parser')
+// Mongoose for MongoDB
+const mongoose = require('mongoose')
+// Config keys
+const keys = require('./config/keys')
 
 // Require API routes
-const users = require('./routes/users')
-const test = require('./routes/test')
+const auth = require('./routes/auth')
 
+// mongoose.connect() returns Promise()
+mongoose.connect(keys.MONGO_DB_URI)
+  .then(() => {
+    console.log('MongoDB connected...')
+  })
+  .catch((error) => console.log('MongoDB error ', error))
+
+// Register Body-Parser
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 // Import API Routes
-app.use(users)
-app.use(test)
+app.use('/auth',auth)
 
 // Export express app
 module.exports = app
@@ -22,28 +36,3 @@ module.exports = app
       })
   }
 // } 
-
-  
-/*const express = require('express')
-
-// Create express instance
-const app = express()
-
-// Require API routes
-const users = require('./routes/users')
-const test = require('./routes/test')
-
-// Import API Routes
-app.use(users)
-app.use(test)
-
-// Export express app
-module.exports = app
-
-// Start standalone server if directly running
-if (require.main === module) {
-  const port = process.env.PORT || 3001
-  app.listen(port, () => {
-    console.log(`API server listening on port ${port}`)
-  })
-}*/
