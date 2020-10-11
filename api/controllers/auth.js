@@ -27,6 +27,21 @@ module.exports.login = async (request, response) => {
       response.status(404).json({ message: 'User not found' })
     }
 }
-module.exports.createUser = (request, response) => {
-
+module.exports.createUser = async (request, response) => {
+  const applicant = await User.findOne({ login: request.body.login })
+  // If User with this login already exists
+  if (applicant) {
+    response.status(409).json({ message: "User login is busy" })
+  } else {
+    const salt = bcrypt().genSaltSync(10)
+    // Create new User
+    const user = new User({
+      login: request.body.login,
+      password: bcrypt.hashSync(request.body.pass, salt)
+    })
+    // Save user to Db
+    await user.save()
+    // Something successfully created
+    response.status(201).json(user)
+  }
 }
