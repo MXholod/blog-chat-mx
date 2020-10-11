@@ -10,7 +10,12 @@ const keys = require('./config/keys')
 const auth = require('./routes/auth')
 
 // mongoose.connect() returns Promise()
-mongoose.connect(keys.MONGO_DB_URI)
+mongoose.connect(keys.MONGO_DB_URI, {
+  'useCreateIndex': true, 
+  'useNewUrlParser': true ,
+  'useFindAndModify': false,
+  'useUnifiedTopology': true
+  })
   .then(() => {
     console.log('MongoDB connected...')
   })
