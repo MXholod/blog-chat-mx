@@ -82,7 +82,7 @@ export default {
     ]
   }),
   methods: {
-    ...mapMutations(['addUser']),
+    ...mapMutations('chat', ['addUser']),
     submit () {
       if (this.$refs.form.validate()) {
         const user = {

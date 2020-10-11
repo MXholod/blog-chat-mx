@@ -34,7 +34,7 @@ export default {
   layout: 'chat/base-chat',
   middleware: ['chat'],
   components: { Message, MessageForm, MessageButton, MessageSystem },
-  computed: mapState(['user', 'messages', 'systemMessage']),
+  computed: mapState('chat', ['user', 'messages', 'systemMessage']),
   head () {
     return {
       title: `The room name is ${this.user.room}`

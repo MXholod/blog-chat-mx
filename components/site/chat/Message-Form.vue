@@ -20,7 +20,7 @@ export default {
     addMessage () {
       // console.log('Result is: ', this.formText)
       this.$socket.emit('createMessage', {
-        id: this.$store.state.user.id,
+        id: this.$store.state.chat.user.id,
         name: 'admin',
         text: this.formText
       }, (data) => {

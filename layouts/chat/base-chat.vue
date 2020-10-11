@@ -137,7 +137,7 @@ export default {
     Navigation
   },
   computed: {
-    ...mapState(['user', 'users']),
+    ...mapState('chat', ['user', 'users']),
     withSidebar () {
       return this.drawer ? 'margin-left:-12px' : 'margin-left:-6px'
     }
@@ -149,7 +149,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['clearData']),
+    ...mapMutations('chat', ['clearData']),
     exit () {
       this.$socket.emit('userLeft', this.user.id, () => {
         // Use mutation to reset state.user
