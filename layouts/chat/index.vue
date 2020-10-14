@@ -34,6 +34,11 @@ export default {
 </script>
 
 <style lang="scss">
+.el-header-base-layout{
+  .el-menu-sport.el-menu--horizontal.el-menu{
+    padding:0;
+  }
+}
 .el-footer-base-layout{
   padding:0;
   background-color:#225AA4;
@@ -44,7 +49,7 @@ export default {
  .container-chat__cols {
   padding: 0px;
   background-color:#225AA4;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 12px;
+  padding-right: 12px;
  }
 </style>

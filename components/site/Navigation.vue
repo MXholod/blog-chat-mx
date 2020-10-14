@@ -1,14 +1,14 @@
 <template>
     <nav>
         <el-menu
-            :default-active="activeIndex1"
+            router
+            :default-active="$route.path"
             class="el-menu-sport"
             mode="horizontal"
-            @select="handleSelect"
             background-color="#225AA4"
             text-color="#fff"
             active-text-color="#12DEF1">
-            <el-menu-item index="1" class="el-menu-sport__item" >Sportsman blog</el-menu-item>
+            <el-menu-item index="/" class="el-menu-sport__item" >Sportsman blog</el-menu-item>
             <el-submenu index="2" class="el-menu-sport__item_sub">
                 <template slot="title">A sportsman life</template>
                 <el-submenu index="2-1">
@@ -23,10 +23,10 @@
                     <el-menu-item index="2-2-3">Agility exercises</el-menu-item>
                 </el-submenu>
             </el-submenu>
-            <el-menu-item index="3" class="el-menu-sport__item">About me</el-menu-item>
-            <el-menu-item index="4" class="el-menu-sport__item">Contacts</el-menu-item>
+            <el-menu-item index="/about" class="el-menu-sport__item">About me</el-menu-item>
+            <el-menu-item index="/contacts" class="el-menu-sport__item">Contacts</el-menu-item>
             <el-menu-item index="5" class="el-menu-sport__item el-menu-sport__item_hover"></el-menu-item>
-            <el-menu-item index="6" class="el-menu-sport__item" disabled>Teammates chat</el-menu-item>
+            <el-menu-item index="/chat" class="el-menu-sport__item">Teammates chat</el-menu-item>
         </el-menu>
     </nav>
 </template>
@@ -41,7 +41,9 @@
     },
     methods: {
       handleSelect(key, keyPath) {
-        console.log(key, keyPath);
+        console.log(this.$router.name);
+        // console.log(key, keyPath);
+        // this.$router.push()
       }
     }
   }
