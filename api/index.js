@@ -3,6 +3,9 @@ const { app, http } = require('./api.socket')
 const bodyParser = require('body-parser')
 // Mongoose for MongoDB
 const mongoose = require('mongoose')
+// Passport library for restricting Routes
+const passport = require('passport')
+const strategyPassport = require('./middleware/passport-strategy')
 // Config keys
 const keys = require('./config/keys')
 
@@ -20,7 +23,9 @@ mongoose.connect(keys.MONGO_DB_URI, {
     console.log('MongoDB connected...')
   })
   .catch((error) => console.log('MongoDB error ', error))
-
+// Register Passport. If User failed a Route gets the 401 status
+app.use(passport.initialize())
+passport.use(strategyPassport)
 // Register Body-Parser
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
