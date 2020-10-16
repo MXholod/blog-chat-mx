@@ -5,36 +5,33 @@
             <v-card max-width="50%" color="#AFD7F2" style="margin:0px auto">
                 <v-card-title>The teammates chat</v-card-title>
                 <v-card-text>
-                    <v-form
-                        ref="form"
-                        v-model="valid"
-                        lazy-validation
-                    >
-                        <v-text-field
-                        v-model="name"
-                        :counter="16"
-                        :rules="nameRules"
-                        label="Enter your name"
-                        required
-                        ></v-text-field>
-
-                        <v-text-field
-                        v-model="room"
-                        :rules="roomRules"
-                        label="Enter room name"
-                        required
-                        ></v-text-field>
-
-                        <v-btn
-                        :disabled="!valid"
-                        color="primary"
-                        class="mr-4"
-                        @click="submit"
-                        style="color:rgba(210,236,253,1)"
-                        >
-                        Enter
-                        </v-btn>
-                    </v-form>
+                  <v-chip class="ma-2 sport-chip" color="primary" label>
+                    <v-icon left>
+                      mdi-account-circle-outline
+                    </v-icon>
+                    {{ currentName }}
+                  </v-chip>
+                  <v-select
+                    v-if="rooms.length"
+                    :items="rooms.map(room => room.name)"
+                    label="Chat rooms"
+                    @change="selectRoom"
+                  ></v-select>
+                  <v-chip
+                    v-else
+                    class="ma-2"
+                    color="pink"
+                    label
+                    text-color="white"
+                  >
+                    <v-icon left>
+                      mdi-compare-horizontal
+                    </v-icon>
+                    No rooms
+                  </v-chip>
+                  <v-btn depressed color="primary" small @click="roomEnter">
+                    Enter chat
+                  </v-btn>
                 </v-card-text>
             </v-card>
         </v-col>
@@ -67,27 +64,33 @@ export default {
     }
   },
   data: () => ({
-    snackbar: false,
-    message: '',
-    valid: true,
-    name: '',
-    nameRules: [
-      v => !!v || 'Name is required',
-      v => (v && v.length <= 16) || 'Name must be less than 16 characters'
+    currentName: 'John Leider',
+    currentRoom: '',
+    rooms: [
+      { name: 'funny', description: 'Funny is good' },
+      { name: 'happy', description: 'Happy is good' }
     ],
-    room: '',
-    roomRules: [
-      v => !!v || 'Room is required'
-      // v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
-    ]
+    snackbar: false,
+    message: ''
   }),
   methods: {
     ...mapMutations('chat', ['addUser']),
-    submit () {
-      if (this.$refs.form.validate()) {
+    selectRoom (roomName) {
+      // roomName - current selected room as a String
+      if (roomName) {
+        const resultRoom = this.rooms.filter(room => room.name === roomName)
+        // Assign current room name
+        this.currentRoom = resultRoom[0].name
+        // Show details about the current room
+        this.message = resultRoom[0].description
+        this.snackbar = true
+      }
+    },
+    roomEnter () {
+      /* eslint-disable */
         const user = {
-          name: this.name,
-          room: this.room
+          name: this.currentName,
+          room: this.currentRoom
         }
         // Send data by socket to the server to get an unique ID of the user connection
         this.$socket.emit('userJoined', user, (data) => {
@@ -104,7 +107,6 @@ export default {
             this.$router.push('/chat/base-chat')
           }
         })
-      }
     } /*,
     message () {
       // console.log('Ok')
@@ -125,6 +127,12 @@ export default {
 </script>
 
 <style lang="scss">
+.v-card__text{
+  .sport-chip{
+    width:100%;
+    margin: 0 auto!important;
+  }
+}
 .snackbar-text .v-snack__content{
   text-align: center;
   color: #000;
