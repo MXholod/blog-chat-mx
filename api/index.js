@@ -11,6 +11,8 @@ const keys = require('./config/keys')
 
 // Require API routes
 const auth = require('./routes/auth')
+const post = require('./routes/post')
+const comment = require('./routes/comment')
 
 // mongoose.connect() returns Promise()
 mongoose.connect(keys.MONGO_DB_URI, {
@@ -31,6 +33,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 // Import API Routes
 app.use('/auth',auth)
+app.use('/post',post)
+app.use('/comment',comment)
 
 // Export express app
 module.exports = app
