@@ -1,5 +1,5 @@
 export default function ({ store, redirect }) {
   if (!store.getters['auth/isAuthenticated']) {
-    redirect('/admin/login?message=unauthenticated')
+    redirect('/login?message=unauthenticated')
   }
 }

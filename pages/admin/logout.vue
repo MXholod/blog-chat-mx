@@ -8,7 +8,7 @@ export default {
   middleware: ['admin-auth'],
   beforeCreate () {
     this.$store.dispatch('auth/logout')
-    this.$router.push('/admin/login?message=admin-logout')
+    this.$router.push('/login?message=admin-logout')
   }
 }
 </script>
