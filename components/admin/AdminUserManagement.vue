@@ -11,9 +11,6 @@
 <script>
 import AdminUserCreate from './admin_user_management/AdminUserCreate'
 export default {
-  props: {
-    isAdmin: Boolean
-  },
   components: { AdminUserCreate },
   data () {
     return {

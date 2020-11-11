@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     onSubmit () {
-      this.$refs.form.validate((valid) => { // async
+      this.$refs.form.validate(async (valid) => {
         if (valid) {
           this.loading = true
           // Prepare form data
@@ -69,12 +69,9 @@ export default {
             login: this.ruleForm.login,
             pass: this.ruleForm.pass,
             role: this.activeRole
-            // 'this.isAdmin' - must be always 'false' because the admin exists
-            // isAdmin: this.isAdmin
           }
-          console.log(formData)
           try {
-            // await this.$store.dispatch('auth/userCreation', formData)
+            await this.$store.dispatch('auth/userCreation', formData)
             this.$message.success('User has been created')
             // Reset form fields
             this.ruleForm.login = ''
@@ -83,9 +80,8 @@ export default {
           } catch (e) {
             this.loading = false
           }
-          // console.log('Form is valid ', formData)
         } else {
-          console.log('Form is invalid')
+          // console.log('Form is invalid')
         }
       })
     }
