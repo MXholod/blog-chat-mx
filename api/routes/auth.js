@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { login, createUser } = require('../controllers/auth')
+const { login, createUser, isAdmin } = require('../controllers/auth')
 const router = Router()
 
 // When work with Login Authorization in REST api use post() method
@@ -8,5 +8,7 @@ const router = Router()
 router.post('/admin/login', login)
 // /api/auth/admin/create
 router.post('/admin/create', createUser)
+// /api/auth/login/isAdmin
+router.post('/login/isAdmin', isAdmin)
 
 module.exports = router

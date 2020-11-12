@@ -33,15 +33,36 @@ module.exports.createUser = async (request, response) => {
   if (applicant) {
     response.status(409).json({ message: "User login is busy" })
   } else {
-    const salt = bcrypt().genSaltSync(10)
+    const salt = bcrypt.genSaltSync(10)
     // Create new User
     const user = new User({
       login: request.body.login,
-      password: bcrypt.hashSync(request.body.pass, salt)
+      password: bcrypt.hashSync(request.body.pass, salt),
+      role: request.body.role
     })
     // Save user to Db
     await user.save()
     // Something successfully created
     response.status(201).json(user)
   }
+}
+// If collection 'users' isn't empty there must be an 'admin'
+module.exports.isAdmin = async (request, response) => {
+  await User.countDocuments({}, async (err, amount) => {
+    // If document (collection) isn't empty
+    if (amount) {
+      const admin = await User.findOne({ isAdmin: true })
+      // Admin exists
+      if (admin) {
+        // If admin presents in collection
+        response.status(200).json({'isAdmin': true})
+      } else { 
+        // It's weird the collection isn't empty but admin is absent
+        response.status(200).json({'isAdmin': false})
+      }
+    } else {
+      // Document (collection) is empty
+      response.status(200).json({'isAdmin': false})
+    }
+  })
 }
