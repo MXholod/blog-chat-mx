@@ -4,7 +4,8 @@ export default {
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
   */
-  mode: 'universal',
+  //mode: 'universal', // It's deprecated, use ssr instead
+  ssr: true, // default value
 
   /*
   ** Nuxt target
@@ -43,7 +44,7 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     // There is no need server side rendering and render it only on client side
-     { src: '@/plugins/socket', ssr: false },
+    { src: '@/plugins/socket', ssr: false },
     // EventBus registration
     '@/plugins/eventBus'
   ],
@@ -59,7 +60,7 @@ export default {
   */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
-    '@nuxtjs/eslint-module',
+    // '@nuxtjs/eslint-module',
     "@nuxtjs/vuetify",
   ],
   
