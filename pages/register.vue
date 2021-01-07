@@ -13,14 +13,21 @@
       <el-form-item label="Confirm password" prop="checkPass" class="confirm-pass">
         <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
       </el-form-item>
+      <div class="accept-terms-block">
+        <el-checkbox v-model="checked" class="accept-terms-tick">Accept terms</el-checkbox>
+        <el-card class="accept-terms-text" :class="!checked ? 'sh' : 'hd'">
+          Please read these Terms of Service carefully before accessing or using our website. By accessing or using any part of the site, you agree to be bound by these Terms of Service. If you do not agree to all the terms and conditions of this agreement, then you may not access the website or use any services. If these Terms of Service are considered an offer, acceptance is expressly limited to these Terms of Service.
+        </el-card>
+      </div>
       <el-form-item>
         <el-button
           type="primary"
           :loading="loading"
+          :disabled="!checked"
           @click="submitForm('ruleForm')">
             Submit
         </el-button>
-        <el-button @click="resetForm('ruleForm')">Reset</el-button>
+        <el-button @click="resetForm('ruleForm')" :disabled="!checked">Reset</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -65,19 +72,20 @@
             { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
           ],
           pass: [
-            { validator: validatePass, trigger: 'blur' }
+            { required: true, validator: validatePass, trigger: 'blur' }
           ],
           checkPass: [
-            { validator: validatePass2, trigger: 'blur' }
+            { required: true, validator: validatePass2, trigger: 'blur' }
           ]
         },
-        loading: false
+        loading: false,
+        checked: false
       };
     },
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
-          if (valid) {
+          if (valid && this.checked) {
             this.loading = true;
             setTimeout(()=>{
               this.$message({
@@ -85,7 +93,9 @@
                 message: 'You\'ve sent the data to register',
                 type: 'success'
               });
+              this.resetForm(formName);
               this.loading = false;
+              this.checked = false;
             },3000);
             //alert('submit!');
           } else {
@@ -113,7 +123,41 @@
     .el-form-item{
       .el-form-item__label{
         width:120px;
-        font-size: 13px;
+        font-size: 12px;
+      }
+    }
+  }
+  .accept-terms-block{
+    padding:0px 0px 3% 0px;
+    &::after{
+      content:'';
+      display: block;
+      clear: both;
+    }
+    .accept-terms-tick{
+      float:left;
+      width:300px;
+      padding: 2% 0 0 20%;
+    }
+    .accept-terms-text{
+      float:right;
+      width:400px;
+      height:70px;
+      overflow-y: scroll;
+      transition: all 1s ease-in;
+      .el-card__body{
+        padding:15px;
+        font-size:12px;
+      }
+      &.sh{
+        visibility: visible;
+        height:70px;
+        color:#000;
+      }
+      &.hd{
+        visibility: hidden;
+        height: 50px;
+        color: transparent;
       }
     }
   }
