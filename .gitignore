@@ -1,5 +1,6 @@
 #Temporary ignore Users
 /pages/users
+/api/config/keys/keys.dev.js
 /static
 # Created by .ignore support plugin (hsz.mobi)
 ### Node template
