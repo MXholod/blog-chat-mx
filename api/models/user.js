@@ -1,9 +1,16 @@
-/* eslint-disable */
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require('mongoose');
 
-const userSchema = new Schema({
-  login: { type: String, required: true, unique: true },
-  password: { type: String, required: true, minLength: 6 },
+const UserSchema = new Schema({
+  login: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+  acceptTerms: Boolean,
+  verificationToken: String,
+  verified: Date,
+  resetToken: { token: String, expires: Date },
+  passwordReset: Date,
+  created: { type: Date, default: Date.now },
+  updated: Date,
   avatar: { type: String, required: false },
   chatBan : { type: Boolean, default: false },
   inChat : { type: Boolean, default: false },
@@ -12,11 +19,34 @@ const userSchema = new Schema({
   isAdmin : { type: Boolean, default: false },
   // role - 'admin' | 'moderator' | 'guest'
   role: { type: String, required: true },
-  posts: [ { type: Schema.Types.ObjectId, ref: 'posts' } ],
+  // Relationship with 'posts' - one-to-many
+  posts: [ { type: Schema.Types.ObjectId, ref: 'Post' } ],
   // Relationship with 'chat-rooms' - one-to-many
-  rooms: [
-    { type: Schema.Types.ObjectId, ref: 'chat-rooms' }
-  ]
-})
+  rooms: [ { type: Schema.Types.ObjectId, ref: 'Chat-room' } ]
+});
 
-module.exports = model('users', userSchema)
+// A _virtual_ is a schema property that is **not** stored in MongoDB.
+// It is instead calculated from other properties in the document.
+UserSchema.virtual('isVerified').get(function () {
+    // In the getter function, `this` is the document. Don't use arrow
+    // functions for virtual getters!
+    return !!(this.verified || this.passwordReset);// !!'' - false, !!'t' - true
+});
+
+UserSchema.set('toJSON', {
+    // Make Mongoose attach virtuals whenever calling `JSON.stringify()`,
+    // including using `res.json()` when {virtuals: true}
+    virtuals: true,
+    // По умолчанию при сохранении данных Mongoose добавляет специальное поле __v,
+    // которое указывает на версию документа. его можно отключить,
+    // добавив в схему объект { versionKey: false }
+    versionKey: false,
+    transform: function (doc, ret) {
+        // remove these props when object is serialized
+        delete ret._id;
+        delete ret.passwordHash;
+    }
+});
+
+//In DB it will be 'users'
+module.exports = model('User', UserSchema);
