@@ -65,17 +65,19 @@
         rules: {
           login: [
             { required: true, message: 'Please input Activity login', trigger: 'blur' },
-            { min: 3, max: 12, message: 'Length should be 3 to 12', trigger: 'blur' }
+            { min: 3, max: 15, message: 'Length should be 3 to 15', trigger: 'blur' }
           ],
           email: [
             { required: true, message: 'Please input email address', trigger: 'blur' },
             { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
           ],
           pass: [
-            { required: true, validator: validatePass, trigger: 'blur' }
+            { required: true, validator: validatePass, trigger: 'blur' },
+            { min: 5, max: 12, message: 'Length should be 5 to 12', trigger: 'blur' }
           ],
           checkPass: [
-            { required: true, validator: validatePass2, trigger: 'blur' }
+            { required: true, validator: validatePass2, trigger: 'blur' },
+            { min: 5, max: 12, message: 'Length should be 5 to 12', trigger: 'blur' }
           ]
         },
         loading: false,
@@ -84,22 +86,36 @@
     },
     methods: {
       submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
+        this.$refs[formName].validate(async (valid) => {
           if (valid && this.checked) {
             this.loading = true;
-            setTimeout(()=>{
+            //Prepare User data
+            const userData = {
+              login: this.ruleForm.login,
+              email: this.ruleForm.email,
+              password: this.ruleForm.pass,
+              passwordConfirmation: this.ruleForm.checkPass,
+              acceptTerms: this.checked
+            };
+            //
+            try {
+              const result = await this.$axios.$post('/api/user/registration', userData);
+               this.$message({
+                  showClose: true,
+                  message: result.message, //'You\'ve sent the data to register',
+                  type: 'success'
+                });
+            } catch (e) {
               this.$message({
                 showClose: true,
-                message: 'You\'ve sent the data to register',
-                type: 'success'
-              });
+                message: `Data ${e.message}`,
+                type: 'error'
+              })
+            }
               this.resetForm(formName);
               this.loading = false;
               this.checked = false;
-            },3000);
-            //alert('submit!');
           } else {
-            //console.log('error submit!!');
             this.$message({
               showClose: true,
               message: 'You\'ve input incorrect data',
