@@ -64,19 +64,19 @@ async function sendAlreadyRegisteredEmail(email, origin) {
 }
 
 // Use it in 'register' controller
-async function sendVerificationEmail(account, origin) {
+async function sendVerificationEmail(user, origin) {
   let message;
   if (origin) {
-      const verifyUrl = `${origin}/account/verify-email?token=${account.verificationToken}`;
+      const verifyUrl = `${origin}/verification-email?token=${user.verificationToken}`;
       message = `<p>Please click the below link to verify your email address:</p>
                  <p><a href="${verifyUrl}">${verifyUrl}</a></p>`;
   } else {
-      message = `<p>Please use the below token to verify your email address with the <code>/account/verify-email</code> api route:</p>
-                 <p><code>${account.verificationToken}</code></p>`;
+      message = `<p>Please use the below token to verify your email address with the <code>/verification-email?token=here is a token from your email</code></p>
+                 <p><code>${user.verificationToken}</code></p>`;
   }
 
   await sendEmail({
-      to: account.email,
+      to: user.email,
       subject: 'Sign-up Verification API - Verify Email',
       html: `<h4>Verify Email</h4>
              <p>Thanks for registering!</p>
@@ -85,19 +85,19 @@ async function sendVerificationEmail(account, origin) {
 }
 
 // Use it in 'forgotPassword' controller
-async function sendPasswordResetEmail(account, origin) {
+async function sendPasswordResetEmail(user, origin) {
   let message;
   if (origin) {
-      const resetUrl = `${origin}/account/reset-password?token=${account.resetToken.token}`;
+      const resetUrl = `${origin}/reset-password?token=${user.resetToken.token}`;
       message = `<p>Please click the below link to reset your password, the link will be valid for 1 day:</p>
                  <p><a href="${resetUrl}">${resetUrl}</a></p>`;
   } else {
-      message = `<p>Please use the below token to reset your password with the <code>/account/reset-password</code> api route:</p>
-                 <p><code>${account.resetToken.token}</code></p>`;
+      message = `<p>Please use the below token to reset your password with the <code>/reset-password</code> api route:</p>
+                 <p><code>${user.resetToken.token}</code></p>`;
   }
 
   await sendEmail({
-      to: account.email,
+      to: user.email,
       subject: 'Sign-up Verification API - Reset Password',
       html: `<h4>Reset Password Email</h4>
              ${message}`
