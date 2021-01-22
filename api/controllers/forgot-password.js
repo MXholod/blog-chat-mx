@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
-const { User } = require('./../helpers/db');
-const { sendPasswordResetEmail } = require('./../helpers/send_email');
-const { randomTokenString } = require('./../helpers/crypto');
+const { User } = require('../helpers/db');
+const { sendPasswordResetEmail } = require('../helpers/send_email');
+const { randomTokenString } = require('../helpers/crypto');
 
 async function forgotPassword(req, res, next){
     const errors = validationResult(req);
