@@ -1,6 +1,7 @@
 // Mongoose for MongoDB
 const mongoose = require('mongoose');
 const User = require('./../models/user');
+const JwtRefresh = require('./../models/jwt-refresh');
 // Config keys
 const keys = require('./../config/keys');
 
@@ -26,5 +27,6 @@ function isValidId(id) {
 module.exports = {
   connectDB, //Make a DB connection
   User,
+  JwtRefresh,
   isValidId
 };
