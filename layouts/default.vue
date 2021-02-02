@@ -26,6 +26,8 @@ export default {
   },
   watch: {
     error (val) {
+      // $axios - val.response.data.message, val - native JS Error
+      val = val.response ? val.response.data.message : val;
       this.$message({
         showClose: true,
         message: val,
