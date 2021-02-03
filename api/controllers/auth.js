@@ -1,68 +1,52 @@
-const bcrypt = require('bcrypt-nodejs')
-const jwt = require('jsonwebtoken')
-const User = require('./../models/user')
-const keys = require('./../config/keys')
+const { validationResult } = require('express-validator');
+const { User } = require('./../helpers/db');
+const { compare: comparePasswords } = require("./../helpers/salt");
+const { generateJwtToken } = require('./../helpers/jwt');
+const generateRefreshToken = require('./../helpers/jwt-refresh');
+const basicDetails = require('./../helpers/basic-details');
+const setTokenCookie = require('./../helpers/token-cookie');
 
-module.exports.login = async (request, response) => {
-  // Search for a User by his login
-  const applicant = await User.findOne({ login: request.body.login })
-    if (applicant) {
-      // Compare passwords
-      const passResult = bcrypt.compareSync(request.body.pass, applicant.password)
-      // When password is correct
-      if (passResult) {
-        // Generate Token
-        const token = jwt.sign({
-          login: applicant.login,
-          userId: applicant._id
-        }, keys.JWT, { expiresIn: (60 * 60) })
-        // Send token to a User
-        response.status(200).json({ token })
-      } else {
-        response.status(401).json({ message: 'Password is incorrect' })
-        // response.status(404).json({ message: 'User not found' })
-      }
+async function authenticate(req, res, next){
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ message: errors.array()[0].msg });
+  }
+  const { email, password } = req.body;
+  const ipAddress = req.ip;
+  try{
+      const user = await User.findOne( { email } );
+      if(!user) throw new Error("Email or password is incorrect 1");
+      comparePasswords(password, user.passwordHash, async function(error, matchResult){
+        try{
+          if(error) throw new Error("Email or password is incorrect 2");
+          if (!user || !user.isVerified || !matchResult) {
+            throw new Error('Email or password is incorrect 3');
+          }
+          // authentication successful so generate jwt
+          const jwtToken = generateJwtToken(user);
+          // authentication successful so generate refresh token
+          const refreshToken = generateRefreshToken(user, ipAddress);
 
-    } else {
-      response.status(404).json({ message: 'User not found' })
-    }
-}
-module.exports.createUser = async (request, response) => {
-  const applicant = await User.findOne({ login: request.body.login })
-  // If User with this login already exists
-  if (applicant) {
-    response.status(409).json({ message: "User login is busy" })
-  } else {
-    const salt = bcrypt.genSaltSync(10)
-    // Create new User
-    const user = new User({
-      login: request.body.login,
-      password: bcrypt.hashSync(request.body.pass, salt),
-      role: request.body.role
-    })
-    // Save user to Db
-    await user.save()
-    // Something successfully created
-    response.status(201).json(user)
+          // save refresh token
+          await refreshToken.save();
+
+          // basic details and tokens
+          const details = {
+              ...basicDetails(user),
+              jwtToken,
+              refreshToken: refreshToken.token
+          };
+          setTokenCookie(res, refreshToken.token);
+          res.status(200).json({ message: 'You are authenticated', details });
+        }catch(e){
+          return res.status(401).json({ message: e.message});
+        }
+      });
+  }catch(e){
+    return res.status(401).json({message: `Can\'t authenticate ${e.message}`});
   }
 }
-// If collection 'users' isn't empty there must be an 'admin'
-module.exports.isAdmin = async (request, response) => {
-  await User.countDocuments({}, async (err, amount) => {
-    // If document (collection) isn't empty
-    if (amount) {
-      const admin = await User.findOne({ isAdmin: true })
-      // Admin exists
-      if (admin) {
-        // If admin presents in collection
-        response.status(200).json({'isAdmin': true})
-      } else { 
-        // It's weird the collection isn't empty but admin is absent
-        response.status(200).json({'isAdmin': false})
-      }
-    } else {
-      // Document (collection) is empty
-      response.status(200).json({'isAdmin': false})
-    }
-  })
+
+module.exports = {
+  authenticate
 }
