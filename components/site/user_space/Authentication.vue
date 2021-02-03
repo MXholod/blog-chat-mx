@@ -9,7 +9,7 @@
             text-color="#fff"
           >
           <el-menu-item index="/login" class="el-menu-sport__item">Sign in</el-menu-item>
-          <el-menu-item index="/" class="el-menu-sport__item">Sign up</el-menu-item>
+          <el-menu-item index="/register" class="el-menu-sport__item">Sign up</el-menu-item>
         </el-menu>
     </div>
 </template>
