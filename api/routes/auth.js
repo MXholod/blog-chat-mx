@@ -1,14 +1,19 @@
-const { Router } = require('express')
-const { login, createUser, isAdmin } = require('../controllers/auth')
-const router = Router()
+const { Router } = require('express');
+const passport = require('passport');
+const loginUser = require('./../middleware/login-user');
+const { authenticate } = require('../controllers/auth');
+const router = Router();
 
 // When work with Login Authorization in REST api use post() method
 // REST API: get() - get data; post() - create data; put() - change/update data; delete() - delete data;
-// /api/auth/admin/login
-router.post('/admin/login', login)
+// /api/auth/user/login
+router.post('/user/login', loginUser(), authenticate);
+
 // /api/auth/admin/create
-router.post('/admin/create', createUser)
-// /api/auth/login/isAdmin
-router.post('/login/isAdmin', isAdmin)
+/*router.post(
+  '/admin/create',
+  passport.authenticate('jwt', { session: false }),
+  createUser
+)*/
 
 module.exports = router
