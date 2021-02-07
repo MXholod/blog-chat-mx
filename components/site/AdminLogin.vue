@@ -69,7 +69,10 @@ export default {
               showClose: true,
               message: 'User logged in',
               type: 'success'
-            })
+            });
+            window.setTimeout(()=>{
+              this.$nuxt.$router.replace({ path: '/cabinet' });
+            },2000);
           } catch (e) {
             this.loading = false;
             /*this.$message({
