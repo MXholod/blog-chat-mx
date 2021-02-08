@@ -1,15 +1,7 @@
 <template>
     <v-app>
-        <v-container fluid style="padding:0px !important;">
-            <v-row v-bind:no-gutters="true">
-                <v-col xs="12" sm="12" md="12" lg="12" xl="12">
-                    <el-container>
-                        <el-header height="10%" class="el-header-base-layout">
-                            <Navigation />
-                        </el-header>
-                    </el-container>
-                </v-col>
-            </v-row>
+        <v-container class="container-chat" fluid>
+            <header-chat></header-chat>
             <v-row v-bind:no-gutters="true" style="position:relative;">
                 <v-col xs="3" sm="3" md="12" lg="3" xl="3">
                     <v-navigation-drawer absolute v-model="drawer" :width="330" :height="400" mobile-breakpoint="650">
@@ -17,6 +9,7 @@
                             border="bottom"
                             color="#38588E"
                             dark
+                            class="sport-text-center"
                         >
                             List of people in the room
                         </v-alert>
@@ -131,10 +124,10 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import Navigation from './../../components/site/Navigation'
+import HeaderChat from './../../components/site/chat/Header-Chat.vue';
 export default {
   components: {
-    Navigation
+    HeaderChat
   },
   computed: {
     ...mapState('chat', ['user', 'users']),
@@ -162,6 +155,11 @@ export default {
 </script>
 
 <style lang="scss">
+.el-header-base-layout{
+  .el-menu-sport.el-menu--horizontal.el-menu{
+    padding:0;
+  }
+}
 .chat-sport-cols{
   padding-top: 0px;
 }
@@ -170,5 +168,12 @@ export default {
   border: 1px solid green;
   background-color:#225AA4;
   padding-bottom: 0px !important;
+ }
+.el-footer-base-layout{
+  padding:0;
+  background-color:#225AA4;
+ }
+ .sport-text-center{
+   text-align: center;
  }
 </style>
