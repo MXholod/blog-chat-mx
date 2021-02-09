@@ -1,5 +1,5 @@
 <template>
-    <nav>
+    <nav class="el-menu-sport-nav">
         <el-menu
             router
             :default-active="$route.path"
@@ -26,32 +26,73 @@
             <el-menu-item index="/about" class="el-menu-sport__item">About me</el-menu-item>
             <el-menu-item index="/contacts" class="el-menu-sport__item">Contacts</el-menu-item>
             <el-menu-item index="5" class="el-menu-sport__item el-menu-sport__item_hover"></el-menu-item>
-            <el-menu-item index="/chat" class="el-menu-sport__item">Teammates chat</el-menu-item>
         </el-menu>
+        <div class="el-menu-sport__user-space">
+          <Authentication v-if="!isAuth" />
+          <CabAndChat v-else :userLogin="userLogin" />
+        </div>
     </nav>
 </template>
 
 <script>
 /* eslint-disable */
+import Authentication from '@/components/site/user_space/Authentication';
+import CabAndChat from '@/components/site/user_space/CabAndChat';
+import { mapState } from 'vuex';
   export default {
+    components: {
+      Authentication,
+      CabAndChat
+    },
     data() {
       return {
-        activeIndex1: '2'
+        activeIndex1: '2',
+        isAuth: false
       };
+    },
+    computed: {
+      authUser(){
+        return this.$store.getters['auth/isUserAuthenticated'];
+      },
+      ...mapState('auth',{
+        userLogin: (state)=>{ return state.user.login;}
+      })
+    },
+    watch:{
+      authUser(val){
+        this.isAuth = val.login === '' ? false : true;
+      }
     },
     methods: {
       handleSelect(key, keyPath) {
-        console.log(this.$router.name);
-        // console.log(key, keyPath);
-        // this.$router.push()
+        // console.log(this.$router.name);
+      }
+    },
+    created(){
+      if(this.$store.state.auth.user){
+          if(this.$store.state.auth.user.login === ''){
+            this.isAuth = false;
+          }else{
+            this.isAuth = true;
+          }
+      }else{
+        this.isAuth = false;
       }
     }
   }
 </script>
 
 <style lang="scss">
+    .el-menu-sport-nav::after{
+      content: '';
+      display: block;
+      clear:both;
+    }
+    $menu-height: 80px;
     .el-menu-sport{
-      height:80px;
+      height:$menu-height;
+      width:80%;
+      float:left;
       display:flex;
       flex-direction: row;
     }
@@ -62,22 +103,23 @@
     }
     .el-menu-sport__item_hover{
       flex-grow: 12;
-      background: transparent url('/Places.png') 50% 0/160px 80px no-repeat padding-box border-box scroll; 
+      background: transparent url('/Places.png') 50% 0/160px 80px no-repeat padding-box border-box scroll;
       &:hover{
         background-color: transparent !important;
-      }  
+      }
     }
     .el-menu-sport__item_sub{
-      flex-grow: 1; 
+      flex-grow: 1;
       & div.el-submenu__title{
         height:78px !important;
         font-size:1.2rem;
       }
     }
-    @mixin aaa($c:violet){
-        h1{
-            color: $c;
-        }
+    .el-menu-sport__user-space{
+      background-color: #45a5e6;
+      background-image: radial-gradient(#45a5e6, #225AA4);
+      width:20%;
+      height:$menu-height;
+      float: right;
     }
-    @include aaa(green);
 </style>
