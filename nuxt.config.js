@@ -46,7 +46,8 @@ export default {
     // There is no need server side rendering and render it only on client side
     { src: '@/plugins/socket', ssr: false },
     // EventBus registration
-    '@/plugins/eventBus'
+    '@/plugins/eventBus',
+    '@/plugins/axios-handler'
   ],
 
   /*
@@ -63,7 +64,7 @@ export default {
     // '@nuxtjs/eslint-module',
     "@nuxtjs/vuetify",
   ],
-  
+
   /*
   ** Nuxt.js Vuetify options
   */

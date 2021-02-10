@@ -1,44 +1,45 @@
 export const state = () => ({
-  token: null,
-  testDataUser: null
+  user: {
+    login: '',
+    role: '',
+    jwtToken: ''
+  }
 })
 
 export const mutations = {
-  setToken (state, token) {
-    state.token = token
+  authUser(state, data){
+    state.user = data;
   },
-  clearToken (state) {
-    state.token = null
-  },
-  testSetDataUser (state, dataUser) {
-    state.testDataUser = dataUser
+  userLogOut(state){
+    state.user = {
+      login: '',
+      role: '',
+      jwtToken: ''
+    }
   }
 }
 
 export const actions = {
   // Authorize in the system
-  login ({ commit, dispatch }, data) {
+  async login ({ commit, dispatch }, data) {
     try {
-      // const { token } = this.$axios.$post('/api/auth/admin/login', data)
-      const token = 'token-test'
-      commit('testSetDataUser', data)
-      // console.log('Token ', token)
-      /* eslint-disable */
-      dispatch('setToken', token)
+      const result = await this.$axios.$post('/api/auth/user/login', data);
+      const { jwtToken, login, isAdmin, role } = result.details;
+      //
+      commit('authUser', { jwtToken, login, role });
+      //console.log('Token ', result.details);
     } catch (e) {
       // Commit mutation
+      //console.log('Error ', e.response.data.message);
       commit('error/setError', e, {root: true})
       throw e
     }
   },
-  setToken ({ commit }, token) {
-    commit('setToken', token)
-  },
   logout ({ commit }) {
-    commit('clearToken')
+    commit('userLogOut');
   },
   async userCreation ({ commit }, data) {
-    // Request 
+    // Request
     try {
       await this.$axios.$post('/api/auth/admin/create', data)
       // console.log('User created', data)
@@ -51,5 +52,5 @@ export const actions = {
 }
 
 export const getters = {
-  isAuthenticated: state => Boolean(state.token)
+  isUserAuthenticated: (state)=>{ return state.user; }
 }
