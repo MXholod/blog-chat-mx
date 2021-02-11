@@ -2,7 +2,8 @@ export const state = () => ({
   user: {
     login: '',
     role: '',
-    jwtToken: ''
+    jwtToken: '',
+    blogBan: false
   }
 })
 
@@ -24,10 +25,12 @@ export const actions = {
   async login ({ commit, dispatch }, data) {
     try {
       const result = await this.$axios.$post('/api/auth/user/login', data);
-      const { jwtToken, login, isAdmin, role } = result.details;
+      const { jwtToken, login, role, blogBan } = result.details;
       //
-      commit('authUser', { jwtToken, login, role });
-      //console.log('Token ', result.details);
+      if(blogBan){
+        throw new Error('Enter is forbidden');
+      }
+      commit('authUser', { jwtToken, login, role, blogBan });
     } catch (e) {
       // Commit mutation
       //console.log('Error ', e.response.data.message);
