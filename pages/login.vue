@@ -21,6 +21,9 @@ export default {
     if(message === 'session'){
       this.$message.warning('Your session has been interrupted');
     }
+    if(message === 'unauthenticated'){
+      this.$message.warning('You must be registered');
+    }
   }
 }
 </script>
