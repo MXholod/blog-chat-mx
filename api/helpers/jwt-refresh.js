@@ -16,4 +16,20 @@ function generateRefreshToken(user, ipAddress) {
   });
 }
 
-module.exports = generateRefreshToken;
+async function getRefreshToken(token, ipAddress) {
+  //Get two objects from DB: 'refreshtokens' and 'users' merged by method 'populate()'
+  const refreshToken = await JwtRefresh.findOne({ token }).populate('user');
+  if (!refreshToken || refreshToken.isExpired){//!refreshToken.isActive
+    //Save in the Database
+    refreshToken.revoked = Date.now();
+    refreshToken.revokedByIp = ipAddress;
+    await refreshToken.save();
+    throw 'Invalid token';
+  }
+  return refreshToken;
+}
+
+module.exports = {
+  generateRefreshToken,
+  getRefreshToken
+};
