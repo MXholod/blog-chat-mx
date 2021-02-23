@@ -17,6 +17,9 @@ export const mutations = {
       role: '',
       jwtToken: ''
     }
+  },
+  setActiveToken(state, activeToken){
+    state.user.jwtToken = activeToken;
   }
 }
 
@@ -30,6 +33,8 @@ export const actions = {
       if(blogBan){
         throw new Error('Enter is forbidden');
       }
+      //Only client side rendering
+      //this.$axios.setToken(jwtToken, 'Bearer');
       commit('authUser', { jwtToken, login, role, blogBan });
     } catch (e) {
       // Commit mutation
@@ -39,7 +44,19 @@ export const actions = {
     }
   },
   logout ({ commit }) {
+    //Only client side rendering
+    //this.$axios.setToken(false);
     commit('userLogOut');
+  },
+  async refreshToken({ commit }){
+    //An Active token has gotten and Refresh token has regenerated
+    const res = await this.$axios.$post('/api/auth/user/refresh');
+    if(res){
+      commit('setActiveToken', res.details.jwtToken);
+    }else{
+      //Refresh is expired
+      commit('error/setError','You should sign in',{root: true});
+    }
   },
   async userCreation ({ commit }, data) {
     // Request
