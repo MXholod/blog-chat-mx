@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 const { User } = require('./../helpers/db');
 const { compare: comparePasswords } = require("./../helpers/salt");
 const { generateJwtToken } = require('./../helpers/jwt');
-const generateRefreshToken = require('./../helpers/jwt-refresh');
+const { generateRefreshToken } = require('./../helpers/jwt-refresh');
 const basicDetails = require('./../helpers/basic-details');
 const setTokenCookie = require('./../helpers/token-cookie');
 
