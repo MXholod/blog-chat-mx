@@ -27,11 +27,22 @@ export default {
     error (val) {
       // $axios - val.response.data.message, val - native JS Error
       val = val.response ? val.response.data.message : val;
-      this.$message({
-        showClose: true,
-        message: val,
-        type: 'error'
-      })
+      if(val.jwtRefreshed){
+        const h = this.$createElement;
+        this.$message({
+          message: h('p', null, [
+            h('span', null, val.jwtRefreshed),
+            h('i', { style: 'color: teal' }, ' Continue to use the interface')
+          ]),
+          duration: 7000
+        });
+      }else{
+        this.$message({
+          showClose: true,
+          message: val,
+          type: 'error'
+        })
+      }
     }
   }
 }
