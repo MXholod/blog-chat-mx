@@ -6,7 +6,7 @@ export default function ({ store }) {
   // Register new plugin
   Vue.use(new VueSocketIO({
     debug: false,
-    connection: 'http://localhost:3001/',
+    connection: 'http://localhost:3001',
     vuex: {
       store,
       actionPrefix: 'SOCKET_',
