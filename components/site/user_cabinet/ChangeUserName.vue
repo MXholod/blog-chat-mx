@@ -14,8 +14,8 @@
         <el-input type="text" v-model="userNameValidate.userName" autocomplete="off" class="userName__input"></el-input>
       </el-form-item>
       <el-form-item class="userName__buttons">
-        <el-button type="primary" @click="submitUserName('userNameValidate')">Change user name</el-button>
-        <el-button @click="resetUserName('userNameValidate')">Reset</el-button>
+        <el-button :loading="disabled" :disabled="disabled" type="primary" @click="submitUserName('userNameValidate')">Change user name</el-button>
+        <el-button :disabled="disabled" @click="resetUserName('userNameValidate')">Reset</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -27,14 +27,36 @@ export default {
     return {
       userNameValidate:{
         userName: ''
-      }
+      },
+      disabled:false,
+      isError: false
     }
   },
   methods: {
     submitUserName(formName){
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
           if (valid) {
-            console.log("Submit ",formName);
+            this.disabled = true;
+            try{
+              await this.$store.dispatch('auth/updateUserLogin', {
+                newLogin: this.userNameValidate.userName
+              });
+            }catch(e){
+              this.isError = true;
+            }
+            //Succes only if there is no error
+            if(!this.isError){
+              //this.userNameValidate.userName = '';
+              this.resetUserName(formName);
+              this.$message({
+                showClose: true,
+                message: 'Your user name has successfully changed',
+                type: 'success'
+              });
+            }
+            //Reset isError to false
+            this.isError = false;
+            this.disabled = false;
           } else {
             console.log('error submit!!');
             return false;
@@ -42,7 +64,6 @@ export default {
         });
     },
     resetUserName(formName){
-      //console.log("Reset ",formName);
       this.$refs[formName].resetFields();
     }
   }
