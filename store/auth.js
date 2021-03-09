@@ -20,6 +20,9 @@ export const mutations = {
   },
   setActiveToken(state, activeToken){
     state.user.jwtToken = activeToken;
+  },
+  updateUserLogin(state,login){
+    state.user.login = login;
   }
 }
 
@@ -48,6 +51,8 @@ export const actions = {
     //this.$axios.setToken(false);
     commit('userLogOut');
   },
+  /*
+  // Call it from Nuxt plugin
   async refreshToken({ commit }){
     //An Active token has gotten and Refresh token has regenerated
     const res = await this.$axios.$post('/api/auth/user/refresh');
@@ -57,7 +62,7 @@ export const actions = {
       //Refresh is expired
       commit('error/setError','You should sign in',{root: true});
     }
-  },
+  },*/
   async userCreation ({ commit }, data) {
     // Request
     try {
@@ -67,6 +72,22 @@ export const actions = {
       // Commit mutation, 'e' - axios is an object error
       commit('error/setError', e, {root: true})
       throw e
+    }
+  },
+  async updateUserLogin({ commit }, data){
+    try{
+      //Update user name (Login)
+      const response = await this.$axios.put('/api/cabinet/user-name',data);
+      //Checking out the axios response
+      if((response.status === 200) && response.data.userName){
+        commit('updateUserLogin',response.data.userName);
+      }else{
+        throw new Error('Your login has not changed');
+      }
+    }catch(e){
+      // Commit mutation, 'e' - axios is an object error
+      commit('error/setError', e, {root: true});
+      throw e;
     }
   }
 }
