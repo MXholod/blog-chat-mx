@@ -20,6 +20,7 @@ module.exports = new Strategy(options, async (payload, done)=>{
             done(null, false);
         }else{
             let userData = {
+                id : user.id,
                 //req.user.role
                 role : user.role,
                 //If refresh-token exists return 'true' else 'false'
