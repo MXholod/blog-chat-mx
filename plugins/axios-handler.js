@@ -18,6 +18,9 @@ export default function({ $axios, store, redirect }){
     if(process.server) {
       $axios.interceptors.response.eject(interceptor);
     }
+    if ((error.response.status === 401) && (error.response.data.details === null)) {
+      return error.response;
+    }
     // When Refresh-Token expired
     if (error.response.status === 401 && error.response.data.message) {
       store.commit('auth/userLogOut',{root: true});

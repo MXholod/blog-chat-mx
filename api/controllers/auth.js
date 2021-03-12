@@ -15,12 +15,12 @@ async function authenticate(req, res, next){
   const ipAddress = req.ip;
   try{
       const user = await User.findOne( { email } );
-      if(!user) throw new Error("Email or password is incorrect 1");
+      if(!user) throw new Error("Email or password is incorrect");
       comparePasswords(password, user.passwordHash, async function(error, matchResult){
         try{
-          if(error) throw new Error("Email or password is incorrect 2");
+          if(error) throw new Error("Email or password is incorrect");
           if (!user || !user.isVerified || !matchResult) {
-            throw new Error('Email or password is incorrect 3');
+            throw new Error('Email or password is incorrect');
           }
           // authentication successful so generate jwt
           const jwtToken = generateJwtToken(user);
@@ -39,11 +39,11 @@ async function authenticate(req, res, next){
           setTokenCookie(res, refreshToken.token);
           res.status(200).json({ message: 'You are authenticated', details });
         }catch(e){
-          return res.status(401).json({ message: e.message});
+          return res.status(401).json({ msg: e.message, details: null });
         }
       });
   }catch(e){
-    return res.status(401).json({message: `Can\'t authenticate ${e.message}`});
+    return res.status(401).json({ msg: e.message, details: null });
   }
 }
 
