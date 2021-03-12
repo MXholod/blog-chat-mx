@@ -2,7 +2,7 @@
   <div class="userName">
     <el-divider content-position="left">User Name</el-divider>
     <h3 class="userName__header">Here you can change your user name</h3>
-    <el-form :model="userNameValidate" ref="userNameValidate">
+    <el-form :model="userNameValidate" ref="userNameValidate" @submit.native.prevent="submitUserName('userNameValidate')">
       <el-form-item
         label="Change your user name"
         prop="userName"
