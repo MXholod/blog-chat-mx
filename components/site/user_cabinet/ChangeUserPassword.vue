@@ -4,13 +4,13 @@
     <h3 class="userPassword__header">Here you can change your user password</h3>
     <el-form :model="ruleForm" status-icon :rules="rules" ref="userPasswordValidate" label-width="170px" class="demo-ruleForm">
       <el-form-item label="Working password" prop="wpass">
-        <el-input type="password" v-model="ruleForm.wpass" autocomplete="off" class="userPassword__input"></el-input>
+        <el-input type="password" v-model="ruleForm.wpass" autocomplete="off" class="userPassword__input" @keypress.native="makeSubmit"></el-input>
       </el-form-item>
       <el-form-item label="Password" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off" class="userPassword__input"></el-input>
+        <el-input type="password" v-model="ruleForm.pass" autocomplete="off" class="userPassword__input" @keypress.native="makeSubmit"></el-input>
       </el-form-item>
       <el-form-item label="Confirm" prop="checkPass">
-        <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" class="userPassword__input"></el-input>
+        <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" class="userPassword__input" @keypress.native="makeSubmit"></el-input>
       </el-form-item>
       <el-form-item class="userPassword__buttons">
         <el-button type="primary" @click="submitUserPassword('userPasswordValidate')">Change user password</el-button>
@@ -65,6 +65,11 @@ export default {
       };
     },
     methods: {
+      makeSubmit(e){
+        if(e.charCode === 13 && e.code === "Enter"){
+          this.submitUserPassword("userPasswordValidate");
+        }
+      },
       submitUserPassword(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
