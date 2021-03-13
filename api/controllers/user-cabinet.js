@@ -48,10 +48,13 @@ async function updateUserPassword(req,res,next){
           //
           try{
             //Find user by ID and update his password
-            await User.findOneAndUpdate({_id: req.user.id},{$set:{ passwordHash: hash }},{new:true});
+            const user = await User.findOneAndUpdate({_id: req.user.id},{$set:{ passwordHash: hash }},{new:true});
+            if(!user){
+              throw new Error("User is absent");
+            }
             return res.status(200).json({message: "Password was updated", passwordChanged: true});
           }catch(e){
-            return res.status(400).json({message: "Match Bad", passwordChanged: false});
+            return res.status(400).json({message: e.message, passwordChanged: false});
           }
         });
       }
