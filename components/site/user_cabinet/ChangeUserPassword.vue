@@ -43,6 +43,7 @@ export default {
         }
       };
       return {
+        countCommitError:0,
         ruleForm: {
           wpass:'',
           pass: '',
@@ -80,7 +81,7 @@ export default {
             };
             try{
               const response = await this.$axios.put('/api/cabinet/user-password',userData);
-              if((response.status === 200) &&  response.data.passwordChanged){
+              if((response.status === 200) && response.data.passwordChanged){
                 this.$message({
                   showClose: true,
                   message: 'Your password has been successfully changed',
@@ -88,12 +89,20 @@ export default {
                 });
                 this.resetUserPassword(formName);
               }else{
-                //If data is unexpactible
-                console.log("Test ",response.response);
-                //this.$store.commit('error/setError', response.response.data.message, {root: true});
+                const resp = response.response;
+                if((resp.status === 400) && !resp.data.passwordChanged && (resp.data.message === "Match Bad")){
+                  ++this.countCommitError;
+                  if((this.countCommitError % 2) === 0){
+                    //Even
+                    this.$store.commit('error/setError', "You've put an invalid working password ", {root: true});
+                  }else{
+                    //Odd
+                    this.$store.commit('error/setError', "You've put an invalid working password", {root: true});
+                  }
+                  return;
+                }
               }
             }catch(e){
-              console.log("Test ",e);
               this.$store.commit('error/setError', e, {root: true});
             }
           } else {
