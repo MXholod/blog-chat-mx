@@ -9,19 +9,9 @@
             text-color="#fff"
             active-text-color="#12DEF1">
             <el-menu-item index="/" class="el-menu-sport__item" >Sportsman blog</el-menu-item>
-            <el-submenu index="2" class="el-menu-sport__item_sub">
-                <template slot="title">A sportsman life</template>
-                <el-submenu index="2-1">
-                    <template slot="title">My nutrition</template>
-                    <el-menu-item index="2-1-1">Everyday nutrition</el-menu-item>
-                    <el-menu-item index="2-1-2">Nutrition during exercise</el-menu-item>
-                </el-submenu>
-                <el-submenu index="2-2">
-                    <template slot="title">A set of exercises</template>
-                    <el-menu-item index="2-2-1">Morning warm-up exercises</el-menu-item>
-                    <el-menu-item index="2-2-2">Strength exercises</el-menu-item>
-                    <el-menu-item index="2-2-3">Agility exercises</el-menu-item>
-                </el-submenu>
+            <el-submenu index="/sport_life" class="el-menu-sport__item_sub">
+              <template slot="title">A sportsman life</template>
+              <parent-item :parentData="createdPagesStructure" />
             </el-submenu>
             <el-menu-item index="/about" class="el-menu-sport__item">About me</el-menu-item>
             <el-menu-item index="/contacts" class="el-menu-sport__item">Contacts</el-menu-item>
@@ -38,16 +28,31 @@
 /* eslint-disable */
 import Authentication from '@/components/site/user_space/Authentication';
 import CabAndChat from '@/components/site/user_space/CabAndChat';
+import ParentItem from '@/components/site/navigation_recursion/ParentItem';
 import { mapState } from 'vuex';
   export default {
     components: {
       Authentication,
-      CabAndChat
+      CabAndChat,
+      ParentItem
     },
     data() {
       return {
         activeIndex1: '2',
-        isAuth: false
+        isAuth: false,
+        createdPagesStructure:null,
+        pages : [
+          { id:1, pageName: "Top item 1", parent:undefined , item: [0,0] },//top
+          { id:2, pageName: "Sub item 1-1", parent:[0,0] , item: [0,1] },
+          { id:3, pageName: "Sub item 1-1-1", parent:[0,1] , item: [0,2] },
+          { id:4, pageName: "Sub item 1-1-2", parent:[0,1] , item: [1,2] },
+          { id:5, pageName: "Sub item 1-1-2-1", parent:[1,2] , item: [0,3] },
+          { id:6, pageName: "Top item 2", parent:undefined , item: [1,0] },//top
+          { id:7, pageName: "Top item 3", parent:undefined , item: [2,0] },//top
+          { id:8, pageName: "Sub item 3-1", parent:[2,0] , item: [2,1] },
+          { id:9, pageName: "Sub item 3-2", parent:[2,0] , item: [2,2] },
+          { id:10, pageName: "Top item 4", parent:undefined , item: [3,0] },//top
+        ]
       };
     },
     computed: {
@@ -66,6 +71,46 @@ import { mapState } from 'vuex';
     methods: {
       handleSelect(key, keyPath) {
         // console.log(this.$router.name);
+      },
+      createNestedMenuStructure(pages){
+				const topArr = [];
+				const pagesArr = [];
+				//Only for top level parents
+				if(pages.length !== 0){
+					let i = 0;
+					while(i < pages.length){
+						//Only top level items
+						if(pages[i].parent === undefined){
+							topArr.push(pages[i]);
+						}else{
+							//Push other pages
+							pagesArr.push(pages[i]);
+						}
+            //Create prop. as an empty array to all objects in list, we may use - Object.defineProperties();
+            pages[i].childrenItems = [];
+						i++;
+					}
+          //Return result of the 'recursion'
+				  return this.recursion(topArr,pagesArr);
+				}else{
+          return null;
+        }
+			},
+      recursion(parentArr,pages){
+        //Iterate parents
+        for(let curParent of parentArr){
+          //Iterate pages
+          for(let curPage of pages){
+            //Get only linked pages with parent
+            if((curParent.item[0] === curPage.parent[0]) && (curParent.item[1] === curPage.parent[1])){
+              //If we have relation between Parent and Child
+              curParent.childrenItems.push(curPage);
+              //Call 'recursion once again'
+              this.recursion(curParent.childrenItems,pages);
+            }
+          }
+        }
+        return parentArr;
       }
     },
     created(){
@@ -78,6 +123,7 @@ import { mapState } from 'vuex';
       }else{
         this.isAuth = false;
       }
+      this.createdPagesStructure = this.createNestedMenuStructure(this.pages);
     }
   }
 </script>
