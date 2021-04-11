@@ -47,7 +47,8 @@ export default {
     { src: '@/plugins/socket', ssr: false },
     // EventBus registration
     '@/plugins/eventBus',
-    '@/plugins/axios-handler'
+    '@/plugins/axios-handler',
+    { src: '@/plugins/pages-menu-recursive', mode: 'client'  }
   ],
 
   /*
