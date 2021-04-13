@@ -9,6 +9,10 @@
             <i class="el-icon-notebook-2"></i>
             <span>Admin page</span>
         </el-menu-item>
+        <el-menu-item index="/admin/pages">
+            <i class="el-icon-document-copy"></i>
+            <span>Page management</span>
+        </el-menu-item>
         <el-menu-item index="/admin/create">
             <i class="el-icon-edit-outline"></i>
             <span>Create post</span>
