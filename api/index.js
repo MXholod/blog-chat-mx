@@ -19,6 +19,7 @@ const user = require('./routes/user');
 const post = require('./routes/post');
 const comment = require('./routes/comment');
 const cabinet = require('./routes/user-cabinet');
+const menuPages = require('./routes/menu-page');
 
 //Mongo connection
 connectDB();
@@ -37,6 +38,7 @@ app.use('/user',user);
 app.use('/post',post);
 app.use('/comment',comment);
 app.use('/cabinet',cabinet);
+app.use('/menu_page', menuPages);
 
 //Create server for Socket.IO
 const port = process.env.PORT_API || 3001;
