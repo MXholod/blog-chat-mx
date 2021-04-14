@@ -1,4 +1,5 @@
 const { MenuPage, MenuPageContent } = require('./../helpers/db');
+const { validationResult } = require('express-validator');
 const { createPageItemIdV4, createReferenceV5 } = require('./../helpers/uuid');
 
 async function getMenuPages(req, res){
@@ -10,6 +11,39 @@ async function getMenuPages(req, res){
     res.status(400).json({ message: "Can't get items", pages: null });
   }catch(e){
     res.status(400).json({ message: "Can't get items", pages: null });
+  }
+}
+
+async function getMenuPageContent(req, res){
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  try{
+    const reference = req.params.reference;
+    const currentPageContent = await MenuPage.findOne({
+      reference
+     }).populate('pageContent');
+    if(currentPageContent){
+      const { title, pageHeader, singleImage, date } = currentPageContent.pageContent;
+      const newPageContent = { title,pageHeader,singleImage,date };
+      if(currentPageContent.pageContent.isBlockOne){
+        newPageContent.headerBlockOne = currentPageContent.pageContent.headerBlockOne;
+        newPageContent.contentBlockOne = currentPageContent.pageContent.contentBlockOne;
+      }
+      if(currentPageContent.pageContent.isBlockTwo){
+        newPageContent.headerBlockTwo = currentPageContent.pageContent.headerBlockTwo;
+        newPageContent.contentBlockTwo = currentPageContent.pageContent.contentBlockTwo;
+      }
+      if(currentPageContent.pageContent.isBlockThree){
+        newPageContent.headerBlockThree = currentPageContent.pageContent.headerBlockThree;
+        newPageContent.contentBlockThree = currentPageContent.pageContent.contentBlockThree;
+      }
+      return res.status(200).json({ message: "Ok", pageContent: newPageContent });
+    }
+    res.status(400).json({ message: "Can't get content", pageContent: null, error: e });
+  }catch(e){
+    res.status(400).json({ message: "Can't get content", pageContent: null, error: e });
   }
 }
 
@@ -38,5 +72,6 @@ function createPage(req, res){
 
 module.exports = {
   getMenuPages,
+  getMenuPageContent,
   createPage
 };
