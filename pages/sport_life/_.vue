@@ -1,44 +1,110 @@
 <template>
   <section class="container">
-    <div>
-      <h1 class="title">
-        {{ title }}
-      </h1>
-    </div>
+    <el-row>
+      <el-col :span="16">
+        <h1 class="header-content">{{ result.pageHeader }}</h1>
+      </el-col>
+      <el-col :span="8">
+        <span class="date-content">Published on: {{ new Date(result.date).toLocaleString() }}</span>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+         <el-divider></el-divider>
+      </el-col>
+    </el-row>
+    <el-row v-if="result.headerBlockOne">
+      <el-col :span="24">
+        <h3 class="title-content">{{ result.headerBlockOne }}</h3>
+      </el-col>
+    </el-row>
+    <el-row v-if="result.contentBlockOne">
+      <el-col :span="24" class="block-content-1">{{ result.contentBlockOne }}</el-col>
+    </el-row>
+    <el-row v-if="result.headerBlockTwo">
+      <el-col :span="24">
+        <h3 class="title-content">{{ result.headerBlockTwo }}</h3>
+      </el-col>
+    </el-row>
+    <el-row v-if="result.contentBlockTwo">
+      <el-col :span="24" class="block-content-2">{{ result.contentBlockTwo }}</el-col>
+    </el-row>
+    <el-row v-if="result.headerBlockThree">
+      <el-col :span="24">
+        <h3 class="title-content">{{ result.headerBlockThree }}</h3>
+      </el-col>
+    </el-row>
+    <el-row v-if="result.contentBlockThree">
+      <el-col :span="24" class="block-content-3">{{ result.contentBlockThree }}</el-col>
+    </el-row>
   </section>
 </template>
 
 <script>
 export default {
-  data(){
-    return { title: "Users VUE" }
+  async asyncData({ $axios, route, redirect }){
+    try{
+      const result = await $axios.get(`/api/menu_page/page/${route.params.pathMatch}`);
+      return { result: result.data.pageContent }
+    }catch(e){
+      return redirect('/');
+    }
   },
   head () {
     return {
-      title: `Test: ${this.title}`
+      title: `${this.result.title}`
     }
   },
   mounted() {
-    console.log("ID ",this.$route.params);
+    //console.log("Reference ",this.$route.params);
+    if(this.result){
+      //console.log("Result ",this.result.date);
+      //console.log("Result ",new Date(this.result.date).toLocaleString());
+    }
   }
 }
 </script>
 
-<style scoped>
+<style scoped  lang="scss">
+$container-width: 960px;
 .container {
-  /*margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;*/
+  width: $container-width;
+  margin: 0px auto;
+  border: 1px solid #ccc;
+  box-shadow: 0px 12px 9px -4px #888888
 }
-.title
-{
-  margin-top: 30px;
+.header-content{
+  color: #12128f;
+  font-size: 1.2em;
+  font-family: Tahoma, Verdana, sans-serif;
 }
-.header
-{
-  margin-top: 30px;
+.date-content{
+  font-size: .8em;
+  font-weight: bold;
+  padding-left:25%;
+}
+@mixin content($block:false,$b-color-content:#ccc){
+  width: ($container-width - 100px);
+  @if $block == false {/* Margin for title-content by default */
+    text-indent: .5em;
+    margin: 0 35px 1% 35px;
+  }@else{/* Margin for block-content by default */
+    margin: 0 35px 5% 35px;
+    padding: .3em;
+    border: 1px solid $b-color-content;
+    box-shadow: 0px 12px 9px -10px $b-color-content;
+  }
+}
+.title-content{
+  @include content(false);
+}
+.block-content-1{
+  @include content(true, #3282eb);
+}
+.block-content-2{
+  @include content(true, #2a6dc5);
+}
+.block-content-3{
+  @include content(true, #1e5295);
 }
 </style>
