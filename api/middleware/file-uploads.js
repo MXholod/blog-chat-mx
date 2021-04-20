@@ -4,11 +4,24 @@ const moment = require('moment')
 
 const fileStorage =  multer.diskStorage({
   destination: function (req, file, cb) {
+    let currentPath = req.baseUrl+req.route.path;
+    let destinationFolder = '';
+    //Check destination path
+    if(currentPath === '/admin/create'){//Route part
+      destinationFolder = 'posts_img';
+    }else if(currentPath === '/menu_page/create'){//Route part
+      destinationFolder = 'pages_img';
+    }
     // The path to storage files '/middleware/../../static'
-    cb(null, path.resolve(__dirname, '../..','static', 'posts_img'))
+    cb(null, path.resolve(__dirname, '../..','static', destinationFolder));
   },
   filename: function (req, file, cb) {
-    cb(null, `${file.originalname}-${moment().format('DDMMYYYY-HHmmss_SSS')}`)
+    //cb(null, `${file.originalname}-${moment().format('DDMMYYYY-HHmmss_SSS')}`)
+    let lastDotIndex = file.originalname.lastIndexOf('.');
+    let part1 = file.originalname.substring(0,lastDotIndex);
+    let part2 = file.originalname.substring(lastDotIndex,file.originalname.length);
+    const uniqueFileName = `${part1}-${moment().format('DDMMYYYY-HHmmss_SSS')}${part2}`
+    cb(null, uniqueFileName);
   }
 })
 const fileFilter = (req, file, cb) => {
