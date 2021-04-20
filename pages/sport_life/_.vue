@@ -13,6 +13,13 @@
          <el-divider></el-divider>
       </el-col>
     </el-row>
+    <el-row v-if="result.singleImage">
+      <el-col :span="24">
+        <div class="img-content">
+          <img :src="`/pages_img/${result.singleImage}`" alt=""  />
+        </div>
+      </el-col>
+    </el-row>
     <el-row v-if="result.headerBlockOne">
       <el-col :span="24">
         <h3 class="title-content">{{ result.headerBlockOne }}</h3>
@@ -93,6 +100,20 @@ $container-width: 960px;
     padding: .3em;
     border: 1px solid $b-color-content;
     box-shadow: 0px 12px 9px -10px $b-color-content;
+  }
+}
+.img-content{
+  width: $container-width / 2 + 50;
+  height: $container-width / 3;
+  margin: 0 auto;
+  img {
+    max-width: 100%;
+  }
+  img[width]{
+    width: auto; /*Defer to max-width*/
+  }
+  img[wedth][height]{
+    height: auto; /*Preserve aspect ratio*/
   }
 }
 .title-content{
