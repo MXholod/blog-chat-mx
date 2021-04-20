@@ -166,7 +166,6 @@ export default {
               pageName: this.menuPageContent.pageMenuItemName,
               title: this.menuPageContent.pageTitle,
               pageHeader: this.menuPageContent.pageHeader,
-              singleImage: this.menuPageContent.singleImage[0] || '',
               headerBlockOne: this.menuPageContent.headerBlockOne || '',
               contentBlockOne: this.menuPageContent.contentBlockOne || '',
               headerBlockTwo: this.menuPageContent.headerBlockTwo || '',
@@ -174,6 +173,7 @@ export default {
               headerBlockThree: this.menuPageContent.headerBlockThree || '',
               contentBlockThree: this.menuPageContent.contentBlockThree || ''
             };
+            let formData = new FormData();
             try{
               // If 'this.attachToItem' has an object data then at least one menu item exists
               if(this.attachToItem.attachToItem !== null){
@@ -195,9 +195,25 @@ export default {
                       let secondItemEl = (this.biggestItemValue + 1);
                     newMenuPageContent.item = [this.attachToItem.item[0], secondItemEl];
                 }
-                await this.createMenuItem(newMenuPageContent);
+                //Make sure there is an image in the field
+                if(this.menuPageContent.singleImage.length){
+                  formData.append('singleImage',this.menuPageContent.singleImage[0], this.menuPageContent.singleImage[0].name);
+                }else{
+                  formData.append('singleImage',this.menuPageContent.singleImage[0]);
+                }
+                //Append all data in the object except of the image
+                formData.append('allData', JSON.stringify(newMenuPageContent));
+                await this.createMenuItem(formData);
               }else{//The very first time
-                await this.createMenuItem(newMenuPageContent);
+                //Make sure there is an image in the field
+                if(this.menuPageContent.singleImage.length){
+                  formData.append('singleImage',this.menuPageContent.singleImage[0], this.menuPageContent.singleImage[0].name);
+                }else{
+                  formData.append('singleImage',this.menuPageContent.singleImage[0]);
+                }
+                //Append all data in the object except of the image
+                formData.append('allData', JSON.stringify(newMenuPageContent));
+                await this.createMenuItem(formData);
               }
               this.onChildDataInserted({ inserted: true });
               this.$refs.singleImage.clearFiles();
