@@ -48,9 +48,17 @@ async function getMenuPageContent(req, res){
 }
 
 function createPage(req, res){
-    const { pageName, pageHidden, parent, item, ...rest } = req.body;
+  //Parse the JSON data from 'allData' field - it is an Object of all client data except image
+  let body = JSON.parse(req.body.allData);
+    let { pageName, pageHidden, parent, item, ...rest } = body;
       const id = createPageItemIdV4();
       const reference = createReferenceV5(parent, item);
+      //If an image is sent, its file name is checked
+      if(req.file){
+        rest.singleImage = req.file.filename;
+      }else{
+        rest.singleImage = '';
+      }
     const menuPC = new MenuPageContent(rest);
     menuPC.save(async function(err,result){
         if (err){
