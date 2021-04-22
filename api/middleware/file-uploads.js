@@ -2,6 +2,7 @@ const path = require('path')
 const multer = require('multer')
 const moment = require('moment')
 
+let siteUpload = {};
 const fileStorage =  multer.diskStorage({
   destination: function (req, file, cb) {
     let currentPath = req.baseUrl+req.route.path;
@@ -11,9 +12,11 @@ const fileStorage =  multer.diskStorage({
       destinationFolder = 'posts_img';
     }else if(currentPath === '/menu_page/create'){//Route part
       destinationFolder = 'pages_img';
+      siteUpload.folderIMG = destinationFolder;
+      req.siteUpload = siteUpload;
     }
     // The path to storage files '/middleware/../../static'
-    cb(null, path.resolve(__dirname, '../..','static', destinationFolder));
+    cb(null, path.resolve(__dirname, '../..','static', destinationFolder, 'temp'));
   },
   filename: function (req, file, cb) {
     //cb(null, `${file.originalname}-${moment().format('DDMMYYYY-HHmmss_SSS')}`)
@@ -21,6 +24,8 @@ const fileStorage =  multer.diskStorage({
     let part1 = file.originalname.substring(0,lastDotIndex);
     let part2 = file.originalname.substring(lastDotIndex,file.originalname.length);
     const uniqueFileName = `${part1}-${moment().format('DDMMYYYY-HHmmss_SSS')}${part2}`
+    siteUpload.fileIMG = uniqueFileName;
+    req.siteUpload = siteUpload;
     cb(null, uniqueFileName);
   }
 })
