@@ -32,6 +32,7 @@
     "nuxt": "^2.14.12",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
+    "sharp": "^0.28.1",
     "socket.io": "^2.0.3",
     "uuid": "^8.3.2",
     "vue-socket.io": "^3.0.10"
