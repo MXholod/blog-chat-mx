@@ -104,10 +104,12 @@ $container-width: 960px;
 }
 .img-content{
   width: $container-width / 2 + 50;
-  height: $container-width / 3;
+  height: $container-width / 3 + 50;
   margin: 0 auto;
+  text-align: center;
   img {
     max-width: 100%;
+    display:inline-block;
   }
   img[width]{
     width: auto; /*Defer to max-width*/
