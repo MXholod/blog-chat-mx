@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 // Passport library for restricting Routes
 const passport = require('passport');
 const strategyJwtPassport = require('./middleware/user-jwt-auth');
+const strategyJwtPassportAdmin = require('./middleware/user-jwt-auth-admin');
 //CORS
 const cors = require('cors');
 app.use(cors());
@@ -26,6 +27,7 @@ connectDB();
 // Register Passport. If User failed a Route gets the 401 status
 app.use(passport.initialize());
 passport.use('jwt-cabinet',strategyJwtPassport);
+passport.use('jwt-cabinet-admin',strategyJwtPassportAdmin);
 // Register Body-Parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
