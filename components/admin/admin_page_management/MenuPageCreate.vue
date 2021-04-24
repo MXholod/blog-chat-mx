@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 export default {
   props:{
     menuItemHeader: String,
@@ -154,6 +155,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations('error',['setError']),
     submitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
           if(valid) {
@@ -275,18 +277,11 @@ export default {
             type: 'success'
           });
         }else{
-          this.$message({
-            showClose: true,
-            message: result.data.message,
-            type: 'error'
-          });
+          throw new Error('You can\'t add a new page menu item');
         }
       }catch(e){
-        this.$message({
-          showClose: true,
-          message: e.message,
-          type: 'error'
-        });
+        //This is a Mutation, call it and pass the error
+        this.setError(e);
       }
     }
   }
