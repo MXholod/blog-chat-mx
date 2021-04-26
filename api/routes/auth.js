@@ -1,7 +1,9 @@
 const { Router } = require('express');
 const passport = require('passport');
+const authCabinetAdmin = passport.authenticate('jwt-cabinet-admin', {session: false});
 const loginUser = require('./../middleware/login-user');
-const { authenticate } = require('../controllers/auth');
+const userAdminCreation = require('./../middleware/user-admin-creation');
+const { authenticate, createUserByAdmin } = require('../controllers/auth');
 const { refresh_token } = require('../controllers/jwt-refresh');
 const router = Router();
 
@@ -11,11 +13,7 @@ const router = Router();
 router.post('/user/login', loginUser(), authenticate);
 // '/api/auth/user/refresh'
 router.post('/user/refresh', refresh_token);
-// /api/auth/admin/create
-/*router.post(
-  '/admin/create',
-  passport.authenticate('jwt', { session: false }),
-  createUser
-)*/
+// /api/auth/admin/user/create
+router.post('/admin/user/create', authCabinetAdmin, userAdminCreation(), createUserByAdmin);
 
-module.exports = router
+module.exports = router;
