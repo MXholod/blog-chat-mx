@@ -5,6 +5,7 @@ const { generateJwtToken } = require('./../helpers/jwt');
 const { generateRefreshToken } = require('./../helpers/jwt-refresh');
 const basicDetails = require('./../helpers/basic-details');
 const setTokenCookie = require('./../helpers/token-cookie');
+const createSalt = require('./../helpers/salt');
 
 async function authenticate(req, res, next){
   const errors = validationResult(req);
@@ -19,8 +20,11 @@ async function authenticate(req, res, next){
       comparePasswords(password, user.passwordHash, async function(error, matchResult){
         try{
           if(error) throw new Error("Email or password is incorrect");
-          if (!user || !user.isVerified || !matchResult) {
-            throw new Error('Email or password is incorrect');
+          //For all users who are not registered by the administrator - user.registeredByAdmin is 'false'
+          if (!user.registeredByAdmin) {
+            if (!user || !user.isVerified || !matchResult) {
+              throw new Error('Email or password is incorrect');
+            }
           }
           // authentication successful so generate jwt
           const jwtToken = generateJwtToken(user);
@@ -47,6 +51,33 @@ async function authenticate(req, res, next){
   }
 }
 
+function createUserByAdmin(req, res){
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ message: errors.array()[0].msg });
+  }
+  createSalt(req.body.password, async function(hash){
+    //Create account object
+    const user = new User({
+      "login": req.body.login,
+      "email": req.body.email,
+      "passwordHash": hash,
+      "acceptTerms": req.body.acceptTerms,
+      "role": req.body.role,
+      "registeredByAdmin": req.body.registeredByAdmin,
+      "verified": req.body.verified
+    });
+    // Save user account
+    try{
+      await user.save();
+      res.status(201).json({"message": "A new user has been created","userInfo": user});
+    }catch(e){
+      return res.status(500).json({"message": "Access denied"});
+    }
+  });
+}
+
 module.exports = {
-  authenticate
+  authenticate,
+  createUserByAdmin
 }
