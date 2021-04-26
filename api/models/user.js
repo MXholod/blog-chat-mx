@@ -22,7 +22,8 @@ const UserSchema = new Schema({
   // Relationship with 'posts' - one-to-many
   posts: [ { type: Schema.Types.ObjectId, ref: 'Post' } ],
   // Relationship with 'chat-rooms' - one-to-many
-  rooms: [ { type: Schema.Types.ObjectId, ref: 'Chat-room' } ]
+  rooms: [ { type: Schema.Types.ObjectId, ref: 'Chat-room' } ],
+  registeredByAdmin: { type: Boolean, default: false }
 });
 
 // A _virtual_ is a schema property that is **not** stored in MongoDB.
