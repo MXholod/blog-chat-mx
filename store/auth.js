@@ -67,17 +67,6 @@ export const actions = {
       commit('error/setError','You should sign in',{root: true});
     }
   },*/
-  async userCreation ({ commit }, data) {
-    // Request
-    try {
-      await this.$axios.$post('/api/auth/admin/create', data)
-      // console.log('User created', data)
-    } catch (e) {
-      // Commit mutation, 'e' - axios is an object error
-      commit('error/setError', e, {root: true})
-      throw e
-    }
-  },
   async updateUserLogin({ commit }, data){
     try{
       //Update user name (Login)
