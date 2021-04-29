@@ -77,7 +77,20 @@ function createUserByAdmin(req, res){
   });
 }
 
+async function getAllUsers(req, res){
+  try{
+    const allUsers = await User.find({});
+    if(allUsers){
+      return res.status(200).json({ "message": "You've got all the users","users": allUsers });
+    }
+    res.status(500).json({"message": "Access denied"});
+  }catch(e){
+    return res.status(500).json({"message": "Access denied"});
+  }
+}
+
 module.exports = {
   authenticate,
-  createUserByAdmin
+  createUserByAdmin,
+  getAllUsers
 }
