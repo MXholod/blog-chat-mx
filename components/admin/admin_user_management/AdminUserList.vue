@@ -15,9 +15,46 @@
             <i  class="header-icon el-icon-medal"></i>
           </div>
         </template>
-        <div>Email: {{ user.email }}</div>
-        <div>Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;</div>
-        <div>Consistent within interface: all elements should be consistent, such as: design style, icons and texts, position of elements, etc.</div>
+        <div class="admin-user-content__email">
+          <span>Email: </span>{{ user.email }}
+        </div>
+        <div v-if="(userId !== '') && (userId !== user.id)">
+          <user-state-ban apiPart="blog" :userId="user.id" :ban="user.blogBan" class="admin-user-content__blog-ban">
+            <template v-slot:header>
+              <h3>Ban user in Blog</h3>
+            </template>
+          </user-state-ban>
+          <user-state-ban apiPart="chat" :userId="user.id" :ban="user.chatBan" class="admin-user-content__blog-ban">
+            <template v-slot:header>
+              <h3>Ban user in Chat</h3>
+            </template>
+          </user-state-ban>
+        </div>
+        <div class="admin-user-content__in-chat">
+          <div v-if="user.inChat">
+            <span class="in-chat__in">User is chatting</span>
+            <i class="el-icon-chat-line-round"></i>
+          </div>
+          <div v-else>
+            <span class="in-chat__out">User is not chatting</span>
+            <i class="el-icon-chat-round"></i>
+          </div>
+        </div>
+        <div class="admin-user-content__email-verification">
+          <div>
+            <span>Whether the email has been verified:</span>
+            <span v-if="user.isVerified">Yes</span>
+            <span v-else>No</span>
+          </div>
+          <div v-if="user.isVerified">
+            <span>When the email address has been verified:</span>
+            <span>{{ new Date(user.verified).toLocaleString() }}</span>
+          </div>
+        </div>
+        <div class="admin-user-content__user-joined">
+          <span>The user joined on:</span>
+          <span>{{ new Date(user.created).toLocaleString() }}</span>
+        </div>
       </el-collapse-item>
     </el-collapse>
     <div v-else-if="users && users.length === 0">There are not users</div>
@@ -27,25 +64,21 @@
 
 <script>
 import Loader from './../../Loader';
+import UserStateBan from './AdminUserListBan';
 export default {
-  components: { Loader },
+  components: { Loader, UserStateBan },
   props: {
-    "users": { type: Array, default: [] }
+    "users": { type: Array, default: [] },
+    "userId": { type: String, default: '' }
   },
   data() {
     return {
-      activeName: '1',
-      /*[
-        { id: 1, login : "John", email : "kjkjjlj@ukr.net" },
-        { id: 2, login : "Bob", email : "hjhjhj@ukr.net" },
-        { id: 3, login : "Jane", email : "popopo@ukr.net" },
-        { id: 4, login : "Sarah", email : "opopoppo@ukr.net" }
-      ]*/
+      activeName: '1'
     };
   },
   methods: {
     handleChange(val) {
-      console.log(val);
+      //console.log(val);
     }
   }
 }
@@ -106,6 +139,78 @@ export default {
   .el-collapse-item__content{
     background-color: lighten(#e2f3bc, 10%);
     padding:2%;
+  }
+}
+%admin-user-content{
+  border: 1px solid #000;
+  background-color: #c0c3e7;
+  padding: 1% 2%;
+  margin-bottom:.5%;
+  font-size: 1.1em;
+}
+.admin-user-content__email{
+  @extend %admin-user-content;
+  span{
+    font-weight:bold;
+  }
+}
+.admin-user-content__blog-ban{
+  @extend %admin-user-content;
+  font-size: .9em;
+}
+.admin-user-content__in-chat{
+  @extend %admin-user-content;
+  .in-chat__in{
+    color: #089b08;
+    & + i{
+      margin-left: 2%;
+      font-size: 1.4em;
+      color: #089b08;
+    }
+  }
+  .in-chat__out{
+    color: #bd0b0b;
+    & + i{
+      margin-left: 2%;
+      font-size: 1.4em;
+      color: #bd0b0b;
+    }
+  }
+}
+.admin-user-content__email-verification{
+  @extend %admin-user-content;
+  & > div:first-child {
+    span:first-child{
+      font-weight:bold;
+    }
+    span:last-child{
+      padding: .1em .5em;
+      font-size: .9em !important;
+      border: 1px solid #000;
+      background-color: #221f1f;
+      border-radius: 10px;
+      color:#fff;
+      margin-left: 1em;
+    }
+  }
+  & > div:last-child {
+    span:first-child{
+      font-weight:bold;
+    }
+    span:last-child{
+      font-size: .9em;
+      margin-left: 1em;
+    }
+  }
+}
+.admin-user-content__user-joined{
+  @extend %admin-user-content;
+  span:first-child{
+    font-weight:bold;
+  }
+  span:last-child{
+    font-size: .9em;
+    margin-left: 1em;
   }
 }
 </style>
