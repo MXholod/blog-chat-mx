@@ -78,19 +78,48 @@ function createUserByAdmin(req, res){
 }
 
 async function getAllUsers(req, res){
+  const userId = req.user.id || '';
   try{
     const allUsers = await User.find({});
     if(allUsers){
-      return res.status(200).json({ "message": "You've got all the users","users": allUsers });
+      return res.status(200).json({ "message": "You've got all the users","users": [allUsers, userId] });
     }
     res.status(500).json({"message": "Access denied"});
   }catch(e){
     return res.status(500).json({"message": "Access denied"});
   }
 }
+//The private function for Blog and Chat ban controllers
+async function setStatusBan(userId, docObject, res){
+  if(!userId){
+    return res.status(500).json({ "message": "Unknown user" });
+  }
+  try{
+    const result = await User.findOneAndUpdate({_id: userId},{$set: docObject},{new:true});
+    if(result){
+      return res.status(200).json({ "message": "Success", result });
+    }
+  }catch(e){
+    return res.status(500).json({ "message": "Access denied" });
+  }
+}
+
+function setStatusBanBlog(req, res){
+  const { blog, userId } = req.body;
+  //Call the private function
+  return setStatusBan(userId, { blogBan: blog }, res);
+}
+
+function setStatusBanChat(req, res){
+  const { chat, userId } = req.body;
+  //Call the private function
+  return setStatusBan(userId, { chatBan: chat }, res);
+}
 
 module.exports = {
   authenticate,
   createUserByAdmin,
-  getAllUsers
+  getAllUsers,
+  setStatusBanBlog,
+  setStatusBanChat
 }
