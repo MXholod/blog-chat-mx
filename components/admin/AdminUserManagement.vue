@@ -2,7 +2,7 @@
   <el-tabs type="card" @tab-click="handleClick">
     <el-tab-pane v-bind:label="tabLabels[0]">
       <h3>List of users</h3>
-      <admin-user-list :users="users" />
+      <admin-user-list :users="users" :userId="userId" />
     </el-tab-pane>
     <el-tab-pane v-bind:label="tabLabels[1]" v-if="isUserAuthenticated.role === 'admin'">
       <h3>Create user</h3>
@@ -24,7 +24,8 @@ export default {
         "List of users",
         "Create user"
       ],
-      users: null
+      users: null,
+      userId: ''
     }
   },
   computed: {
@@ -34,21 +35,22 @@ export default {
     async getAllUsers(){
       try{
         const apiUsers = await this.$axios.get('/api/auth/admin/users');
-        if(apiUsers){
+        if(apiUsers){//apiUsers - [ [],'' ]
           //Create array of data for the Moderators only
           const arrForModerator = [];
           //Prepare data for the Moderators
-          apiUsers.data.users.forEach(obj => {
+          apiUsers.data.users[0].forEach(obj => {
             if((obj.role === "guest")){
               arrForModerator.push(obj);
             }
           });
           //Get the current role from Vuex Store
           if(this.isUserAuthenticated.role === "admin"){
-            this.users = apiUsers.data.users;
+            this.users = apiUsers.data.users[0];
           }else{
             this.users = arrForModerator;
           }
+          this.userId = apiUsers.data.users[1];
         }
       }catch(e){
         this.users = null;
