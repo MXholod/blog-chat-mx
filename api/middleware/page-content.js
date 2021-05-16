@@ -2,7 +2,7 @@ const { param } = require('express-validator');
 
 function validationParamPageContent(){
   return [
-    param('pageContent').custom((value)=>{
+    param('reference').custom((value)=>{
       const reg = /^[A-Za-z0-9-]{0,36}$/g;
       if(!reg.test(value)){
         throw new Error('Page that you are looking for not found');
