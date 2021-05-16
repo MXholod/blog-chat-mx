@@ -78,8 +78,27 @@ function createPage(req, res){
     });
 }
 
+async function getFullPageContent(req, res){
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const reference = req.params.reference;
+  try{
+    const currentPageContent = await MenuPage.findOne({
+      reference
+    }).populate('pageContent');
+    if(currentPageContent){
+      return res.status(200).json({ message: "All content", fullContent: currentPageContent });
+    }
+  }catch(e){
+    res.status(400).json({ message: "Page doesn't exist", fullContent: null, error: e });
+  }
+}
+
 module.exports = {
   getMenuPages,
   getMenuPageContent,
-  createPage
+  createPage,
+  getFullPageContent
 };
