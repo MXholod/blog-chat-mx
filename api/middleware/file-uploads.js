@@ -10,7 +10,8 @@ const fileStorage =  multer.diskStorage({
     //Check destination path
     if(currentPath === '/admin/create'){//Route part
       destinationFolder = 'posts_img';
-    }else if(currentPath === '/menu_page/create'){//Route part
+      //Route part
+    }else if((currentPath === '/menu_page/create') || (currentPath === '/menu_page/update')){
       destinationFolder = 'pages_img';
       siteUpload.folderIMG = destinationFolder;
       req.siteUpload = siteUpload;
