@@ -1,7 +1,8 @@
 <template>
   <div class="image-loader__preview">
     <figure>
-      <img :src="`/pages_img/${imageLink}`" alt="Page image">
+      <img v-show="isImageLoaded" :src="`/pages_img/${imageLink}`" alt="Page image" @load="loadImage" />
+      <loader v-if="!isImageLoaded" class="pre-loader" />
     </figure>
     <div class="image-loader__warning-block">
       <h4>This image preview belongs to the current page</h4>
@@ -20,15 +21,62 @@
 </template>
 
 <script>
+import Loader from './../../Loader';
 export default {
   props:{
     imageLink: { type: String, default: '' },
     previewWarning: { type: Boolean, default: false },
     uploadedImgName: { type: String, default: '' }
   },
+  components:{
+    Loader
+  },
+  data(){
+    return {
+      isImageLoaded: false
+    };
+  },
+  inject: ['provideId'],
+  /*watch: {
+    isImageLoaded(newValue, oldValue) {
+      //console.log("New value is: " + newValue);
+      //console.log("Old value is: " + oldValue);
+    }
+  },*/
   methods:{
-    deleteImage(e){
-      console.log(this.imageLink);
+    async deleteImage(e){
+      try{
+        const url = `/api/menu_page/delete/${this.provideId.id}/${this.imageLink}`;
+        const result = await this.$axios.patch(url);
+        //Delete image
+        if(result.data.deletedImage){
+          this.$message({
+            showClose: true,
+            message: result.data.message,
+            type: 'success'
+          });
+          //Emit event with data up to the parent component
+          this.$emit('onDeleteImage', { 'deleted' : true });
+        }else{
+          this.$message({
+            showClose: true,
+            message: result.data.message,
+            type: 'error'
+          });
+        }
+      }catch(error){
+        this.$message({
+          showClose: true,
+          message: "Image can't be deleted",
+          type: 'error'
+        });
+      }
+    },
+    //Triggers on image onload event
+    loadImage(e){
+      setTimeout(function(){
+        this.isImageLoaded = true;
+      }.bind(this),2000);
     }
   }
 }
@@ -52,6 +100,12 @@ export default {
       max-width: 100%;
       height: 100%;
     }
+  }
+  .pre-loader{
+    left:5%;
+    top:20%;
+    height:30px;
+    transform: scale(.5);
   }
   .image-loader__warning-block{
     width: 340px;
