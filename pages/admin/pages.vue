@@ -31,7 +31,17 @@
             ></menu-page-create>
           </el-tab-pane>
           <el-tab-pane label="Update menu item with page">
-
+            <p>The current menu item that can be updated</p>
+            <div class="edit-menu-items__current-menu-item">
+              The current menu item:
+              <span>{{ currentPageItem && currentPageItem[0].pageName }}</span>
+            </div>
+            <menu-page-update  v-if="currentPageItem"
+              :key="currentPageItem[0].id"
+              :attach-to-item="currentPageItem[0]"
+              menu-item-header="Update menu item and add to the existing the page"
+              page-content-header="Update page content related to the menu item"
+            ></menu-page-update>
           </el-tab-pane>
           <el-tab-pane label="Delete menu item with page">
 
@@ -52,6 +62,7 @@
 
 <script>
 import MenuPageCreate from "@/components/admin/admin_page_management/MenuPageCreate";
+import MenuPageUpdate from "@/components/admin/admin_page_management/MenuPageUpdate";
 export default {
   async asyncData(ctx){
     const menuItems = await ctx.$axios.get('/api/menu_page/page');
@@ -62,7 +73,8 @@ export default {
   },
   layout: 'admin',
   components: {
-    MenuPageCreate
+    MenuPageCreate,
+    MenuPageUpdate
   },
   data(){
     return {
@@ -77,6 +89,7 @@ export default {
   methods: {
       //It calls whem choose an item in cascader
       handleChangeMenuItem(value) {
+        //value - array of page ids, we always need to get the last one item
         if(value.length){
           let id = value[value.length-1];
           this.currentPageItem = this.menuItemsList.filter(el => {
