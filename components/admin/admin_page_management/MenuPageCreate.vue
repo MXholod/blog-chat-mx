@@ -22,21 +22,11 @@
         <el-input type="text" v-model="menuPageContent.pageHeader" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="Page image">
-        <el-upload
-          class="menu-page-content__singleImage"
-          action="#"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          :multiple="false"
-          :limit="1"
-          :on-change="handleChangeSingleImage"
-          :on-exceed="handleExceed"
-          :file-list="menuPageContent.singleImage"
-          ref="singleImage">
-          <el-button size="small" type="primary">Click to upload an image</el-button>
-          <div slot="tip" class="el-upload__tip">jpg/png files with a size less than 500kb</div>
-        </el-upload>
+        <image-loader
+          v-on:onSingleImage="onGetSingleImage"
+          :onDeleteSingleImage="onDeleteSingleImage"
+          ref="toClearUpload"
+        />
       </el-form-item>
       <el-tabs type="border-card">
         <el-tab-pane label="Block content one">
@@ -89,6 +79,7 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import ImageLoader from './ImageLoader.vue';
 export default {
   props:{
     menuItemHeader: String,
@@ -100,6 +91,9 @@ export default {
     biggestItemValue: { type: Number, default: 0 },
     onChildDataInserted: { type: Function, default: null},
     itemPlaceLevel: { type: Boolean, default: false }
+  },
+  components:{
+    ImageLoader
   },
   data(){
     return {
@@ -218,12 +212,13 @@ export default {
                 await this.createMenuItem(formData);
               }
               this.onChildDataInserted({ inserted: true });
-              this.$refs.singleImage.clearFiles();
               this.resetForm(formName);
             }catch(e){
-              console.log(e);
+              //console.log(e);
             }finally{
               this.loading = false;
+              //Clear uploaded image in Child Component
+              this.$refs.toClearUpload.clearUpload();
             }
           }else {
             this.$message({
@@ -249,28 +244,21 @@ export default {
         this.pageHidden.value = true;
       }
     },
-    //Single message
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    //Get data from child (ImageLoader), method calls when child emits an event
+    onGetSingleImage(data){
+      this.menuPageContent.singleImage[0] = data.singleImage;
     },
-    handlePreview(file) {
-      console.log(file);
+    //Get data from child (ImageLoader), method calls by child, like in (React)
+    onDeleteSingleImage(isDelete){
+      if(isDelete){
+        this.menuPageContent.singleImage = [];
+      }
     },
-    handleExceed(files, fileList) {
-      this.$message.warning(`The limit is 1, you selected ${files.length} files this time, add up to ${files.length + fileList.length} totally`);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`Cancel the transfer of ${ file.name } ?`);
-    },
-    handleChangeSingleImage(file, fileList){
-      this.menuPageContent.singleImage[0] = file.raw;
-    },
-    //End of the single message
     async createMenuItem(data){
       try{
         //If 'this.attachToItem' hasn't an object then create the first menu item
         const result = await this.$axios.post('/api/menu_page/create', data);
-        if(result.data.page){
+        if(result.status === 201 && result.data.page){
           this.$message({
             showClose: true,
             message: result.data.message,
