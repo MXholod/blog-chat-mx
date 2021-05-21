@@ -129,7 +129,7 @@ async function updatePage(req, res){
       { ...rest },
       { new: true }
     );
-    return res.status(200).json({ message: "Page updated", updatedContent: { menuPageUpdated, menuPageContentUpdated, rest } });
+    return res.status(200).json({ message: "Page updated", imageName: menuPageContentUpdated.singleImage });
   }catch(e){
     res.status(400).json({ message: "Page can't be updated", error: e });
   }
@@ -140,7 +140,8 @@ const removeFile = (file)=>{
   let filePath = path.resolve(__dirname, '../..','static','pages_img',file);
   //Remove uploaded file from 'temp' directory
   if (!fs.existsSync(filePath)) {
-    console.log('The file does not exist');
+    //console.log('The file does not exist');
+    return;
   }
   //File will be removed
   fs.unlink(filePath, (err) => {
@@ -150,10 +151,38 @@ const removeFile = (file)=>{
   });
 }
 
+async function deleteImage(req, res){
+  if(!req.params.collectionId || !req.params.imgName){
+    return res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+  }
+  try{
+    //Remove previous image by name 'imgName'
+    removeFile(req.params.imgName);
+    //Get id of the bound Model
+    const menuPageContent = await MenuPage.findOne({
+      id: req.params.collectionId
+    }).populate('pageContent');
+    //Erase image name to empty string
+    const menuPageContentUpdated = await MenuPageContent.findOneAndUpdate(
+      { _id: menuPageContent.pageContent },
+      { singleImage: '' },
+      { new: true }
+    );
+    if(menuPageContentUpdated){
+      res.status(200).json({ message: "Deleted image ", deletedImage: true });
+    }else{
+      res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+    }
+  }catch(e){
+    res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+  }
+}
+
 module.exports = {
   getMenuPages,
   getMenuPageContent,
   createPage,
   getFullPageContent,
-  updatePage
+  updatePage,
+  deleteImage
 };
