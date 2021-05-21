@@ -16,8 +16,10 @@
         <el-button size="small" type="primary">Click to upload an image</el-button>
         <div slot="tip" class="el-upload__tip">jpg/png files with a size less than 500kb</div>
     </el-upload>
-    <image-preview v-if="imageLink !== ''"
-      :imageLink="imageLink"
+    <image-preview v-if="imageLinkValue !== ''"
+      :key="imageLinkValue"
+      @onDeleteImage="onGetDeleteImage"
+      :imageLink="imageLinkValue"
       :previewWarning="previewWarning"
       :uploadedImgName="singleImage[0] && singleImage[0].name"
     />
@@ -36,8 +38,15 @@ export default {
   },
   data(){
     return {
+      imageLinkValue: '',
       singleImage:[],
       previewWarning: false
+    }
+  },
+  watch:{
+    //Copy and watch the 'props' value
+    imageLink(val){
+      this.imageLinkValue = val;
     }
   },
   methods:{
@@ -48,7 +57,7 @@ export default {
       this.onDeleteSingleImage(true);
     },
     handlePreview(file) {
-      console.log(file);
+      //console.log(file);
     },
     handleExceed(files, fileList) {
       this.$message.warning(`The limit is 1, you selected ${files.length} files this time, add up to ${files.length + fileList.length} totally`);
@@ -65,6 +74,17 @@ export default {
       //Emit event with data up to the parent component
       this.$emit('onSingleImage',{'singleImage': this.singleImage[0]});
     },
+    //This function is called by 'ref' from the parent
+    clearUpload(){
+      this.$refs.singleImage.clearFiles();
+      this.previewWarning = false;
+    },
+    //Event from child component
+    onGetDeleteImage(data){
+      if(data.deleted){
+        this.imageLinkValue = '';
+      }
+    }
     //End of the single image
   }
 }
