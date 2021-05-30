@@ -44,7 +44,16 @@
             ></menu-page-update>
           </el-tab-pane>
           <el-tab-pane label="Delete menu item with page">
-
+            <p>The current menu item(s) that can be deleted</p>
+            <div class="delete-menu-items__current-menu-item">
+              The current menu item:
+              <span>{{ currentPageItem && currentPageItem[0].pageName }}</span>
+            </div>
+            <menu-page-delete  v-if="currentPageItem"
+              :key="currentPageItem[0].id"
+              :deletePagesData="currentPageItem"
+              menu-item-header="will be deleted!"
+            ></menu-page-delete>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -63,6 +72,7 @@
 <script>
 import MenuPageCreate from "@/components/admin/admin_page_management/MenuPageCreate";
 import MenuPageUpdate from "@/components/admin/admin_page_management/MenuPageUpdate";
+import MenuPageDelete from "@/components/admin/admin_page_management/MenuPageDelete";
 export default {
   async asyncData(ctx){
     const menuItems = await ctx.$axios.get('/api/menu_page/page');
@@ -74,7 +84,8 @@ export default {
   layout: 'admin',
   components: {
     MenuPageCreate,
-    MenuPageUpdate
+    MenuPageUpdate,
+    MenuPageDelete
   },
   data(){
     return {
@@ -229,7 +240,7 @@ export default {
 .display-menu-items{
   margin-bottom: 1.5em;
 }
-.edit-menu-items__current-menu-item{
+.edit-menu-items__current-menu-item, .delete-menu-items__current-menu-item{
   width:600px;
   margin: 1% auto 0;
   padding:1% 1% 1% 3%;
