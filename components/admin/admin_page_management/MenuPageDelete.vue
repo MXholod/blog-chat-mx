@@ -12,6 +12,15 @@
         class="menu-page-content__cascader"
       ></el-cascader-panel>
     </div>
+    <el-button
+      type="danger"
+      plain size="mini"
+      v-on:click="deleteChoosenData"
+      :disabled="buttonStateChanging"
+      :loading="loading"
+    >
+      {{ idsToDelete.length === 1 ? 'Delete item' : 'Delete items' }}
+    </el-button>
   </div>
 </template>
 
@@ -19,15 +28,23 @@
 export default {
   props: {
     deletePagesData: Array,
-    menuItemHeader: String
-  },
-  computed:{
-
+    menuItemHeader: String,
+    onDeletePages: Function
   },
   data(){
     return {
       pagesToDelete:null,
-      idsToDelete: new Array()
+      idsToDelete: new Array(),
+      loading: false
+    }
+  },
+  computed:{
+    buttonStateChanging(){
+      if(!!this.idsToDelete.length){
+        return false;
+      }else{
+        return true;
+      }
     }
   },
   methods:{
@@ -84,12 +101,43 @@ export default {
           }
         }
       return result;
+    },
+    deleteChoosenData(e){
+      if(!!this.idsToDelete.length){
+        this.loading = true;
+          const result = this.$axios.delete('/api/menu_page/page/delete', {
+            data: { ids: this.idsToDelete }
+          });
+          result.then((response) => {
+            const { message } = response.data;
+            setTimeout(()=>{
+              this.onDeletePages(true);
+              this.idsToDelete = new Array();
+              this.$message({
+                showClose: true,
+                message: message,
+                type: 'success'
+              });
+            },1000);
+          }).catch((e) => {
+            this.$message({
+              showClose: true,
+              message: e,
+              type: 'error'
+            });
+          }).finally(()=>{
+            setTimeout(()=>{
+              this.loading = false;
+            },1000);
+          });
+      }else{
+        //console.log("There is not an item");
+      }
     }
   },
   created(){
     //this.deletePagesData - clicked page
     this.preparedPageToDelete(this.deletePagesData);
-
   }
 }
 </script>
@@ -119,6 +167,7 @@ export default {
 .menu-page-content__wrapper-cascader{
   overflow-x: auto;
   width: 580px;
+  margin-bottom: 0.5em;
   .menu-page-content__cascader{
     border: none;
     .el-scrollbar.el-cascader-menu{
