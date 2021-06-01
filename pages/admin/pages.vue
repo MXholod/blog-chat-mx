@@ -53,6 +53,7 @@
               :key="currentPageItem[0].id"
               :deletePagesData="currentPageItem"
               menu-item-header="will be deleted!"
+              :onDeletePages="onDeletePages"
             ></menu-page-delete>
           </el-tab-pane>
         </el-tabs>
@@ -205,6 +206,21 @@ export default {
           return Math.max.apply(null, input);
         }
         return resultArr;
+      },
+      async onDeletePages(isDeleted){
+        if(isDeleted){
+          try{
+            const menuItems = await this.$axios.get('/api/menu_page/page');
+            if(!menuItems.data.pages) throw new Error("Can't reload cascader");
+            //The 'createNestedMenuStructure' function is taken from 'plugin' adds 'childrenItems = []' to each item
+            this.createdPagesStructure = this.createNestedMenuStructure(menuItems.data.pages);
+            //Force update component and reset 'currentPageItem' to null
+            this.componentRerender +=1;
+            this.currentPageItem = null;
+          }catch(e){
+            //console.log(e.message);
+          }
+        }
       }
   },
   mounted(){
