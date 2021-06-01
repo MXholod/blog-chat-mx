@@ -135,22 +135,6 @@ async function updatePage(req, res){
   }
 }
 
-// Private function for deleting files
-const removeFile = (file)=>{
-  let filePath = path.resolve(__dirname, '../..','static','pages_img',file);
-  //Remove uploaded file from 'temp' directory
-  if (!fs.existsSync(filePath)) {
-    //console.log('The file does not exist');
-    return;
-  }
-  //File will be removed
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
-
 async function deleteImage(req, res){
   if(!req.params.collectionId || !req.params.imgName){
     return res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
@@ -178,11 +162,65 @@ async function deleteImage(req, res){
   }
 }
 
+async function deletePageData(req, res){
+  let { ids: idsMainCollection } = req.body;
+  try{
+    const boundModelsResult = await MenuPage.find({'id': { $in: idsMainCollection } }).populate('pageContent');
+    const idsBoundCollection = [];
+    const imagesBoundCollection = [];
+    //Find and copy IDs from the bound Model into the array
+    boundModelsResult.forEach((mainDoc)=>{
+      if(mainDoc.pageContent._id){
+        //Add '_id' to array
+        idsBoundCollection.push(mainDoc.pageContent._id);
+        //Add 'singleImage' to array
+        if(mainDoc.pageContent.singleImage !== ''){
+          imagesBoundCollection.push(mainDoc.pageContent.singleImage);
+        }
+      }
+    });
+    //Removing images from the Server
+    if(!!imagesBoundCollection.length){
+      let i = 0;
+      do{
+        removeFile(imagesBoundCollection[i]);
+        i++;
+      }while(imagesBoundCollection.length > i)
+    }
+    //Removing data from the Models
+    const delete1 = await MenuPage.deleteMany({ id: { $in : idsMainCollection } });
+    const delete2 = await MenuPageContent.deleteMany({ _id: { $in : idsBoundCollection } });
+    if(delete1.deletedCount === delete2.deletedCount){
+      return res.status(200).json({ message: "Ok" });
+    }
+    res.status(404).json({ message: "Bad" });
+  }catch(e){
+    res.status(404).json({ message: "Bad" });
+  }
+}
+
+// Private function for deleting files
+const removeFile = (file)=>{
+  let filePath = path.resolve(__dirname, '../..','static','pages_img',file);
+  //Remove uploaded file from 'temp' directory
+  if (!fs.existsSync(filePath)) {
+    //console.log('The file does not exist');
+    return;
+  }
+  //File will be removed
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+}
+
 module.exports = {
   getMenuPages,
   getMenuPageContent,
   createPage,
   getFullPageContent,
   updatePage,
-  deleteImage
+  deleteImage,
+  deletePageData
 };
