@@ -116,10 +116,21 @@ function setStatusBanChat(req, res){
   return setStatusBan(userId, { chatBan: chat }, res);
 }
 
+function getRole(req, res){
+  //'admin' || 'moderator'
+  const { role } = req.user;
+  //The Role is pulled from Passport Middleware
+  if(role){
+    //Always return status 200, because if exists Bad status it is returned in Middleware before
+    return res.status(200).json({ role , message: "Welcome to admin panel" });
+  }
+}
+
 module.exports = {
   authenticate,
   createUserByAdmin,
   getAllUsers,
   setStatusBanBlog,
-  setStatusBanChat
+  setStatusBanChat,
+  getRole
 }
