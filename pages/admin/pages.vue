@@ -83,6 +83,7 @@ export default {
     };
   },
   layout: 'admin',
+  middleware: ['user-auth-admin'],
   components: {
     MenuPageCreate,
     MenuPageUpdate,
