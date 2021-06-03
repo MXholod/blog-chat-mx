@@ -6,14 +6,14 @@ module.exports.createPost = async (request, response) => {
     title: request.body.title,
     text: request.body.text,
     // Get the file path of an uploaded image by Multer
-    imageUrl: `${request.file.fileName}`
+    imageUrl: `${request.file.filename}`
   })
   try {
-    await post.save()
+    await post.save();
     // Data saved in DB
-    response.status(201).json(post)
+    response.status(201).json({ message: "New post created" });
   } catch (e) {
-    response.status(500).json(e)
+    response.status(500).json(e);
   }
 }
 
@@ -21,7 +21,7 @@ module.exports.createPost = async (request, response) => {
 module.exports.getPosts = async (request, response) => {
   try {
     const posts = await Post.find()
-    // Sort posts in reverse order 
+    // Sort posts in reverse order
     posts.sort({ date: -1 })
     response.status(200).json(posts)
   } catch (e) {
@@ -74,7 +74,7 @@ module.exports.addViewToPostById = async (request, response) => {
   }
   try {
     await Post.findOneAndUpdate({ _id: request.params.id }, { $set })
-    // 204 - Success, without content creation 
+    // 204 - Success, without content creation
     response.status(204).json({ message: 'Views incremented' })
   } catch (e) {
     response.status(500).json(e)
