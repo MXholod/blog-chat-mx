@@ -1,12 +1,17 @@
-const passport = require('passport')
-const controller = require('./../controllers/post')
-const { Router } = require('express')
-const router = Router()
+const passport = require('passport');
+const authCabinetAdmin = passport.authenticate('jwt-cabinet-admin', {session: false});
+const upload = require('./../middleware/file-uploads');
+const uploadOptimized = require('./../middleware/file-uploads-optimized');
+const controller = require('./../controllers/post');
+const { Router } = require('express');
+const router = Router();
 
 // /api/post/admin/create   -   create Post in Admin
 router.post(
   '/admin/create',
-  passport.authenticate('jwt', { session: false }),
+  authCabinetAdmin,
+  upload.single('imagePost'),
+  uploadOptimized,
   controller.createPost
 )
 
