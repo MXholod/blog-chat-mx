@@ -39,20 +39,15 @@ export const actions = {
     })
   },
   async createAdminPost ({ commit }, data) {
-    try {
-      const formD = new FormData()
+    const formData = new FormData();
       // formData.append(name, value)
-      formD.append('title', data.title)
-      formD.append('text', data.text)
+      formData.append('title', data.title);
+      formData.append('text', data.text);
       // formData.append(name, blob, fileName)
-      formD.append('image', data.image, data.image.name)
-      //
-      return await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          console.log('Data ', data.title, ' ', data.text)
-          resolve(data.title)
-        }, 3000)
-      })
+      formData.append('imagePost', data.image, data.image.name);
+    try {
+      //Create Post with FormData()
+      await this.$axios.$post('/api/post/admin/create', formData);
     } catch (e) {
       commit('error/setError', e, { root: true })
       // Block 'catch' will be called in create.vue file
