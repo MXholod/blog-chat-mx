@@ -64,7 +64,7 @@
 <script>
 export default {
   layout: 'admin',
-  middleware: ['admin-auth'],
+  middleware: ['user-auth-admin'],
   data () {
     return {
       activeName: 'first',
@@ -105,11 +105,10 @@ export default {
             this.$refs.sportImage.clearFiles()
             this.$message.success('Post has created')
           } catch (e) {
-            console.error('Error ', e)
+            //console.error('Error ', e)
           } finally {
             this.loading = false
           }
-          console.log('Form is valid ', formData)
         } else {
           // console.log('Form is invalid')
           this.$message({
@@ -124,7 +123,6 @@ export default {
       // console.log(tab, event)
     },
     handleChangeImage (file, fileList) {
-      // console.log('File ', file, 'File list ', fileList[0])
       this.postImage = file.raw
     }
   }
