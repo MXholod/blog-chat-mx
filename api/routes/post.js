@@ -18,7 +18,7 @@ router.post(
 // /api/post/admin/posts   -   get all Posts in Admin
 router.get(
   '/admin/posts',
-  passport.authenticate('jwt', { session: false }),
+  authCabinetAdmin,
   controller.getPosts
 )
 
