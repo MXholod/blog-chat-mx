@@ -55,7 +55,10 @@ export const actions = {
       formData.append('imagePost', data.image, data.image.name);
     try {
       //Create Post with FormData()
-      await this.$axios.$post('/api/post/admin/create', formData);
+      const result = await this.$axios.$post('/api/post/admin/create', formData);
+      if(!result.message){
+        throw new Error("Post hasn't created");
+      }
     } catch (e) {
       commit('error/setError', e, { root: true })
       // Block 'catch' will be called in create.vue file
