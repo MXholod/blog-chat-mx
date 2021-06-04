@@ -1,4 +1,4 @@
-const Post = require('./../models/post')
+const { Post } = require('./../helpers/db');
 
 // Create new Post - in Admin
 module.exports.createPost = async (request, response) => {
@@ -20,12 +20,19 @@ module.exports.createPost = async (request, response) => {
 // Get all Posts in Admin and Public
 module.exports.getPosts = async (request, response) => {
   try {
-    const posts = await Post.find()
+    const posts = await Post.find({});
+    if(!posts.length){
+      return response.status(200).json({ message: "No posts", posts: [] });
+    }
     // Sort posts in reverse order
-    posts.sort({ date: -1 })
-    response.status(200).json(posts)
+    posts.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      return new Date(b.date) - new Date(a.date);
+    });
+    response.status(200).json({ message: "All posts", posts });
   } catch (e) {
-    response.status(500).json(e)
+    response.status(400).json({ message: "Error" , posts: [] });
   }
 }
 
