@@ -1,5 +1,5 @@
 const posts = [
-  {
+  /*{
     _id: 'id-1',
     title: 'Post 1',
     date: new Date(),
@@ -12,16 +12,24 @@ const posts = [
     date: new Date(),
     views: 34,
     comments: [1, 2, 3, 4, 5]
-  }
+  }*/
 ]
 
 export const actions = {
   async displayAdminPosts ({ commit }) {
-    return await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(posts)
-      }, 3000)
-    })
+    try{
+      const result = await this.$axios.get('/api/post/admin/posts');
+      //console.log(result.data);
+      if(result.data){
+        const { message, posts } = result.data;
+        return posts;
+      }
+      return [];
+    }catch(e){
+      commit('error/setError', e, { root: true })
+      // Block 'catch' will be called in create.vue file
+      throw e
+    }
   },
   async editAdminPost ({ commit }, id) {
     return await new Promise((resolve, reject) => {
