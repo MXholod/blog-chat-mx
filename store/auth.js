@@ -23,6 +23,9 @@ export const mutations = {
   },
   updateUserLogin(state,login){
     state.user.login = login;
+  },
+  updateUserJwtToken(state,jwtToken){
+    state.user.jwtToken = jwtToken;
   }
 }
 

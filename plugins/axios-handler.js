@@ -38,6 +38,7 @@ export default function({ $axios, store, redirect }){
         throw data;
       }).then(activeToken => {
         $axios.defaults.headers.common['Authorization'] = `Bearer ${activeToken}`;
+        store.commit('auth/updateUserJwtToken', activeToken);
         store.commit('error/setError',
           {jwtRefreshed : 'Your session is extended, have a nice work!'},
           {root: true}
