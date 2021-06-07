@@ -108,9 +108,9 @@ export default {
   /*
   ** Server Middleware
   */
-  serverMiddleware: {
-    '/api': '~/api'
-  },
+  serverMiddleware: [
+    { path: '/api', handler: '~/api' }
+  ],
 
   /*
   ** Build configuration
