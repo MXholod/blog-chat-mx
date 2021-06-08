@@ -76,14 +76,26 @@ import MenuPageUpdate from "@/components/admin/admin_page_management/MenuPageUpd
 import MenuPageDelete from "@/components/admin/admin_page_management/MenuPageDelete";
 export default {
   async asyncData(ctx){
+    let jwt = ctx.store.getters['auth/isUserAuthenticated'].jwtToken;
+    let userData = await ctx.app.$isAllowedByRole(jwt);
+
+    if(userData.role === 'guest'){
+      ctx.redirect('/cabinet');
+    }
+    if(userData.role === '' && !userData.sessionEnd){
+      if(ctx.store.getters['auth/isUserAuthenticated'].role !== ''){
+        ctx.store.dispatch('auth/logout');
+      }
+      ctx.redirect('/');
+    }
     const menuItems = await ctx.$axios.get('/api/menu_page/page');
     return {
       menuItemsList: menuItems.data.pages,
-      menuItemsTree: menuItems.data.pages
+      menuItemsTree: menuItems.data.pages,
+      userLogoutRefresh: userData.sessionEnd ? true : false
     };
   },
   layout: 'admin',
-  middleware: ['user-auth-admin'],
   components: {
     MenuPageCreate,
     MenuPageUpdate,
@@ -232,6 +244,17 @@ export default {
     //Get the free parent item place (depends on Db data)
     let allParentItems = this.pickParentItems(this.menuItemsList);
     this.parentItemFromDB = this.makeCorrectParentItem(allParentItems);
+    //Displaying the modal window to inform user about the end of the session
+    if(this.userLogoutRefresh){
+      this.$alert('Your session is up!', 'Session state', {
+          confirmButtonText: 'Sign in again',
+          showClose:false,
+          callback: action => {
+            this.$store.dispatch('auth/logout');
+            this.$router.push('/login?message=unauthenticated');
+          }
+        });
+    }
   }
 }
 </script>
