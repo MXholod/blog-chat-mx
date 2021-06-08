@@ -139,7 +139,7 @@ async function getRole(req, res){
       const refreshToken = await JwtRefresh.findOne({ token }).populate('user');
       if (!refreshToken || refreshToken.isExpired){//!refreshToken.isActive
         //Refresh Token is expired
-        return res.status(200).json({ message: "Role is absent", role: '' });
+        return res.status(200).json({ message: "Role is absent", role: '', sessionEnd: true });
       }
       return res.status(200).json({ message: "Role by refresh ", role: refreshToken.user.role });
     }catch(e){
