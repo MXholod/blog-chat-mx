@@ -50,11 +50,29 @@
 <script>
 export default {
   layout: 'admin',
-  middleware: ['admin-auth'],
-  async asyncData ({ store }) {
-    const posts = await store.dispatch('post/displayAdminPosts')
+  async asyncData (context) {
+    let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
+    //'$isAllowedByRole' is a function from Plugin
+    let userData = await context.app.$isAllowedByRole(jwt);
+    if(userData.role === 'guest'){
+      context.redirect('/cabinet');
+    }
+    if(userData.role === '' && !userData.sessionEnd){
+      if(context.store.getters['auth/isUserAuthenticated'].role !== ''){
+        context.store.dispatch('auth/logout');
+      }
+      context.redirect('/');
+    }
+    let posts = [];
+    //If we have role: 'admin' or 'moderator'
+    if(userData.role && !userData.sessionEnd){
+      posts = await context.store.dispatch('post/displayAdminPosts')
+    }
     // It will be merged with 'data' if 'data' is present
-    return { posts }
+    return {
+      posts,
+      userLogoutRefresh: userData.sessionEnd ? true : false
+    }
   },
   methods: {
     editPost (id) {
@@ -79,6 +97,19 @@ export default {
       } catch (e) {
 
       }
+    }
+  },
+  mounted(){
+    //Displaying the modal window to inform user about the end of the session
+    if(this.userLogoutRefresh){
+      this.$alert('Your session is up!', 'Session state', {
+        confirmButtonText: 'Sign in again',
+        showClose:false,
+        callback: action => {
+          this.$store.dispatch('auth/logout');
+          this.$router.push('/login?message=unauthenticated');
+        }
+      });
     }
   }
 }
