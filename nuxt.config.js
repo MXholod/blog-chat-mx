@@ -48,7 +48,8 @@ export default {
     // EventBus registration
     '@/plugins/eventBus',
     '@/plugins/axios-handler',
-    { src: '@/plugins/pages-menu-recursive', mode: 'client'  }
+    { src: '@/plugins/pages-menu-recursive', mode: 'client'  },
+    { src: '~/plugins/user-role' }
   ],
 
   /*
