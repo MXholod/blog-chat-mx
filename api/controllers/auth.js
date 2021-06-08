@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
-const { User } = require('./../helpers/db');
+const jwtDecode = require('jwt-decode');
+const { User, JwtRefresh } = require('./../helpers/db');
 const { compare: comparePasswords } = require("./../helpers/salt");
 const { generateJwtToken } = require('./../helpers/jwt');
 const { generateRefreshToken } = require('./../helpers/jwt-refresh');
@@ -116,13 +117,34 @@ function setStatusBanChat(req, res){
   return setStatusBan(userId, { chatBan: chat }, res);
 }
 
-function getRole(req, res){
-  //'admin' || 'moderator'
-  const { role } = req.user;
-  //The Role is pulled from Passport Middleware
-  if(role){
-    //Always return status 200, because if exists Bad status it is returned in Middleware before
-    return res.status(200).json({ role , message: "Welcome to admin panel" });
+async function getRole(req, res){
+  if(!req.params.jwt) return res.status(400).json({ message: "Can't define a role", role: '' });
+  const jwtDecoded = jwtDecode(req.params.jwt) || {};
+  //Difine current time
+  const currentTime = new Date().getTime() / 1000;
+  const expired = jwtDecoded.exp || 0;
+  //Access Token is valid
+  if(currentTime < expired){
+    try{
+      const { role } = await User.findById(jwtDecoded.id).exec();
+      return res.status(200).json({ message: "Role by access ", role });
+    }catch(e){
+      return res.status(400).json({ message: e.message, role: '' });
+    }
+  }else{//Checking Refresh Token lifetime
+    //Get Cookie using 'cookieparser'
+    const token = req.cookies.refreshToken;
+    try{
+      //Get two objects from DB: 'refreshtokens' and 'users' merged by method 'populate()'
+      const refreshToken = await JwtRefresh.findOne({ token }).populate('user');
+      if (!refreshToken || refreshToken.isExpired){//!refreshToken.isActive
+        //Refresh Token is expired
+        return res.status(200).json({ message: "Role is absent", role: '' });
+      }
+      return res.status(200).json({ message: "Role by refresh ", role: refreshToken.user.role });
+    }catch(e){
+      return res.status(400).json({ message: "Role error", role: '' });
+    }
   }
 }
 
