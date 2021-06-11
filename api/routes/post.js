@@ -25,8 +25,8 @@ router.get(
 // /api/post/admin/post/:id   -   get Post by id in Admin
 router.get(
   '/admin/post/:id',
-  passport.authenticate('jwt', { session: false }),
-  controller.getPostById
+  authCabinetAdmin,
+  controller.getAdminPostById
 )
 
 // /api/post/admin/post/:id   -   update Post by id in Admin
@@ -55,8 +55,7 @@ router.get(
 // '/:id'   -   get Post by id on the Site
 router.get(
   '/:id',
-  passport.authenticate('jwt', { session: false }),
-  controller.getPostById
+  controller.getClientPostById
 )
 // '/:id'   -   add view to a Post by id on the Site
 router.put(
