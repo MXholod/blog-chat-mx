@@ -36,16 +36,34 @@ module.exports.getPosts = async (request, response) => {
   }
 }
 
-// Get Post by ID in Admin and Public
-module.exports.getPostById = async (request, response) => {
+// Get Post by ID in Admin
+module.exports.getAdminPostById = async (request, response) => {
+  const id = request.params.id;
+  if(!id) return response.status(400).json({ message: "Invalid post data" , post: {} });
   try {
-    const post = await Post.findById(request.params.id)
-    // bindings between models
-    post.populate('comments').exec((error, post) => {
-      response.status(200).json(post)
-    })
+    const post = await Post.findById(id).exec();
+    if(post){
+      return response.status(200).json({ message: "The post data" , post });
+    }
+    throw new Error("Something went wrong");
   } catch (e) {
-    response.status(500).json(e)
+    return response.status(400).json({ message: e.message, post: {} });
+  }
+}
+
+// Get Post by ID in Client
+module.exports.getClientPostById = (request, response) => {
+  const id = request.params.id;
+  if(!id) return response.status(400).json({ message: "Invalid post data" , post: {} });
+  try {
+    Post.findById(id).populate('comments').exec((error, post) => {
+      if(post){
+        return response.status(200).json({ message: "The post data" , post });
+      }
+    })
+    throw new Error("Something went wrong");
+  } catch (e) {
+    return response.status(400).json({ message: e.message, post: {} });
   }
 }
 
