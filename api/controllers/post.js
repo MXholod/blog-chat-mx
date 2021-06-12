@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const { Post } = require('./../helpers/db');
 
 // Create new Post - in Admin
@@ -48,6 +50,29 @@ module.exports.getAdminPostById = async (request, response) => {
     throw new Error("Something went wrong");
   } catch (e) {
     return response.status(400).json({ message: e.message, post: {} });
+  }
+}
+
+module.exports.deleteImage = async (req, res)=>{
+  if(!req.params.collectionId || !req.params.imgName){
+    return res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+  }
+  try{
+    //Remove previous image by name 'imgName'
+    removeFile(req.params.imgName);
+    //Erase image name to empty string
+    const postUpdated = await Post.findOneAndUpdate(
+      { _id: req.params.collectionId },
+      { imageUrl: '' },
+      { new: true }
+    );
+    if(postUpdated){
+      res.status(200).json({ message: "Deleted image ", deletedImage: true });
+    }else{
+      res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+    }
+  }catch(e){
+    res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
   }
 }
 
@@ -104,4 +129,20 @@ module.exports.addViewToPostById = async (request, response) => {
   } catch (e) {
     response.status(500).json(e)
   }
+}
+
+// Private function for deleting files
+const removeFile = (file)=>{
+  let filePath = path.resolve(__dirname, '../..','static','posts_img',file);
+  //Remove uploaded file from 'temp' directory
+  if (!fs.existsSync(filePath)) {
+    //console.log('The file does not exist');
+    return;
+  }
+  //File will be removed
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
 }
