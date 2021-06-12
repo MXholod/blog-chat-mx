@@ -29,6 +29,13 @@ router.get(
   controller.getAdminPostById
 )
 
+// /api/post/delete/postId/imageName  (Delete image only)
+router.patch(
+  '/delete/:collectionId/:imgName',
+  authCabinetAdmin,
+  controller.deleteImage
+);
+
 // /api/post/admin/post/:id   -   update Post by id in Admin
 router.put(
   '/admin/post/:id',
