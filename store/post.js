@@ -1,19 +1,6 @@
-const posts = [
-  /*{
-    _id: 'id-1',
-    title: 'Post 1',
-    date: new Date(),
-    views: 12,
-    comments: [1, 2]
-  },
-  {
-    _id: 'id-2',
-    title: 'Post 2',
-    date: new Date(),
-    views: 34,
-    comments: [1, 2, 3, 4, 5]
-  }*/
-]
+export const state = () => ({
+  posts: []
+})
 
 export const actions = {
   async displayAdminPosts ({ commit }) {
@@ -26,6 +13,25 @@ export const actions = {
       }
       return [];
     }catch(e){
+      commit('error/setError', e, { root: true })
+      // Block 'catch' will be called in create.vue file
+      throw e
+    }
+  },
+  async createAdminPost ({ commit }, data) {
+    const formData = new FormData();
+      // formData.append(name, value)
+      formData.append('title', data.title);
+      formData.append('text', data.text);
+      // formData.append(name, blob, fileName)
+      formData.append('imagePost', data.image, data.image.name);
+    try {
+      //Create Post with FormData()
+      const result = await this.$axios.$post('/api/post/admin/create', formData);
+      if(!result.message){
+        throw new Error("Post hasn't created");
+      }
+    } catch (e) {
       commit('error/setError', e, { root: true })
       // Block 'catch' will be called in create.vue file
       throw e
@@ -44,27 +50,23 @@ export const actions = {
     }
   },
   async updateAdminPost ({ commit }, data) {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('Post updated')
-        // console.log('Data ', data.id, ' ', data.text)
-      }, 3000)
-    })
-  },
-  async createAdminPost ({ commit }, data) {
     const formData = new FormData();
-      // formData.append(name, value)
-      formData.append('title', data.title);
-      formData.append('text', data.text);
-      // formData.append(name, blob, fileName)
-      formData.append('imagePost', data.image, data.image.name);
-    try {
-      //Create Post with FormData()
-      const result = await this.$axios.$post('/api/post/admin/create', formData);
-      if(!result.message){
-        throw new Error("Post hasn't created");
+    const { id, imageUrl, singleImage, ...rest } = data;//rest - title, text
+    //If new Image is uploaded the previous one will be replaced
+    if(singleImage){
+      formData.append('imagePostToDelete', imageUrl);
+      formData.append('singleImage', singleImage);
+    }else{//Leave an old Post image without changes
+      formData.append('imagePostToDelete', '');
+      formData.append('singleImage', '');
+    }
+    formData.append('postData', JSON.stringify(rest));
+    try{
+      const result = await this.$axios.put(`/api/post/admin/post/${id}`, formData);
+      if(result.data && result.data.postUpdated){
+        return result.data.postUpdated;
       }
-    } catch (e) {
+    }catch(e){
       commit('error/setError', e, { root: true })
       // Block 'catch' will be called in create.vue file
       throw e
