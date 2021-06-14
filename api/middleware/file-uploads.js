@@ -8,7 +8,7 @@ const fileStorage =  multer.diskStorage({
     let currentPath = req.baseUrl+req.route.path;
     let destinationFolder = '';
     //Check destination path
-    if(currentPath === '/post/admin/create'){//Route part
+    if((currentPath === '/post/admin/create') || (currentPath === '/post/admin/post/:id')){//Route part
       destinationFolder = 'posts_img';
       siteUpload.folderIMG = destinationFolder;
       req.siteUpload = siteUpload;
