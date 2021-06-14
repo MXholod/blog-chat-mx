@@ -53,26 +53,38 @@ module.exports.getAdminPostById = async (request, response) => {
   }
 }
 
-module.exports.deleteImage = async (req, res)=>{
-  if(!req.params.collectionId || !req.params.imgName){
-    return res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+module.exports.updatePost = async (req, res)=>{
+  if(req.body.imagePostToDelete){
+    //Remove previous image by name 'imagePostToDelete'
+    removeFile(req.body.imagePostToDelete);
+  }
+  //Parse the JSON data from 'allData' field - it is an Object of all client data except image
+  let body = JSON.parse(req.body.postData);
+  const postUpdateData = {};
+  let { title, text } = body;
+  postUpdateData.title = title;
+  postUpdateData.text = text;
+  //Get 'id' of 'Post' Model
+  const id = req.params.id;
+  //'singleImage' is undefined because it comes through the Multer
+  if(!req.body.singleImage){
+    //If an image is sent, its file name is checked
+    if(req.file){
+      postUpdateData.imageUrl = req.file.filename;
+    }
+  }else{//'imagePostToDelete' has a name
+    postUpdateData.imageUrl = req.body.imagePostToDelete;
   }
   try{
-    //Remove previous image by name 'imgName'
-    removeFile(req.params.imgName);
-    //Erase image name to empty string
+    //Update Models
     const postUpdated = await Post.findOneAndUpdate(
-      { _id: req.params.collectionId },
-      { imageUrl: '' },
+      { _id: id },
+      { ...postUpdateData },
       { new: true }
     );
-    if(postUpdated){
-      res.status(200).json({ message: "Deleted image ", deletedImage: true });
-    }else{
-      res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
-    }
+    return res.status(200).json({ message: "Post updated", postUpdated });
   }catch(e){
-    res.status(400).json({ message: "Image doesn't exist", deletedImage: false });
+    res.status(400).json({ message: "Post can't be updated", error: e });
   }
 }
 
