@@ -73,5 +73,15 @@ export const actions = {
     }
   },
   async deleteAdminPost ({ commit }, id) {
+    try{
+      const result = await this.$axios.delete(`/api/post/admin/post/${id}`);
+      if(result.data && result.data.postId){
+        return result.data.postId;
+      }
+    }catch(e){
+      commit('error/setError', e, { root: true })
+      // Block 'catch' will be called in create.vue file
+      throw e
+    }
   }
 }
