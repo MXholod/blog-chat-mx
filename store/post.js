@@ -83,5 +83,18 @@ export const actions = {
       // Block 'catch' will be called in create.vue file
       throw e
     }
+  },
+  //Public actions
+  async displayPosts({ commit }){
+    try{
+      const result = await this.$axios.get('/api/post');
+      if(result.data && result.data.posts){
+        return result.data.posts;
+      }
+    }catch(e){
+      commit('error/setError', e, { root: true })
+      // Block 'catch' will be called in create.vue file
+      throw e
+    }
   }
 }
