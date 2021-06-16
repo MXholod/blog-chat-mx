@@ -41,8 +41,8 @@ router.put(
 // /api/post/admin/post/:id   -   delete Post by id in Admin
 router.delete(
   '/admin/post/:id',
-  passport.authenticate('jwt', { session: false }),
-  controller.deletePostById
+  authCabinetAdmin,
+  controller.deletePost
 )
 
 /*  Public  Routes */
