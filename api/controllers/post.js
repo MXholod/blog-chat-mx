@@ -120,7 +120,26 @@ module.exports.deletePost = async (request, response) => {
   }
 }
 
-// Get Post by ID in Client
+//Get all client side Posts
+module.exports.getPosts = async (request, response) => {
+  try{
+    const posts = await Post.find({});
+    if(!posts.length){
+      return response.status(400).json({ message: "No posts", posts: [] });
+    }
+    // Sort posts in reverse order
+    posts.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      return new Date(b.date) - new Date(a.date);
+    });
+    return response.status(200).json({ message: "All posts", posts });
+  }catch(e){
+    return response.status(400).json({ message: e.message, posts: [] });
+  }
+}
+
+// Get Post by ID on client side
 module.exports.getClientPostById = (request, response) => {
   const id = request.params.id;
   if(!id) return response.status(400).json({ message: "Invalid post data" , post: {} });
