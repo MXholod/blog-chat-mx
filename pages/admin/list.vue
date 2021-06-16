@@ -79,7 +79,7 @@ export default {
       // console.log('Edit post id ', id)
       this.$router.push(`/admin/post/${id}`)
     },
-    // this method is 'async' because of $confirm().then().catch()
+    // This method is 'async' because of $confirm().then().catch()
     // returns Promise() and that's why we may use 'async' instead of Promise()
     async removePost (id) {
       try {
@@ -90,12 +90,20 @@ export default {
           type: 'warning'
         })
         // Delete a post from the store
-        // await this.store.dispatch('post/deleteAdminPost', id)
-        // Delete post localy
-        this.posts = this.posts.filter(p => p._id !== id)
-        this.$message.success('The post has been deleted')
+        const postDeletedId = await this.$store.dispatch('post/deleteAdminPost', id);
+        if(postDeletedId){
+          //Leave in 'posts' all posts except deleted once
+          this.posts = this.posts.filter( post => post._id !== postDeletedId);
+          this.$message.success('The post has been deleted');
+        }else{
+          throw new Error("Something went wrong");
+        }
       } catch (e) {
-
+        this.$message({
+          showClose: true,
+          message: e.message,
+          type: 'error'
+        });
       }
     }
   },
