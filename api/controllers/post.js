@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { Post } = require('./../helpers/db');
+const { Post, Comment } = require('./../helpers/db');
 
 // Create new Post - in Admin
 module.exports.createPost = async (request, response) => {
@@ -88,6 +88,38 @@ module.exports.updatePost = async (req, res)=>{
   }
 }
 
+// Delete Post by ID in Admin
+module.exports.deletePost = async (request, response) => {
+  const id = request.params.id;
+  if(!id) return response.status(400).json({ message: "Wrong request" });
+  try {
+    const postWithComments = await Post.findById(id).populate('comments').exec();
+    if(!postWithComments || !postWithComments.imageUrl){
+      return response.status(400).json({ message: "Wrong request" });
+    }
+    //Delete the Post image
+    removeFile(postWithComments.imageUrl);
+    const commentIds = [];
+    if(postWithComments.comments && !!postWithComments.comments.length){
+      //Get the all Comment ids
+      postWithComments.forEach(el => {
+        commentIds.push(el._id);
+      });
+    }
+    //Removing data from Comment Model
+    if(!!commentIds.length){
+      await Comment.deleteMany({ _id: { $in : commentIds } });
+    }
+    //Delete the Post itself
+    const postDeleted = await Post.deleteOne({ _id: id});
+    if(postDeleted){
+      return response.status(200).json({ message: "Post deleted", postId: id });
+    }
+  } catch (e) {
+    return response.status(400).json({ message: e.message });
+  }
+}
+
 // Get Post by ID in Client
 module.exports.getClientPostById = (request, response) => {
   const id = request.params.id;
@@ -101,32 +133,6 @@ module.exports.getClientPostById = (request, response) => {
     throw new Error("Something went wrong");
   } catch (e) {
     return response.status(400).json({ message: e.message, post: {} });
-  }
-}
-
-// Update Post by ID in Admin
-module.exports.updatePostById = async (request, response) => {
-  const $set = {
-    title: request.body.title,
-    text: request.body.text
-  }
-  try {
-    const post = await Post.findOneAndUpdate({
-      _id: request.params.id
-    }, { $set }, { 'new': true })
-    response.status(200).json(post)
-  } catch (e) {
-    response.status(500).json(e)
-  }
-}
-
-// Delete Post by ID in Admin
-module.exports.deletePostById = async (request, response) => {
-  try {
-    await Post.deleteOne({ _id: request.params.id})
-    response.status(200).json({ message: 'Post removed' })
-  } catch (e) {
-    response.status(500).json(e)
   }
 }
 
