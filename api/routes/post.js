@@ -47,12 +47,8 @@ router.delete(
 
 /*  Public  Routes */
 
-// '/'  -   get all Posts on the Site
-router.get(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  controller.getPosts
-)
+// '/api/post/'  -   get all Posts on the Site
+router.get('/', controller.getPosts);
 
 // '/:id'   -   get Post by id on the Site
 router.get(
