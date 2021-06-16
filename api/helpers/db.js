@@ -5,6 +5,7 @@ const JwtRefresh = require('./../models/jwt-refresh');
 const MenuPage = require('./../models/menu-page');
 const MenuPageContent = require('./../models/menu-page-content');
 const Post = require('./../models/post');
+const Comment = require('./../models/comment');
 // Config keys
 const keys = require('./../config/keys');
 
@@ -34,5 +35,6 @@ module.exports = {
   MenuPage,
   MenuPageContent,
   Post,
+  Comment,
   isValidId
 };
