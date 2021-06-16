@@ -11,9 +11,9 @@ const postSchema = new Schema({
   views: { type: Number, default: 0 },
   imageUrl: String,
   comments: [
-    { type: Schema.Types.ObjectId, ref: 'comments' }
-  ] 
-  
+    { type: Schema.Types.ObjectId, ref: 'Comment' }
+  ]
+
 })
 
-module.exports = model('posts', postSchema)
+module.exports = model('Post', postSchema)
