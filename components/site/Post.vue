@@ -4,15 +4,15 @@
         :body-style="{padding: 0}"
         class="post">
         <header slot="header" class="post__header">
-            <h1>Post title</h1>
+            <h1>{{ post.title }}</h1>
             <small>
                 <i class="el-icon-time"></i>
-                {{ new Date().toLocaleString() }}
+                {{ new Date(post.date).toLocaleString() }}
             </small>
         </header>
         <div class="post__body">
             <img
-                src="/posts_img/sport_balls.jpg"
+                :src="`/posts_img/${post.imageUrl}`"
                 alt="Post image"
                 class="post__img"
                 />
@@ -21,7 +21,7 @@
             <el-button round @click="openPost">Open post</el-button>
             <span>
                 <i class="el-icon-message"></i>
-                12
+                {{ post.comments.length }}
             </span>
         </footer>
     </el-card>
@@ -29,11 +29,12 @@
 
 <script>
 export default {
+  props: {
+    post: { type: Object, required: true }
+  },
   methods: {
-    openPost () {
-      const id = 'test-id'
-      this.$router.push(`/post/${id}`)
-      console.log('Post')
+    openPost(){
+      this.$router.push(`/post/${this.post._id}`);
     }
   }
 }
@@ -49,22 +50,22 @@ export default {
             justify-content: space-between;
             align-items: center;
             small{
-                text-align: center;
+              text-align: center;
             }
         }
         .post__body{
-            background-color: #f6f6f6;
-            //margin-bottom: 1rem;
+            width: 200px;
+            margin: 5px auto;
             .post__img{
-                width: 100%;
-                min-height: auto;
+              width: 100%;
+              min-height: auto;
             }
         }
         .post__footer{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem;
         }
     }
 </style>
