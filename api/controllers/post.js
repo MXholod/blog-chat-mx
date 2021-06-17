@@ -142,29 +142,36 @@ module.exports.getPosts = async (request, response) => {
 // Get Post by ID on client side
 module.exports.getClientPostById = (request, response) => {
   const id = request.params.id;
-  if(!id) return response.status(400).json({ message: "Invalid post data" , post: {} });
+  if(!id) return response.status(400).json({ message: "Invalid post data" , post: null });
   try {
     Post.findById(id).populate('comments').exec((error, post) => {
+      if(error){
+        return response.status(400).json({ message: e.message, post: null });
+      }
       if(post){
         return response.status(200).json({ message: "The post data" , post });
       }
-    })
-    throw new Error("Something went wrong");
+    });
   } catch (e) {
-    return response.status(400).json({ message: e.message, post: {} });
+    return response.status(400).json({ message: e.message, post: null });
   }
 }
 
 module.exports.addViewToPostById = async (request, response) => {
-  const $set = {
+  const { id } = request.params;
+  const update = {
     views: ++request.body.views
   }
   try {
-    await Post.findOneAndUpdate({ _id: request.params.id }, { $set })
-    // 204 - Success, without content creation
-    response.status(204).json({ message: 'Views incremented' })
+    const postUpdated = await Post.findOneAndUpdate({ _id: id }, update, {
+      new: true
+    });
+    if(postUpdated){
+      // 204 - Success, without content creation
+      return response.status(204).json();
+    }
   } catch (e) {
-    response.status(500).json(e)
+    response.status(500).json(e);
   }
 }
 
