@@ -50,15 +50,14 @@ router.delete(
 // '/api/post/'  -   get all Posts on the Site
 router.get('/', controller.getPosts);
 
-// '/:id'   -   get Post by id on the Site
+// '/api/post/:id'   -   get Post by id on the Site
 router.get(
   '/:id',
   controller.getClientPostById
 )
-// '/:id'   -   add view to a Post by id on the Site
-router.put(
-  '/:id',
-  passport.authenticate('jwt', { session: false }),
+// '/api/post/views/:id'   -   add view to a Post by id on the Site
+router.patch(
+  '/views/:id',
   controller.addViewToPostById
 )
 
