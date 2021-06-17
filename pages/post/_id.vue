@@ -2,7 +2,7 @@
     <article class="post-details">
         <header class="post-details__header">
             <div class="post-details__title">
-                <h1>Post id</h1>
+                <h1>{{ post.title }}</h1>
                 <nuxt-link to="/">
                     <i class="el-icon-back"></i>
                 </nuxt-link>
@@ -10,33 +10,31 @@
             <div class="post-details__information">
                 <small>
                     <i class="el-icon-time"></i>
-                    {{ new Date().toLocaleString() }}
+                    {{ new Date(post.date).toLocaleString() }}
                 </small>
                 <small>
                     <i class="el-icon-view"></i>
-                    17
+                    {{ post.views }}
                 </small>
             </div>
             <div class="post-details__img">
                 <img
-                    src="/posts_img/sport_balls.jpg"
-                    alt="Post image detail"
-                    />
+                  :src="`/posts_img/${post.imageUrl}`"
+                  alt="Post image detail"
+                />
             </div>
         </header>
         <main class="post-details__content">
-            <p>Lorem ipsum dolor sit,
-                amet consectetur adipisicing elit.
-            </p>
+          <div v-html="$md.render(post.text)"></div>
         </main>
         <footer class="post-details__comments">
             <blog-comment-form
               v-if="commentAllowed"
               @commentAdded="commentAddedHandler"
             />
-            <div v-if="true">
+            <div v-if="post.comments.length">
                 <blog-comment
-                    v-for="(comment, ind) in 2"
+                    v-for="(comment, ind) in post.comments"
                     :key="ind"
                     :comment="comment"
                 ></blog-comment>
@@ -52,6 +50,12 @@
 import BlogComment from '@/components/site/Comment'
 import BlogCommentForm from '@/components/site/CommentForm'
 export default {
+  async asyncData({ store, params, redirect }){
+    const post = await store.dispatch('post/getPost', params.id);
+    if(!post) return redirect('/');
+    await store.dispatch('post/addView', post);
+    return { post: { ...post, views: ++post.views } };
+  },
   components: {
     BlogComment,
     BlogCommentForm
