@@ -96,5 +96,28 @@ export const actions = {
       // Block 'catch' will be called in create.vue file
       throw e
     }
+  },
+  async getPost({ commit }, id){
+    try{
+      const result = await this.$axios.get('/api/post/'+id);
+      if(result.data && result.data.post){
+        return result.data.post;
+      }
+    }catch(e){
+      commit('error/setError', e, { root: true })
+      // Block 'catch' will be called in create.vue file
+      throw e
+    }
+  },
+  async addView({ commit }, post){
+    try{
+      await this.$axios.patch('/api/post/views/'+post._id, {
+        views:  post.views
+      });
+    }catch(e){
+      commit('error/setError', e, { root: true })
+      // Block 'catch' will be called in create.vue file
+      throw e
+    }
   }
 }
