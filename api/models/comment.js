@@ -7,4 +7,4 @@ const commentSchema = new Schema({
   postId: { type: Schema.Types.ObjectId, ref: 'posts' }
 })
 
-module.exports = model('comments',commentSchema)
+module.exports = model('Comment',commentSchema)
