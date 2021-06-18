@@ -102,7 +102,7 @@ module.exports.deletePost = async (request, response) => {
     const commentIds = [];
     if(postWithComments.comments && !!postWithComments.comments.length){
       //Get the all Comment ids
-      postWithComments.forEach(el => {
+      postWithComments.comments.forEach(el => {
         commentIds.push(el._id);
       });
     }
