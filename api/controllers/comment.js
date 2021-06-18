@@ -11,7 +11,7 @@ module.exports.createComment = async (request, response) => {
     // Add 'id' of the Comment to the Post array
     post.comments.push(comment._id)
     await post.save()
-    response.status(201).json(comment)
+    response.status(201).json({ comment });
   } catch (e) {
     response.status(500).json(e)
   }
