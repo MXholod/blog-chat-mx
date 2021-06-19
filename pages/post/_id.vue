@@ -18,29 +18,37 @@
                 </small>
             </div>
             <div class="post-details__img">
+              <div>
                 <img
                   :src="`/posts_img/${post.imageUrl}`"
                   alt="Post image detail"
                 />
+              </div>
             </div>
         </header>
         <main class="post-details__content">
           <div v-html="$md.render(post.text)"></div>
         </main>
         <footer class="post-details__comments">
-            <blog-comment-form
-              v-if="commentAllowed"
-              @commentAdded="commentAddedHandler"
-            />
+            <div v-if="user.login">
+              <blog-comment-form
+                :postId="post._id"
+                :login="user.login"
+                @commentAdded="commentAddedHandler"
+              />
+            </div>
+            <div v-else class="post-details__unathorized">
+              You must be registered to leave a comment!
+            </div>
             <div v-if="post.comments.length">
-                <blog-comment
-                    v-for="(comment, ind) in post.comments"
-                    :key="ind"
-                    :comment="comment"
-                ></blog-comment>
+              <blog-comment
+                v-for="comment in post.comments"
+                :key="comment._id"
+                :comment="comment"
+              />
             </div>
             <div v-else class="post-details__comments-absent">
-                Comments are absent
+              Comments are absent
             </div>
         </footer>
     </article>
@@ -49,6 +57,7 @@
 <script>
 import BlogComment from '@/components/site/Comment'
 import BlogCommentForm from '@/components/site/CommentForm'
+import { mapState } from 'vuex';
 export default {
   async asyncData({ store, params, redirect }){
     const post = await store.dispatch('post/getPost', params.id);
@@ -63,14 +72,11 @@ export default {
   validate ({ params }) {
     return Boolean(params.id)
   },
-  data () {
-    return {
-      commentAllowed: true
-    }
-  },
+  computed: mapState('auth', ['user']),
   methods: {
-    commentAddedHandler () {
-      this.commentAllowed = false
+    commentAddedHandler (comment) {
+      //Add new comment as the first in the list of comments
+      this.post.comments.unshift(comment);
     }
   }
 }
@@ -95,10 +101,14 @@ export default {
                 margin-bottom: 0.5rem;
             }
             .post-details__img{
+              div{
+                width: 300px;
+                margin: 0 auto;
                 img{
                     width: 100%;
                     min-height: auto;
                 }
+              }
             }
         }
         .post-details__content{
@@ -108,6 +118,13 @@ export default {
         }
         .post-details__comments-absent{
             text-align: center;
+        }
+        .post-details__unathorized{
+          margin-bottom: .8em;
+          text-align: center;
+          padding:3px 0px;
+          border: 3px solid #999696;
+          background-color: #d4d1d1;
         }
     }
 </style>
