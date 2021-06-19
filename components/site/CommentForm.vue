@@ -5,16 +5,15 @@
       :rules="rules"
       @submit.native.prevent="onSubmit"
     >
-        <h3>Add your comment</h3>
-        <el-form-item label="Name" prop="name">
-            <el-input v-model.trim="ruleForm.name"></el-input>
-        </el-form-item>
+        <span style="font-weight:bold">Hey, </span>
+        <el-tag>{{ login }} !</el-tag>
+        <span style="font-weight:bold">Add your comment</span>
         <el-form-item label="Comment text" prop="text">
             <el-input
                 type="textarea"
                 resize="none"
                 :rows="3"
-                v-model.trim="ruleForm.text">
+                v-model="ruleForm.text">
             </el-input>
         </el-form-item>
         <el-form-item>
@@ -32,18 +31,17 @@
 
 <script>
 export default {
+  props: {
+    postId: { type: String, required: true },
+    login: { type: String, required: true }
+  },
   data () {
     return {
       loading: false,
       ruleForm: {
-        name: '',
         text: ''
       },
       rules: {
-        name: [
-          { required: true, message: 'Please input a name', trigger: 'blur' },
-          { min: 3, max: 10, message: 'Length should be 3 to 10', trigger: 'blur' }
-        ],
         text: [
           { required: true, message: 'Please type a comment', trigger: 'blur' }
         ]
@@ -52,25 +50,28 @@ export default {
   },
   methods: {
     onSubmit () {
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate( async (valid) => {
         if (valid) {
           this.loading = true
           // Prepare form data
           const formData = {
-            postId: '',
-            name: this.ruleForm.name,
+            postId: this.postId,
+            name: this.login,
             text: this.ruleForm.text
           }
           try {
-            setTimeout(() => {
-              this.$message.success('Comment has been added')
+            const newComment = await this.$store.dispatch('comment/create', formData);
+            if(newComment){
+              this.$message.success('Comment has been added');
+              this.ruleForm.text = '';
               // Referring to the parent with event
-              this.$emit('commentAdded')
-            }, 2000)
+              this.$emit('commentAdded', newComment);
+            }
           } catch (e) {
-            this.loading = false
+
+          }finally{
+            this.loading = false;
           }
-          console.log('Form is valid ', formData)
         } else {
           // console.log('Form is invalid')
         }
