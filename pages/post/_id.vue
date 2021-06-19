@@ -19,10 +19,12 @@
             </div>
             <div class="post-details__img">
               <div>
-                <img
+                <el-image
+                  class="post-details__el-image"
+                  fit="scale-down"
                   :src="`/posts_img/${post.imageUrl}`"
-                  alt="Post image detail"
-                />
+                  :preview-src-list="post.postImage">
+                </el-image>
               </div>
             </div>
         </header>
@@ -63,7 +65,8 @@ export default {
     const post = await store.dispatch('post/getPost', params.id);
     if(!post) return redirect('/');
     await store.dispatch('post/addView', post);
-    return { post: { ...post, views: ++post.views } };
+    const postImage = [`/posts_img/${post.imageUrl}`];
+    return { post: { ...post, views: ++post.views, postImage } };
   },
   components: {
     BlogComment,
@@ -82,7 +85,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     .post-details{
         max-width: 600px;
         margin: 0 auto;
@@ -101,12 +104,17 @@ export default {
                 margin-bottom: 0.5rem;
             }
             .post-details__img{
-              div{
-                width: 300px;
-                margin: 0 auto;
-                img{
-                    width: 100%;
-                    min-height: auto;
+              text-align: center;
+              .post-details__el-image{
+                .el-image-viewer__mask{
+                  opacity: .9;
+                }
+                .el-image-viewer__btn.el-image-viewer__close{
+                  color:#fff;
+                  transition: color 2s;
+                  &:hover, &:active{
+                    color:blue;
+                  }
                 }
               }
             }
