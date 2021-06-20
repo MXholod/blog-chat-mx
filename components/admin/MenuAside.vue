@@ -36,7 +36,7 @@
         </template>
         <el-menu-item-group class="admin-chat__title"  title="Chat rooms">
           <el-menu-item index="/admin/chat/rooms">List of rooms</el-menu-item>
-          <el-menu-item index="/admin/chat/room">Room management</el-menu-item>
+          <el-menu-item index="/admin/chat/room">Creating a chat room</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group class="admin-chat__title" title="Chat users">
           <el-menu-item index="/admin/chat/users">Usres in the chat</el-menu-item>
