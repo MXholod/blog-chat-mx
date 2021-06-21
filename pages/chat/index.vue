@@ -2,7 +2,15 @@
   <v-main>
     <v-row justify="center" align="center">
         <v-col xs="12" md="8" lg="6">
-            <v-card max-width="50%" color="#AFD7F2" style="margin:0px auto">
+            <v-card v-if="tryAgainMessage" max-width="50%" color="#AFD7F2" style="margin:0px auto">
+              <v-card-title>{{ tryAgainMessage }}</v-card-title>
+              <v-card-text>
+                <v-btn depressed color="primary" small @click="getRoomsAgain">
+                  Click to try to load rooms
+                </v-btn>
+              </v-card-text>
+            </v-card>
+            <v-card v-else max-width="50%" color="#AFD7F2" style="margin:0px auto">
                 <v-card-title>The teammates chat</v-card-title>
                 <v-card-text>
                   <v-chip class="ma-2 sport-chip" color="primary" label>
@@ -11,27 +19,28 @@
                     </v-icon>
                     {{ currentName }}
                   </v-chip>
-                  <v-select
-                    v-if="rooms.length"
-                    :items="rooms.map(room => room.name)"
-                    label="Chat rooms"
-                    @change="selectRoom"
-                  ></v-select>
+                  <div v-if="rooms.length">
+                    <v-select
+                      :items="rooms.map(room => room.name)"
+                      label="Chat rooms"
+                      @change="selectRoom"
+                    ></v-select>
+                    <v-btn
+                      :disabled="!currentRoom"
+                      depressed color="primary" small @click="roomEnter">
+                      Enter chat
+                    </v-btn>
+                  </div>
                   <v-chip
                     v-else
-                    class="ma-2"
+                    class="ma-2 ml-8"
                     color="pink"
                     label
                     text-color="white"
                   >
-                    <v-icon left>
-                      mdi-compare-horizontal
-                    </v-icon>
-                    No rooms
+                    <v-icon left>mdi-close-circle</v-icon>
+                    'There are no rooms'
                   </v-chip>
-                  <v-btn depressed color="primary" small @click="roomEnter">
-                    Enter chat
-                  </v-btn>
                 </v-card-text>
             </v-card>
         </v-col>
@@ -49,12 +58,43 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex';
 export default {
+  async asyncData(context){
+    let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
+    //'$isAllowedByRole' is a function from Plugin
+    const { role, sessionEnd } = await context.app.$isAllowedByRole(jwt);
+    let access = false;
+    if(role === 'guest' || role === 'moderator' || role === 'admin'){
+      access = true;
+    }
+    if(!access || role === '' && !sessionEnd){
+      if(context.store.getters['auth/isUserAuthenticated'].role !== ''){
+        context.store.dispatch('auth/logout');
+      }
+      context.redirect('/');
+    }
+    //Get all rooms. The result can be 'undefined' if jwt access has expired
+    const result = await context.app.$axios.$get('/api/chat_room/rooms');
+    if(result){//Access token is active
+      return {
+        userLogoutRefresh: sessionEnd ? true : false,
+        rooms: result.rooms,
+        tryAgainMessage: null
+      };
+    }else{//Axios 'jwt' access failed
+      return {
+        userLogoutRefresh: sessionEnd ? true : false,
+        rooms: [],
+        tryAgainMessage: 'Get a list of rooms again'
+      };
+    }
+  },
   layout: 'chat/index',
   head: {
     title: 'Sports Chat'
   },
+  middleware:['user-auth'],
   sockets: {
     connect () {
       console.log('socket connected')
@@ -63,27 +103,28 @@ export default {
       console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
     }
   },
-  data: () => ({
-    currentName: 'John Leider',
-    currentRoom: '',
-    rooms: [
-      { name: 'funny', description: 'Funny is good' },
-      { name: 'happy', description: 'Happy is good' }
-    ],
-    snackbar: false,
-    message: ''
-  }),
+  data(){
+    return {
+      currentName: '',
+      currentRoom: '',
+      snackbar: false,
+      message: ''
+    }
+  },
+  computed:{
+    ...mapGetters('auth', ['isUserAuthenticated'])
+  },
   methods: {
     ...mapMutations('chat', ['addUser']),
     selectRoom (roomName) {
       // roomName - current selected room as a String
       if (roomName) {
-        const resultRoom = this.rooms.filter(room => room.name === roomName)
+        const resultRoom = this.rooms.filter(room => room.name === roomName);
         // Assign current room name
-        this.currentRoom = resultRoom[0].name
+        this.currentRoom = resultRoom[0].name;
         // Show details about the current room
-        this.message = resultRoom[0].description
-        this.snackbar = true
+        this.message = resultRoom[0].description;
+        this.snackbar = true;
       }
     },
     roomEnter () {
@@ -96,32 +137,70 @@ export default {
         this.$socket.emit('userJoined', user, (data) => {
           // Server response if request was bad
           if (typeof data === 'string') {
-            console.error(data)
+            console.error(data);
           } else {
             // Good response
             // Sets the user id according to the socket
-            user.id = data.userId
+            user.id = data.userId;
             // Use mutation from Vuex
-            this.addUser(user)
+            this.addUser(user);
             // Redirect User to the Chat
-            this.$router.push('/chat/base-chat')
+            this.$router.push('/chat/base-chat');
           }
         })
-    } /*,
+    },
+    async getRoomsAgain(){
+      try{
+        //Get all rooms. The result can be 'undefined' if jwt access has expired
+        const result = await this.$axios.$get('/api/chat_room/rooms');
+        if(result){
+          this.rooms = result.rooms;
+          this.tryAgainMessage = null;
+          return true;
+        }else{
+          this.rooms = [];
+          this.tryAgainMessage = null;
+          throw new Error("There aren't any rooms");
+        }
+      }catch(e){
+        this.$message({
+          showClose: true,
+          message: `${e.message}`,
+          type: 'error'
+        });
+        //console.log("Error ",e.message);
+      }
+    }
+     /*,
     message () {
       // console.log('Ok')
       this.$socket.emit('createMessage', { text: 'From client' })
     } */
   },
   mounted () {
-    const { message } = this.$route.query
-    if (message === 'noUser') {
-      this.message = 'User data is incomplete'
-    } else if (message === 'leftChat') {
-      this.message = 'You\'ve left the chat'
+    //Displaying the modal window to inform user about the end of the session
+    if(this.userLogoutRefresh){
+      this.$alert('Your session is up!', 'Session state', {
+        confirmButtonText: 'Sign in again',
+        showClose:false,
+        callback: action => {
+          this.$store.dispatch('auth/logout');
+          this.$router.push('/login?message=unauthenticated');
+        }
+      });
+    }else{
+      //Get User name from store
+      this.currentName = this.isUserAuthenticated.login;
+      //
+      const { message } = this.$route.query
+      if (message === 'noUser') {
+        this.message = 'User data is incomplete'
+      } else if (message === 'leftChat') {
+        this.message = 'You\'ve left the chat'
+      }
+      // If 'message' is nothing - then snackbar is false, but if string - true
+      this.snackbar = !!this.message;
     }
-    // If 'message' is nothing - then snackbar is false, but if string - true
-    this.snackbar = !!this.message
   }
 }
 </script>
