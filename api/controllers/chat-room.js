@@ -14,6 +14,19 @@ async function createRoom(req, res){
   }
 }
 
+async function getAllRooms(req, res){
+  try{
+    const rooms = await ChatRoom.find({});
+    if(rooms && !!rooms.length){
+      return res.status(200).json({ message: "Rooms list", rooms });
+    }
+    return res.status(400).json({ message: "Rooms are absent", rooms: [] });
+  }catch(e){
+    return res.status(400).json({ message: "Rooms are absent", room: [] });
+  }
+}
+
 module.exports = {
-  createRoom
+  createRoom,
+  getAllRooms
 };
