@@ -18,19 +18,20 @@
         </div>
       </el-col>
       <el-col :span="12">
-        <p>Hello ceneter</p>
-        <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
-          <el-radio-button label="top">top</el-radio-button>
-          <el-radio-button label="right">right</el-radio-button>
-          <el-radio-button label="bottom">bottom</el-radio-button>
-          <el-radio-button label="left">left</el-radio-button>
-        </el-radio-group>
-
-        <el-tabs :tab-position="tabPosition" style="height: 200px;">
-          <el-tab-pane label="User">User</el-tab-pane>
-          <el-tab-pane label="Config">Config</el-tab-pane>
-          <el-tab-pane label="Role">Role</el-tab-pane>
-          <el-tab-pane label="Task">Task</el-tab-pane>
+        <el-tabs style="height: 200px;">
+          <el-tab-pane label="User information">
+            <avatar :imageLink="avatar" />
+          </el-tab-pane>
+          <el-tab-pane label="Blog statistics">
+            Blog statistics
+          </el-tab-pane>
+          <el-tab-pane label="Chat statistics">
+            Chat statistics
+          </el-tab-pane>
+          <el-tab-pane label="Security">
+            <change-user-name />
+            <change-user-password />
+          </el-tab-pane>
         </el-tabs>
       </el-col>
       <el-col :span="6">
@@ -49,43 +50,62 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import ChangeUserName from './../components/site/user_cabinet/ChangeUserName';
+import ChangeUserPassword from './../components/site/user_cabinet/ChangeUserPassword';
+import Avatar from '../components/site/user_cabinet/avatar/Avatar.vue';
 export default {
-  async asyncData (ctx) {
-    try{
-      const role = ctx.store.getters['auth/isUserAuthenticated'].role;
-      return {
-        role
-      }
-    }catch(e){
-      //await ctx.store.dispatch('auth/logout');
-      //ctx.redirect('/login?message="You must be registered 2"');
-      return {
-        role: "Error"
-      }
+  async asyncData ({ store, app, redirect }) {
+    let jwt = store.getters['auth/isUserAuthenticated'].jwtToken;
+    //'$isAllowedByRole' is a function from Plugin
+    const { role, sessionEnd, avatar } = await app.$isAllowedByRole(jwt);
+    let access = false;
+    if(role === 'guest' || role === 'moderator' || role === 'admin'){
+      access = true;
     }
+    if(!access || role === '' && !sessionEnd){
+      if(store.getters['auth/isUserAuthenticated'].role !== ''){
+        store.dispatch('auth/logout');
+      }
+      redirect('/');
+    }
+    return {
+      userLogoutRefresh: sessionEnd ? true : false,
+      role,
+      avatar //'undefined' or 'image name'
+    };
   },
   middleware:['user-auth'],
   layout: 'user-cabinet',
+  components: {
+    ChangeUserName,
+    ChangeUserPassword,
+    Avatar
+  },
   data() {
     return {
-      tabPosition: 'top',
       result: ''
     };
   },
   computed: {
     ...mapGetters('auth',['isUserAuthenticated'])
   },
-  async mounted(){
-    //if(this.test === "Error"){
-      //await this.$store.dispatch('auth/logout');
-      //await this.$store.dispatch('error/setError', "You must be registered");
-      //this.$nuxt.$router.replace({ path: '/login?message=You must be registered' });
-    //}
-  },
   methods: {
     async testing(){
       let res = await this.$axios.$get('/api/cabinet/test');
       this.result = res;
+    }
+  },
+  mounted(){
+    //Displaying the modal window to inform user about the end of the session
+    if(this.userLogoutRefresh){
+      this.$alert('Your session is up!', 'Session state', {
+        confirmButtonText: 'Sign in again',
+        showClose:false,
+        callback: action => {
+          this.$store.dispatch('auth/logout');
+          this.$router.push('/login?message=unauthenticated');
+        }
+      });
     }
   }
 }
