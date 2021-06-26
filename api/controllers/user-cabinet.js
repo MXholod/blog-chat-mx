@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const { validationResult } = require('express-validator');
 const { User } = require('./../helpers/db');
 const createSalt = require("./../helpers/salt");
@@ -61,8 +63,52 @@ async function updateUserPassword(req,res,next){
     });
 }
 
+async function updateUserAvatar(req, res){
+  const id = req.user.id;
+  //If an image is sent, its file name is checked
+  let singleImage = '';
+  if(req.file){
+    singleImage = req.file.filename;
+  }else{
+    singleImage = '';
+  }
+  //Remove previous avatar image if it exists
+  if(req.body.prevAvatar !== '' && singleImage !== ''){
+    removeFile(req.body.prevAvatar);
+  }
+
+  if(!id){
+    return res.status(400).json({ message: 'Avatar can\'t be updated' });
+  }
+  try{
+    const result = await User.findByIdAndUpdate(id, { avatar: singleImage }, { new: true });
+    if(result){
+      return res.status(200).json({ message: 'Avatar has updated', avatar: result.avatar });
+    }
+  }catch(e){
+    return res.status(400).json({ message: 'Avatar hasn\'t updated' });
+  }
+}
+
+// Private function for deleting files
+const removeFile = (file)=>{
+  let filePath = path.resolve(__dirname, '../..','static','avatar',file);
+  //Remove uploaded file from 'temp' directory
+  if (!fs.existsSync(filePath)) {
+    //console.log('The file does not exist');
+    return;
+  }
+  //File will be removed
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+    }
+  });
+}
+
 module.exports = {
   //test,
   updateUserLogin,
-  updateUserPassword
+  updateUserPassword,
+  updateUserAvatar
 };
