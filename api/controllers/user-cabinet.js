@@ -90,6 +90,23 @@ async function updateUserAvatar(req, res){
   }
 }
 
+async function deleteUserAvatar(req, res){
+  const { id } = req.user;
+  const { imageName } = req.body;
+  if(!id || !imageName) return res.status(400).json({ message: "Can't delete avatar" });
+  try{
+    //Remove previous avatar image if it exists
+    removeFile(imageName);
+    //Set an empty string in DB
+    const result = await User.findByIdAndUpdate(id, { avatar: '' }, { new: true });
+    if(result){
+      return res.status(200).json({ message: "Avatar has been deleted", avatar: result.avatar });
+    }
+  }catch(e){
+    return res.status(400).json({ message: "Can't delete avatar" });
+  }
+}
+
 // Private function for deleting files
 const removeFile = (file)=>{
   let filePath = path.resolve(__dirname, '../..','static','avatar',file);
@@ -110,5 +127,6 @@ module.exports = {
   //test,
   updateUserLogin,
   updateUserPassword,
-  updateUserAvatar
+  updateUserAvatar,
+  deleteUserAvatar
 };
