@@ -48,7 +48,6 @@ export default {
           formData.append('prevAvatar',this.prevAvatar);
         try{
           const result = await this.$axios.$patch('/api/cabinet/user-avatar/update', formData);
-          console.log("Result ",result);
           if(result.avatar){
             //Draw new avatar
             this.imageLinkValue = result.avatar;

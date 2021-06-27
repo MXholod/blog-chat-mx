@@ -21,6 +21,7 @@
       :imageLink="imageLinkValue"
       :previewWarning="previewWarning"
       :uploadedImgName="singleImage[0] && singleImage[0].name"
+      :onDeleteAvatar="onDeleteAvatar"
     />
   </div>
 </template>
@@ -77,8 +78,15 @@ export default {
     clearUpload(){
       this.$refs.singleImage.clearFiles();
       this.previewWarning = false;
-    }
+    },
     //End of the single image
+    //React approach. This function calls in child
+    onDeleteAvatar(avatarState){
+      //'avatarState' should be an empty string
+      if(avatarState === ''){
+        this.imageLinkValue = avatarState;
+      }
+    }
   },
   created(){
     this.imageLinkValue = this.imageLink;
