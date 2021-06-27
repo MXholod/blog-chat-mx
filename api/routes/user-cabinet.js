@@ -5,7 +5,8 @@ const userLoginMiddleware = require('./../middleware/update-user-login');
 const {
   updateUserLogin,
   updateUserPassword,
-  updateUserAvatar
+  updateUserAvatar,
+  deleteUserAvatar
 } = require('./../controllers/user-cabinet');
 const userPasswordMiddleware = require('./../middleware/update-user-password');
 const upload = require('./../middleware/avatar-upload');
@@ -21,6 +22,9 @@ router.patch('/user-avatar/update',
   authCabinet,
   upload.single('singleImage'),
   uploadOptimized,
-  updateUserAvatar);
+  updateUserAvatar
+);
+// /api/cabinet/user-avatar/delete
+router.delete('/user-avatar/delete',authCabinet, deleteUserAvatar);
 
 module.exports = router;
