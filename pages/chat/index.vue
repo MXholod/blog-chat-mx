@@ -68,14 +68,17 @@ export default {
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
     }
-    if(!access || role === '' && !sessionEnd){
+    if((!access || role === '') && !sessionEnd){
       if(context.store.getters['auth/isUserAuthenticated'].role !== ''){
         context.store.dispatch('auth/logout');
       }
       context.redirect('/');
     }
-    //Get all rooms. The result can be 'undefined' if jwt access has expired
-    const result = await context.app.$axios.$get('/api/chat_room/rooms');
+    let result;
+    if(access && !sessionEnd){
+      //Get all rooms. The result can be 'undefined' if jwt access has expired
+      result = await context.app.$axios.$get('/api/chat_room/rooms');
+    }
     if(result){//Access token is active
       return {
         userLogoutRefresh: sessionEnd ? true : false,
@@ -94,7 +97,6 @@ export default {
   head: {
     title: 'Sports Chat'
   },
-  middleware:['user-auth'],
   sockets: {
     connect () {
       console.log('socket connected')
@@ -152,22 +154,29 @@ export default {
     async getRoomsAgain(){
       try{
         //Get all rooms. The result can be 'undefined' if jwt access has expired
-        const result = await this.$axios.$get('/api/chat_room/rooms');
-        if(result){
+        let result = await this.$axios.get('/api/chat_room/rooms');
+        let conditionTwo = result?.response?.data?.rooms.length === 0;
+        result = result?.data;
+        if(result && (result.rooms.length > 0)){
           this.rooms = result.rooms;
           this.tryAgainMessage = null;
-          return true;
-        }else{
+        }else if(conditionTwo){
           this.rooms = [];
           this.tryAgainMessage = null;
-          throw new Error("There aren't any rooms");
+          this.$message({
+            showClose: true,
+            message: "There aren't any rooms",
+            type: 'warning'
+          });
+        }else if(result === undefined){
+          this.tryAgainMessage = 'Get a list of rooms again';
+          this.$message({
+            showClose: true,
+            message: "Click to load the list of rooms",
+            type: 'warning'
+          });
         }
       }catch(e){
-        this.$message({
-          showClose: true,
-          message: `${e.message}`,
-          type: 'error'
-        });
         //console.log("Error ",e.message);
       }
     }
