@@ -107,23 +107,26 @@ export default {
   },
   data(){
     return {
-      currentName: '',
-      currentRoom: '',
+      currentName: '',//User name
       snackbar: false,
-      message: ''
+      currentRoomId:'',//Room id
+      currentRoom: '',//Room name
+      message: ''//Room description
     }
   },
   computed:{
     ...mapGetters('auth', ['isUserAuthenticated'])
   },
   methods: {
-    ...mapMutations('chat', ['addUser']),
+    ...mapMutations('chat', ['addUser', 'addCurrentRoom']),
     selectRoom (roomName) {
       // roomName - current selected room as a String
       if (roomName) {
         const resultRoom = this.rooms.filter(room => room.name === roomName);
         // Assign current room name
         this.currentRoom = resultRoom[0].name;
+        // Assign current room id
+        this.currentRoomId = resultRoom[0]._id;
         // Show details about the current room
         this.message = resultRoom[0].description;
         this.snackbar = true;
@@ -135,6 +138,12 @@ export default {
           name: this.currentName,
           room: this.currentRoom
         }
+        //
+        this.addCurrentRoom({
+          id: this.currentRoomId, //Room id
+          name: this.currentRoom, //Room name
+          description: this.message //Room description
+        });
         // Send data by socket to the server to get an unique ID of the user connection
         this.$socket.emit('userJoined', user, (data) => {
           // Server response if request was bad

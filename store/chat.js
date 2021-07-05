@@ -6,9 +6,10 @@ export const state = () => ({
       title: '',
       text: ''
     },
-    users: []
+    users: [],
+    currentRoom: null
   })
-  
+
   export const mutations = {
     addUser (state, user) {
       state.user = user
@@ -17,6 +18,10 @@ export const state = () => ({
       state.user = {}
       state.messages = []
       state.users = []
+      state.currentRoom = null
+    },
+    addCurrentRoom(state, room){
+      state.currentRoom = room;
     },
     SOCKET_systemMessage (state, systemMessage) {
       state.systemMessage = systemMessage
@@ -32,11 +37,10 @@ export const state = () => ({
       state.users = users
     }
   }
-  
+
   /* export const actions = {
     // It will be called automatically by installed package 'vue-socket.io'
     SOCKET_newMessage (ctx, data) {
       console.log('Message recieved ', data)
     }
   } */
-  
