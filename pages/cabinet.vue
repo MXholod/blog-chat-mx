@@ -62,7 +62,7 @@ export default {
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
     }
-    if(!access || role === '' && !sessionEnd){
+    if((!access || role === '') && !sessionEnd){
       if(store.getters['auth/isUserAuthenticated'].role !== ''){
         store.dispatch('auth/logout');
       }
@@ -74,7 +74,7 @@ export default {
       avatar //'undefined' or 'image name'
     };
   },
-  middleware:['user-auth'],
+  //middleware:['user-auth'],
   layout: 'user-cabinet',
   components: {
     ChangeUserName,
