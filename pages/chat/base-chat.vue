@@ -31,8 +31,25 @@ import Message from '@/components/site/chat/Message'
 import MessageForm from '@/components/site/chat/Message-Form'
 import MessageButton from '@/components/site/chat/Message-Button'
 export default {
+  async asyncData(context){
+    let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
+    //'$isAllowedByRole' is a function from Plugin
+    const { role, sessionEnd } = await context.app.$isAllowedByRole(jwt);
+    let access = false;
+    if(role === 'guest' || role === 'moderator' || role === 'admin'){
+      access = true;
+    }
+    if((!access || role === '') && !sessionEnd){
+      if(context.store.getters['auth/isUserAuthenticated'].role !== ''){
+        context.store.dispatch('auth/logout');
+      }
+      context.redirect('/');
+    }
+      return {
+        userLogoutRefresh: sessionEnd ? true : false,
+      };
+  },
   layout: 'chat/base-chat',
-  middleware: ['chat'],
   components: { Message, MessageForm, MessageButton, MessageSystem },
   computed: mapState('chat', ['user', 'messages', 'systemMessage']),
   head () {
@@ -50,6 +67,22 @@ export default {
         this.$refs.blockScroll.scrollTop = this.$refs.blockScroll.scrollHeight
       // })
       })
+    }
+  },
+  mounted () {
+    //Displaying the modal window to inform user about the end of the session
+    if(this.userLogoutRefresh){
+      this.$alert('Your session is up!', 'Session state', {
+        confirmButtonText: 'Sign in again',
+        showClose:false,
+        callback: action => {
+          this.$store.dispatch('auth/logout');
+          this.$router.push('/login?message=unauthenticated');
+        }
+      });
+    }else{
+      //Get User name from store
+      //this.currentName = this.isUserAuthenticated.login;
     }
   }
 }
