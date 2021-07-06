@@ -8,7 +8,7 @@
         :owner="message.id === user.id"
         :name="message.name"
         :text="message.text"
-        :avatar="message.avatar"
+        :avatar="avatar"
         :divider="false"
         :inset="false"
         />
@@ -34,7 +34,7 @@ export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
     //'$isAllowedByRole' is a function from Plugin
-    const { role, sessionEnd } = await context.app.$isAllowedByRole(jwt);
+    const { role, sessionEnd, avatar } = await context.app.$isAllowedByRole(jwt);
     let access = false;
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
@@ -47,6 +47,7 @@ export default {
     }
       return {
         userLogoutRefresh: sessionEnd ? true : false,
+        avatar
       };
   },
   layout: 'chat/base-chat',

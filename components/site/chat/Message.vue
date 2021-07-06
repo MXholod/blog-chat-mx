@@ -34,8 +34,18 @@
         @click.prevent=""
         height="40px"
       >
-        <v-list-item-avatar v-if="avatar">
-          <v-img :src="avatar"></v-img>
+        <v-list-item-avatar>
+          <v-img v-if="avatar"
+            :src="require(`@/static/avatar/${avatar}`)"
+            contain
+          ></v-img>
+          <v-avatar v-else
+            size="36"
+            color="indigo">
+            <v-icon dark>
+              mdi-account-circle
+            </v-icon>
+          </v-avatar>
         </v-list-item-avatar>
         <v-list-item-content class="message-content">
           <v-list-item-title class="message-content__name">
