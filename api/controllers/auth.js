@@ -127,7 +127,7 @@ async function getRole(req, res){
   if(currentTime < expired){
     try{
       const { role, avatar } = await User.findById(jwtDecoded.id).exec();
-      return res.status(200).json({ message: "Role by access ", role, avatar });
+      return res.status(200).json({ message: "Role by access ", role, avatar, id: jwtDecoded.id });
     }catch(e){
       return res.status(400).json({ message: e.message, role: '' });
     }
@@ -140,9 +140,9 @@ async function getRole(req, res){
       let avatar = refreshToken.user.avatar ? refreshToken.user.avatar : '';
       if (!refreshToken || refreshToken.isExpired){//!refreshToken.isActive
         //Refresh Token is expired
-        return res.status(200).json({ message: "Role is absent", role: '', sessionEnd: true, avatar });
+        return res.status(200).json({ message: "Role is absent", role: '', sessionEnd: true, avatar, id: jwtDecoded.id });
       }
-      return res.status(200).json({ message: "Role by refresh ", role: refreshToken.user.role, avatar });
+      return res.status(200).json({ message: "Role by refresh ", role: refreshToken.user.role, avatar, id: jwtDecoded.id });
     }catch(e){
       return res.status(400).json({ message: "Role error", role: '' });
     }
