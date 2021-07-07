@@ -5,7 +5,7 @@
       <Message
         v-for="(message,ind) of messages"
         :key="ind"
-        :owner="message.id === user.id"
+        :owner="message.userSocketId === user.userSocketId"
         :name="message.name"
         :text="message.text"
         :avatar="avatar"
@@ -15,7 +15,7 @@
     </div>
     <div class="chat-sport-content__control">
       <div class="chat-sport-content__msg">
-        <message-form></message-form>
+        <message-form :userId="id" :roomId="currentRoom"></message-form>
       </div>
       <div class="chat-sport-content__btn">
         <message-button></message-button>
@@ -34,7 +34,7 @@ export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
     //'$isAllowedByRole' is a function from Plugin
-    const { role, sessionEnd, avatar } = await context.app.$isAllowedByRole(jwt);
+    const { role, sessionEnd, avatar, id } = await context.app.$isAllowedByRole(jwt);
     let access = false;
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
@@ -47,12 +47,13 @@ export default {
     }
       return {
         userLogoutRefresh: sessionEnd ? true : false,
-        avatar
+        avatar,
+        id
       };
   },
   layout: 'chat/base-chat',
   components: { Message, MessageForm, MessageButton, MessageSystem },
-  computed: mapState('chat', ['user', 'messages', 'systemMessage']),
+  computed: mapState('chat', ['user', 'messages', 'systemMessage', 'currentRoom']),
   head () {
     return {
       title: `The room name is ${this.user.room}`
