@@ -9,7 +9,7 @@ class Users {
   }
 
   get (id) {
-    return this.users.find( (user) => user.id === id )
+    return this.users.find( (user) => user.socketId === id )
   }
 
   remove (id) {
@@ -17,7 +17,7 @@ class Users {
     // If 'user' exists remove it
     if (user) {
       // Remove user if its 'id' isn't equal to 'id'
-      this.users = this.users.filter( (user) => user.id !== id )
+      this.users = this.users.filter( (user) => user.socketId !== id )
     }
     // Return deleted 'user'
     return user

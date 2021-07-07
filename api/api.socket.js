@@ -6,6 +6,7 @@ const httpServer = require('http').createServer(app)
 const io = require('socket.io')(httpServer)
 //
 const users = require('./Users')()
+const { ChatMessage } = require('./helpers/db');
 
 io.on('connection', socket => {
   /* When the user first came (create new User) */
@@ -21,16 +22,16 @@ io.on('connection', socket => {
       // Add a user to the class Users but remove before
       users.remove(socket.id)
       users.add({
-        id: socket.id,
+        socketId: socket.id,
         name: dataUser.name,
         room: dataUser.room
       })
       // If validation is good
       callback({
         // Socket ID is to define the User on the front-end
-        userId: socket.id
+        userSocketId: socket.id
       })
-      // Update list of all users in the room 
+      // Update list of all users in the room
       io.to(dataUser.room).emit('updateUsers', users.getByRoom(dataUser.room))
       // System message
       socket.emit('systemMessage',{
@@ -50,16 +51,29 @@ io.on('connection', socket => {
         return callback('A message can\'t be empty')
       }
       //
-      const user = users.get(data.id)
+      //console.log("Data ",data);
+      const user = users.get(data.userSocketId)
       if (user) {
         // to( 'room number' ) - which room a message is being sent to.
         // Event for all users in a specific room
         io.to(user.room).emit('newMessage', {
-          id: data.id,
+          userSocketId: data.userSocketId,
           name: user.name,
           text: data.text
-        }) 
-        // Call the callback() to clean the form text field 
+        })
+        //Save current message into the DB
+        ChatMessage.create({
+          text: data.text,
+          user: data.userId,
+          room: data.roomId
+        }, function (err,success) {
+          if(err){
+              //console.log("Error ",err);
+            }else{
+              //console.log("Success ",success);
+            }
+        });
+        // Call the callback() to clean the form text field
         callback()
       }
     })
@@ -67,7 +81,7 @@ io.on('connection', socket => {
     socket.on('userLeft', (userId, callback) => {
       const user = users.remove(userId)
       if (user) {
-        // Update list of all users in the room 
+        // Update list of all users in the room
         io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
         io.to(user.room).emit('systemMessage',{
           title: '-- User left --',
@@ -80,7 +94,7 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
       const user = users.remove(socket.id)
       if (user) {
-        // Update list of all users in the room 
+        // Update list of all users in the room
         io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
         io.to(user.room).emit('systemMessage',{
           title: '-- User left --',
