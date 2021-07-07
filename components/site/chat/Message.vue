@@ -23,10 +23,6 @@
           <v-list-item-subtitle class="message-content__text" v-html="text"></v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-divider
-        v-if="divider"
-        :inset="inset"
-      ></v-divider>
     </v-list>
 
     <v-list v-else class="user" :class="{ owner }">
