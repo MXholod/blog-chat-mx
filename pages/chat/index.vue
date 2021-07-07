@@ -152,7 +152,7 @@ export default {
           } else {
             // Good response
             // Sets the user id according to the socket
-            user.id = data.userId;
+            user.userSocketId = data.userSocketId
             // Use mutation from Vuex
             this.addUser(user);
             // Redirect User to the Chat
