@@ -1,13 +1,14 @@
 /* eslint-disable */
 export const state = () => ({
-    user: {},
-    messages: [],
+    user: {}, // name: userName, room: currentRoom, userSocketId: socket.id
+    messages: [], // name: userName, text: messageText, userSocketId: socket.id
     systemMessage: {
       title: '',
       text: ''
     },
-    users: [],
-    currentRoom: null
+    //users - [{socketId: socket.id, name: userName, room: currentRoom}, {}, ...]
+    users: [], // Array of all object users in the current room.
+    currentRoom: null // Name of the current room
   })
 
   export const mutations = {
