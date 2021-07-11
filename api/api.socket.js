@@ -19,17 +19,18 @@ io.on('connection', socket => {
       }
       // Add User to a Room programmatically (id Room)
       socket.join(dataUser.room)
-      // Add a user to the class Users but remove before
-      users.remove(socket.id)
+      //Remove user id before adding to avoid duplications
+      users.remove(dataUser.userId)
+      // Add a user to the class Users
       users.add({
-        socketId: socket.id,
+        userId: dataUser.userId,
         name: dataUser.name,
         room: dataUser.room
       })
       // If validation is good
       callback({
         // Socket ID is to define the User on the front-end
-        userSocketId: socket.id
+        userId: dataUser.userId
       })
       // Update list of all users in the room
       io.to(dataUser.room).emit('updateUsers', users.getByRoom(dataUser.room))
@@ -51,27 +52,26 @@ io.on('connection', socket => {
         return callback('A message can\'t be empty')
       }
       //
-      //console.log("Data ",data);
-      const user = users.get(data.userSocketId)
-      if (user) {
-        // to( 'room number' ) - which room a message is being sent to.
-        // Event for all users in a specific room
-        io.to(user.room).emit('newMessage', {
-          userSocketId: data.userSocketId,
-          name: user.name,
-          text: data.text
-        })
+      const currentUser = users.get(data.userId)
+      if (currentUser) {
         //Save current message into the DB
         ChatMessage.create({
           text: data.text,
           user: data.userId,
           room: data.roomId,
-          userName: user.name
+          userName: currentUser.name,
+          avatar: data.avatar,
+          role: data.role
         }, function (err,success) {
           if(err){
               //console.log("Error ",err);
             }else{
-              //console.log("Success ",success);
+              const { _id, userName: name, user, room, date, text, inset, divider, avatar, role } = success;
+                //name = data.role === 'admin' ? `${name} (admin) ` : name;
+              const newMessage = { _id, name, user, room, date, text, inset, divider, avatar, role };
+              // to( 'room number' ) - which room a message is being sent to.
+              // Event for all users in a specific room
+              io.to(currentUser.room).emit('newMessage', newMessage);
             }
         });
         // Call the callback() to clean the form text field
@@ -93,7 +93,8 @@ io.on('connection', socket => {
     })
     // User closed the chat window
     socket.on('disconnect', () => {
-      const user = users.remove(socket.id)
+      //const user = users.remove(socket.id)
+      const user = users.remove()
       if (user) {
         // Update list of all users in the room
         io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
