@@ -5,20 +5,33 @@
     class="mx-auto"
     :class="alignMessage"
   >
-    <v-list v-if="name === 'admin'" class="admin">
+    <v-list v-if="role === 'admin'" class="admin">
       <v-list-item
         @click.prevent=""
         height="40px"
       >
         <v-list-item-avatar v-if="avatar">
-          <v-img :src="avatar"></v-img>
+          <v-img v-if="avatar"
+            :src="require(`@/static/avatar/${avatar}`)"
+            contain
+          ></v-img>
+          <v-avatar v-else
+            size="36"
+            color="indigo">
+            <v-icon dark>
+              mdi-account-circle
+            </v-icon>
+          </v-avatar>
         </v-list-item-avatar>
         <v-list-item-content class="message-content">
           <v-list-item-title class="message-content__name">
             <span>Name: </span>{{name}}
+            <span class="message-content__is-admin"> - Admin - </span>
           </v-list-item-title>
           <v-list-item-subtitle class="message-content__time">
-            <time>16:30</time>
+            <time>
+              {{ makeTime() }}
+            </time>
           </v-list-item-subtitle>
           <v-list-item-subtitle class="message-content__text" v-html="text"></v-list-item-subtitle>
         </v-list-item-content>
@@ -48,7 +61,9 @@
             <span>Name: </span>{{name}}
           </v-list-item-title>
           <v-list-item-subtitle class="message-content__time">
-            <time>16:30</time>
+            <time>
+              {{ makeTime() }}
+            </time>
           </v-list-item-subtitle>
           <v-list-item-subtitle class="message-content__text" v-html="text"></v-list-item-subtitle>
         </v-list-item-content>
@@ -66,6 +81,8 @@ export default {
   props: {
     name: String,
     text: String,
+    date: String,
+    role: String,
     avatar: String,
     divider: { type: Boolean, default: false },
     inset: { type: Boolean, default: false },
@@ -76,7 +93,7 @@ export default {
   },
   computed: {
     alignMessage () {
-      if (this.name === 'admin') {
+      if (this.role === 'admin') {
         return 'admin'
       } else if (this.owner) {
         return 'owner-right-margin'
@@ -84,13 +101,23 @@ export default {
         return 'visitor-left-margin'
       }
     }
+  },
+  methods: {
+    makeTime(){
+      let date = new Date(this.date);
+      let hours = date.getHours();
+      let minutes = date.getMinutes();
+      hours = hours <= 9 ? `0${hours}` : hours;
+      minutes = minutes <= 9 ? `0${minutes}` : minutes;
+      return hours+':'+minutes;
+    }
   }
 }
 </script>
 
 <style lang="scss">
 .admin{
-  background-color: pink !important;
+  background-color:#b6b5ee !important;
   margin-top: 1% !important;
 }
 .v-application .owner-right-margin{
@@ -119,6 +146,9 @@ export default {
     span{
       color: #000;
       font-weight: bold;
+    }
+    .message-content__is-admin{
+      margin-left: 35%;
     }
   }
   .message-content__time{
