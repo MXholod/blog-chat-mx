@@ -3,19 +3,26 @@
     <message-system :systemMessage="systemMessage"></message-system>
     <div class="chat-sport-content__messages" ref="blockScroll">
       <Message
-        v-for="(message,ind) of messages"
-        :key="ind"
-        :owner="message.userSocketId === user.userSocketId"
+        v-for="message of messagesFromDB"
+        :key="message._id"
+        :owner="message.user === user.userId"
         :name="message.name"
         :text="message.text"
-        :avatar="avatar"
-        :divider="false"
-        :inset="false"
+        :date="message.date"
+        :avatar="message.avatar"
+        :role="message.role"
+        :divider="message.divider"
+        :inset="message.inset"
         />
     </div>
     <div class="chat-sport-content__control">
       <div class="chat-sport-content__msg">
-        <message-form :userId="id" :roomId="currentRoom"></message-form>
+        <message-form
+          :userId="id"
+          :roomId="currentRoom"
+          :avatar="avatar"
+          :role="role"
+        ></message-form>
       </div>
       <div class="chat-sport-content__btn">
         <message-button></message-button>
@@ -45,22 +52,55 @@ export default {
       }
       context.redirect('/');
     }
+    let result;
+    if(access && !sessionEnd){
+      const id = context.store.state.chat.currentRoom.id;
+      //Get all messages for the current room.
+      result = await context.app.$axios.$get('/api/chat_message/room/message/'+id);
+    }
+    if(result){//Access token is active
+      result = result.messages.map((msg)=> {
+        const tempProp = msg.userName;
+        delete msg.userName;
+        msg['name'] = tempProp;
+        return msg;
+      });
       return {
         userLogoutRefresh: sessionEnd ? true : false,
         avatar,
-        id
+        id,
+        messagesFromDB: result,
+        role
       };
+    }else{//Axios 'jwt' access failed
+      return {
+        userLogoutRefresh: sessionEnd ? true : false,
+        avatar: '',
+        id: '',
+        messagesFromDB: [],
+        role: ''
+      };
+    }
   },
   layout: 'chat/base-chat',
   components: { Message, MessageForm, MessageButton, MessageSystem },
-  computed: mapState('chat', ['user', 'messages', 'systemMessage', 'currentRoom']),
+  computed: {
+    ...mapState('chat', ['user', 'systemMessage', 'currentRoom']),
+    messages(){
+      //console.log("Messages ",this.$store.state.chat.messages);
+      return this.$store.state.chat.messages;
+    }
+  },
   head () {
     return {
       title: `The room name is ${this.user.room}`
     }
   },
   watch: {
-    messages () {
+    messages (val) {
+      //Always get the last element from the state of messages
+      let lastEl = val[(val.length - 1)];
+      this.messagesFromDB.push(lastEl);
       // setTimeout is needed to make a little pause before message will be inserted
       // setTimeout(() => {
       this.$nextTick(() => {

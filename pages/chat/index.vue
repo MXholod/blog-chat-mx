@@ -63,7 +63,7 @@ export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
     //'$isAllowedByRole' is a function from Plugin
-    const { role, sessionEnd } = await context.app.$isAllowedByRole(jwt);
+    const { role, sessionEnd, id } = await context.app.$isAllowedByRole(jwt);
     let access = false;
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
@@ -83,13 +83,15 @@ export default {
       return {
         userLogoutRefresh: sessionEnd ? true : false,
         rooms: result.rooms,
-        tryAgainMessage: null
+        tryAgainMessage: null,
+        id
       };
     }else{//Axios 'jwt' access failed
       return {
         userLogoutRefresh: sessionEnd ? true : false,
         rooms: [],
-        tryAgainMessage: 'Get a list of rooms again'
+        tryAgainMessage: 'Get a list of rooms again',
+        id
       };
     }
   },
@@ -136,7 +138,8 @@ export default {
       /* eslint-disable */
         const user = {
           name: this.currentName,
-          room: this.currentRoom
+          room: this.currentRoom,
+          userId: this.id
         }
         //
         this.addCurrentRoom({
@@ -152,7 +155,8 @@ export default {
           } else {
             // Good response
             // Sets the user id according to the socket
-            user.userSocketId = data.userSocketId
+            //user.userSocketId = data.userSocketId
+            user.userId = this.id;
             // Use mutation from Vuex
             this.addUser(user);
             // Redirect User to the Chat
