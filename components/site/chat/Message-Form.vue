@@ -13,7 +13,9 @@
 export default {
   props:{
     userId: { type: String, default: '' },
-    roomId: { type: Object }
+    roomId: { type: Object },
+    avatar: { type: String, default: '' },
+    role: { type: String, default: '' }
   },
   data () {
     return {
@@ -22,12 +24,12 @@ export default {
   },
   methods: {
     addMessage () {
-      // console.log('Result is: ', this.formText)
       this.$socket.emit('createMessage', {
-        userSocketId: this.$store.state.chat.user.userSocketId,
         userId: this.userId,
         roomId: this.roomId.id,
-        text: this.formText
+        text: this.formText,
+        avatar: this.avatar,
+        role: this.role
       }, (data) => {
         if (typeof data === 'string') {
           console.error(data)
