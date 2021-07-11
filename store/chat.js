@@ -29,8 +29,6 @@ export const state = () => ({
     },
     // It will be called automatically by installed package 'vue-socket.io'
     SOCKET_newMessage (state, message) {
-      message.divider = true
-      message.inset = true
       state.messages.push(message)
     },
     SOCKET_updateUsers (state, users) {
