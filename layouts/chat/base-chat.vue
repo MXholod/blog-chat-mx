@@ -14,9 +14,9 @@
                             List of people in the room
                         </v-alert>
                         <v-list>
+                          <div v-for="u in users" :key="u.userId">
                             <v-list-item
-                                v-for="u in users"
-                                :key="u.userId"
+                                v-if="u.room === user.room"
                                 @click.prevent=""
                                 :style="u.userId === user.userId ? {backgroundColor:'#d9efff'} : {backgroundColor:'#fff'}"
                             >
@@ -32,6 +32,7 @@
                                   <v-icon :color="u.userId === user.userId ? 'blue' : 'grey'">mdi-comment-processing-outline</v-icon>
                                 </v-list-item-icon>
                             </v-list-item>
+                          </div>
                         </v-list>
                     </v-navigation-drawer>
                 </v-col>
