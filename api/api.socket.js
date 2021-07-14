@@ -43,7 +43,8 @@ io.on('connection', socket => {
       users.add({
         userId: dataUser.userId,
         name: dataUser.name,
-        room: dataUser.room
+        room: dataUser.room,
+        socketId: socket.id
       })
       // If validation is good
       callback({
@@ -112,12 +113,11 @@ io.on('connection', socket => {
     })
     // User closed the chat window
     socket.on('disconnect', () => {
-      //const user = users.remove(socket.id)
-      console.log("Socket.id ",socket.id);
-      const user = users.remove()
+      //Remove current user from the chat when he close browser tab or window
+      const user = users.removeBySocketId(socket.id);
       if (user) {
         // Update list of all users in the room
-        io.to(user.room).emit('updateUsers', users.getByRoom(user.room))
+        io.to(user.room).emit('updateUsers', users.users) //users.getByRoom(dataUser.room))
         io.to(user.room).emit('systemMessage',{
           title: '-- User left --',
           text: `User ${user.name} left the chat`

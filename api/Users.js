@@ -29,6 +29,12 @@ class Users {
   getByRoom (room) {
     return this.users.filter( (user) => user.room === room )
   }
+  //Remove user by socket ID when he close the tab or window
+  removeBySocketId(socketId){
+    const user = this.users.find(user => user.socketId === socketId);
+    this.users = this.users.filter(user => user.socketId !== socketId);
+    return user;
+  }
 }
 
 module.exports = function () {
