@@ -49,6 +49,21 @@ export default {
             message: `${result.data.message}`,
             type: 'success'
           });
+          //Create 'Socket' event 'userChatBan' to unconnect the user
+          if(this.banState && (this.apiPart === 'chat')){
+            //Prepare user's data
+              const userData = { id: result.data.result.id, banState: this.banState };
+              // Send data by socket to the server to get an unique ID of the user connection
+            this.$socket.emit('userChatBan', userData, (data) => {
+              // Server response if request was bad
+              if (typeof data === 'string') {
+                //console.error(data);
+              } else {
+                // Good response
+                //console.log("Good response ",data);
+              }
+            })
+          }
           return;
         }
         //Return state of the radio button back if API fails

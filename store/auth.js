@@ -3,7 +3,8 @@ export const state = () => ({
     login: '',
     role: '',
     jwtToken: '',
-    blogBan: false
+    blogBan: false,
+    chatBan: false
   }
 })
 
@@ -15,7 +16,9 @@ export const mutations = {
     state.user = {
       login: '',
       role: '',
-      jwtToken: ''
+      jwtToken: '',
+      blogBan: false,
+      chatBan: false
     }
   },
   setActiveToken(state, activeToken){
@@ -26,6 +29,9 @@ export const mutations = {
   },
   updateUserJwtToken(state,jwtToken){
     state.user.jwtToken = jwtToken;
+  },
+  updateChatBan(state, stateBan){
+    state.user.chatBan = stateBan;
   }
 }
 

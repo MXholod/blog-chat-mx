@@ -124,6 +124,33 @@ io.on('connection', socket => {
         })
       }
     })
+    //Chat ban by Admin or Moderator
+    socket.on('userChatBan', (dataUser, callback) => {
+      if(!dataUser.id){
+        // Sends to front-end
+        return callback('Data to change chatBan is incorrect!')
+      }
+      // If data is correct
+      callback({
+        // Socket ID is to define the User on the front-end
+        id: dataUser.id
+      })
+      //If user in the chat then ban him
+      const userObj = users.get(dataUser.id);
+      if(userObj){
+        //
+        const user = users.remove(dataUser.id);
+        // Update list of all users in the room
+        io.to(user.room).emit('updateUsers',users.users) //users.getByRoom(dataUser.room))
+        io.to(user.room).emit('systemMessage',{
+          title: '-- User left --',
+          text: `User ${user.name} has been banned in the chat`
+        });
+        //Ban state in the specified room
+        io.to(userObj.room).emit('userChatBanState', dataUser);
+      }
+    });
+
 })
 
 module.exports = {

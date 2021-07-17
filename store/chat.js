@@ -33,6 +33,20 @@ export const state = () => ({
     },
     SOCKET_updateUsers (state, users) {
       state.users = users
+    },
+    resetUser(state){
+      state.user = {};
+    }
+  }
+
+  export const actions = {
+    SOCKET_userChatBanState({ commit, state }, data){
+      //If the user id in state is equal to the incoming id
+      if(data.id === state.user.userId){
+        commit('resetUser');
+        commit('auth/updateChatBan',data.banState ,{root: true});
+        this.$router.push('/');
+      }
     }
   }
 
