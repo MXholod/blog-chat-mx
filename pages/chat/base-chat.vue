@@ -41,10 +41,14 @@ export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
     //'$isAllowedByRole' is a function from Plugin
-    const { role, sessionEnd, avatar, id } = await context.app.$isAllowedByRole(jwt);
+    const { role, sessionEnd, avatar, id, chatBan } = await context.app.$isAllowedByRole(jwt);
     let access = false;
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
+    }
+    //Chat access denied
+    if(access && chatBan){
+      context.redirect('/cabinet?message=chatDenied');
     }
     if((!access || role === '') && !sessionEnd){
       if(context.store.getters['auth/isUserAuthenticated'].role !== ''){

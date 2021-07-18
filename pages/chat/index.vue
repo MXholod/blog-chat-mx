@@ -63,7 +63,7 @@ export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
     //'$isAllowedByRole' is a function from Plugin
-    const { role, sessionEnd, id } = await context.app.$isAllowedByRole(jwt);
+    const { role, sessionEnd, id, chatBan } = await context.app.$isAllowedByRole(jwt);
     let access = false;
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
@@ -84,14 +84,16 @@ export default {
         userLogoutRefresh: sessionEnd ? true : false,
         rooms: result.rooms,
         tryAgainMessage: null,
-        id
+        id,
+        chatBan
       };
     }else{//Axios 'jwt' access failed
       return {
         userLogoutRefresh: sessionEnd ? true : false,
         rooms: [],
         tryAgainMessage: 'Get a list of rooms again',
-        id
+        id,
+        chatBan
       };
     }
   },
@@ -121,6 +123,7 @@ export default {
   },
   methods: {
     ...mapMutations('chat', ['addUser', 'addCurrentRoom']),
+    ...mapMutations('auth', ['updateChatBan']),
     selectRoom (roomName) {
       // roomName - current selected room as a String
       if (roomName) {
@@ -211,6 +214,8 @@ export default {
         }
       });
     }else{
+      //Use Mutation
+      this.updateChatBan(this.chatBan);
       //Get User name from store
       this.currentName = this.isUserAuthenticated.login;
       //

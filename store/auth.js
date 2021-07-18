@@ -41,14 +41,14 @@ export const actions = {
     try {
       const result = await this.$axios.$post('/api/auth/user/login', data);
       if(result && result.details){
-        const { jwtToken, login, role, blogBan } = result.details;
+        const { jwtToken, login, role, blogBan, chatBan } = result.details;
         //
         if(blogBan){
           throw new Error('Enter is forbidden');
         }
         //Only client side rendering
         //this.$axios.setToken(jwtToken, 'Bearer');
-        commit('authUser', { jwtToken, login, role, blogBan });
+        commit('authUser', { jwtToken, login, role, blogBan, chatBan });
       }else{//If not 'result.details'
         throw new Error(result.msg);
       }

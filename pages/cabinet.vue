@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import ChangeUserName from './../components/site/user_cabinet/ChangeUserName';
 import ChangeUserPassword from './../components/site/user_cabinet/ChangeUserPassword';
 import Avatar from '../components/site/user_cabinet/avatar/Avatar.vue';
@@ -57,7 +57,7 @@ export default {
   async asyncData ({ store, app, redirect }) {
     let jwt = store.getters['auth/isUserAuthenticated'].jwtToken;
     //'$isAllowedByRole' is a function from Plugin
-    const { role, sessionEnd, avatar } = await app.$isAllowedByRole(jwt);
+    const { role, sessionEnd, avatar, chatBan } = await app.$isAllowedByRole(jwt);
     let access = false;
     if(role === 'guest' || role === 'moderator' || role === 'admin'){
       access = true;
@@ -71,7 +71,8 @@ export default {
     return {
       userLogoutRefresh: sessionEnd ? true : false,
       role,
-      avatar //'undefined' or 'image name'
+      avatar, //'undefined' or 'image name'
+      chatBan
     };
   },
   //middleware:['user-auth'],
@@ -90,6 +91,7 @@ export default {
     ...mapGetters('auth',['isUserAuthenticated'])
   },
   methods: {
+    ...mapMutations('auth', ['updateChatBan']),
     async testing(){
       let res = await this.$axios.$get('/api/cabinet/test');
       this.result = res;
@@ -106,6 +108,13 @@ export default {
           this.$router.push('/login?message=unauthenticated');
         }
       });
+    }
+    //Use Mutation
+    this.updateChatBan(this.chatBan);
+    //If the user was logout from the chat
+    const { message } = this.$route.query;
+    if(message === 'chatDenied'){
+      this.$message.warning('Chat access denied');
     }
   }
 }
