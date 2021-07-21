@@ -6,7 +6,16 @@ const httpServer = require('http').createServer(app)
 const io = require('socket.io')(httpServer)
 //
 const users = require('./Users')()
-const { ChatMessage } = require('./helpers/db');
+const { User, ChatMessage } = require('./helpers/db');
+
+const userPresenceInChat = async (id, isInChat)=>{
+  //If user is in chat - true, if he left chat - false
+  try{
+    await User.findByIdAndUpdate(id, { inChat: isInChat });
+  }catch(e){
+    console.log(e);
+  }
+}
 
 io.on('connection', socket => {
   /* When the user first came (create new User) */
@@ -64,6 +73,8 @@ io.on('connection', socket => {
         title: '-- New guest has joined --',
         text: `User ${dataUser.name} has joined to the chat`
       })
+      //Update 'inChat' user property in DB
+      userPresenceInChat(dataUser.userId, true);
     })
     // Create a new chat event and send a message to all the users in the room
     // and even for the current user.
@@ -110,6 +121,8 @@ io.on('connection', socket => {
         })
       }
       callback()
+      //Update 'inChat' user property in DB
+      userPresenceInChat(userId, false);
     })
     // User closed the chat window
     socket.on('disconnect', () => {
@@ -122,6 +135,8 @@ io.on('connection', socket => {
           title: '-- User left --',
           text: `User ${user.name} left the chat`
         })
+        //Update 'inChat' user property in DB
+        userPresenceInChat(user.userId, false);
       }
     })
     //Chat ban by Admin or Moderator
@@ -149,6 +164,8 @@ io.on('connection', socket => {
         //Ban state in the specified room
         io.to(userObj.room).emit('userChatBanState', dataUser);
       }
+      //Update 'inChat' user property in DB
+      userPresenceInChat(dataUser.id, false);
     });
 
 })
