@@ -15,7 +15,10 @@
             </el-submenu>
             <el-menu-item index="/about" class="el-menu-sport__item">About me</el-menu-item>
             <el-menu-item index="/contacts" class="el-menu-sport__item">Contacts</el-menu-item>
-            <el-menu-item index="5" class="el-menu-sport__item el-menu-sport__item_hover"></el-menu-item>
+            <el-menu-item index="5"
+              :style="{ backgroundImage: siteLogo ? `url(/logo/${siteLogo})`: '' }"
+              class="el-menu-sport__item el-menu-sport__item_hover"
+            ></el-menu-item>
         </el-menu>
         <div class="el-menu-sport__user-space">
           <Authentication v-if="!isAuth" />
@@ -40,6 +43,7 @@ import { mapState } from 'vuex';
         activeIndex1: '2',
         isAuth: false,
         createdPagesStructure:null,
+        siteLogo: ''
       };
     },
     computed: {
@@ -69,6 +73,16 @@ import { mapState } from 'vuex';
         }catch(e){
           throw e;
         }
+      },
+      async getSiteLogo(){
+        try{
+          const result = await this.$axios.$get('/api/settings/logo');
+          if(result){
+            return result.logo;
+          }
+        }catch(e){
+          throw e;
+        }
       }
     },
     created(){
@@ -91,7 +105,14 @@ import { mapState } from 'vuex';
         //The 'createNestedMenuStructure' function is taken from 'plugin'
         this.createdPagesStructure = this.createNestedMenuStructure(data);
       }).catch(e =>{
-        console.log(e);
+        //console.log(e);
+      });
+      //Get site logo
+      this.getSiteLogo().then(data =>{
+        //Set the site logo
+        this.siteLogo =  data;
+      }).catch(e => {
+        //console.log(e);
       });
     }
   }
@@ -118,7 +139,10 @@ import { mapState } from 'vuex';
     }
     .el-menu-sport__item_hover{
       flex-grow: 12;
-      background: transparent url('/Places.png') 50% 0/160px 80px no-repeat padding-box border-box scroll;
+      width:160px;
+      height:80px;
+      /*url('/logo/untitled2-20072021-182431_795.png')*/
+      background: transparent 50% 0/160px 80px no-repeat padding-box border-box scroll;
       &:hover{
         background-color: transparent !important;
       }
