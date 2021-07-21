@@ -49,7 +49,8 @@ export default {
     '@/plugins/eventBus',
     '@/plugins/axios-handler',
     { src: '@/plugins/pages-menu-recursive', mode: 'client'  },
-    { src: '~/plugins/user-role' }
+    { src: '~/plugins/user-role' },
+    { src: '~/plugins/admin-settings' }
   ],
 
   /*
