@@ -8,6 +8,7 @@ const Post = require('./../models/post');
 const Comment = require('./../models/comment');
 const ChatRoom = require('./../models/chat-room');
 const ChatMessage = require('./../models/chat-message');
+const SiteSettings = require('./../models/site-settings');
 // Config keys
 const keys = require('./../config/keys');
 
@@ -40,5 +41,6 @@ module.exports = {
   Comment,
   ChatRoom,
   ChatMessage,
+  SiteSettings,
   isValidId
 };
