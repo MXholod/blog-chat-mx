@@ -23,6 +23,7 @@ const cabinet = require('./routes/user-cabinet');
 const menuPages = require('./routes/menu-page');
 const chatRoom = require('./routes/chat-room');
 const chatMessage = require('./routes/chat-message');
+const siteSettings = require('./routes/site-settings');
 
 //Mongo connection
 connectDB();
@@ -45,6 +46,7 @@ app.use('/cabinet',cabinet);
 app.use('/menu_page', menuPages);
 app.use('/chat_room', chatRoom);
 app.use('/chat_message', chatMessage);
+app.use('/settings', siteSettings);
 
 //Create server for Socket.IO
 const port = process.env.PORT_API || 3001;
