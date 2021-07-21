@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const jwtDecode = require('jwt-decode');
-const { User, JwtRefresh } = require('./../helpers/db');
+const { User, JwtRefresh, SiteSettings } = require('./../helpers/db');
 const { compare: comparePasswords } = require("./../helpers/salt");
 const { generateJwtToken } = require('./../helpers/jwt');
 const { generateRefreshToken } = require('./../helpers/jwt-refresh');
@@ -42,6 +42,14 @@ async function authenticate(req, res, next){
               refreshToken: refreshToken.token
           };
           setTokenCookie(res, refreshToken.token);
+          //Save user id into 'sitesettings' only once
+          if(user.role === "admin"){
+            const setttings = await SiteSettings.find({});
+            if(setttings.length === 0){
+              const siteSettings = new SiteSettings({adminId: user._id});
+              await siteSettings.save();
+            }
+          }
           res.status(200).json({ message: 'You are authenticated', details });
         }catch(e){
           return res.status(401).json({ msg: e.message, details: null });
