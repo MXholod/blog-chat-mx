@@ -20,20 +20,36 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import { mapMutations, mapGetters, mapState } from 'vuex';
 export default {
   props: { userLogin : String },
   computed:{
-    ...mapGetters('auth', ['isUserAuthenticated'])
+    ...mapGetters('auth', ['isUserAuthenticated']),
+    ...mapState('chat',{
+      chatUserId: (state)=>{ return state.user.userId; }
+    })
   },
   methods: {
-    userLogOutHandler(){
-      this.userLogOutMethod();
-      this.$router.push('/');
-    },
     ...mapMutations('auth',{
       userLogOutMethod: 'userLogOut'
-    })
+    }),
+    userLogOutHandler(){
+      this.userLogOutMethod();
+      if(this.chatUserId){
+        //Remove object of the User on the server side
+        this.$socket.emit('userLeft', this.chatUserId, (data) => {
+          // Server response if request was bad
+          if (typeof data === 'string') {
+            //console.error(data);
+          } else {
+            // Good response
+            //console.log("Good response ",data);
+            this.$router.push('/?message=loggedOut');
+          }
+        });
+      }
+      this.$router.push('/?message=unauthenticated');
+    }
   }
 }
 </script>
