@@ -1,10 +1,17 @@
 <template>
-  <el-tabs type="card" @tab-click="handleClick">
+  <el-tabs type="card" @tab-click="handleTabPaneClick">
     <el-tab-pane v-bind:label="tabLabels[0]">
+      <h3>About user management</h3>
+      <p>In this section you can create new user and modify those who are existed.</p>
+    </el-tab-pane>
+    <el-tab-pane v-bind:label="tabLabels[1]">
       <h3>List of users</h3>
+      <el-button v-if="!Array.isArray(users) || (users === null)" @click="showUsersList">
+        Retry to download user list
+      </el-button>
       <admin-user-list :users="users" :userId="userId" />
     </el-tab-pane>
-    <el-tab-pane v-bind:label="tabLabels[1]" v-if="isUserAuthenticated.role === 'admin'">
+    <el-tab-pane v-bind:label="tabLabels[2]" v-if="isUserAuthenticated.role === 'admin'">
       <h3>Create user</h3>
       <admin-user-create />
     </el-tab-pane>
@@ -21,6 +28,7 @@ export default {
     return {
       activeName: 'first',
       tabLabels:[
+        "About user management",
         "List of users",
         "Create user"
       ],
@@ -56,11 +64,14 @@ export default {
         this.users = null;
       }
     },
-    handleClick (tab, event) {
+    handleTabPaneClick (tab, event) {
       //console.log(tab, event)
-      if(tab.label === this.tabLabels[0]){
+      if(tab.label === this.tabLabels[1]){
         this.getAllUsers();
       }
+    },
+    showUsersList(){
+      this.getAllUsers();
     }
   },
   mounted(){
