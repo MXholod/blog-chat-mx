@@ -8,7 +8,8 @@ export const state = () => ({
     },
     //users - [{socketId: socket.id, name: userName, room: currentRoom}, {}, ...]
     users: [], // Array of all object users in the current room.
-    currentRoom: null // Name of the current room
+    currentRoom: null, // Name of the current room
+    usersInRooms: []
   })
 
   export const mutations = {
@@ -36,6 +37,12 @@ export const state = () => ({
     },
     resetUser(state){
       state.user = {};
+    },
+    SOCKET_userJoinedToRooms(state, usersInRooms){
+      state.usersInRooms = usersInRooms;
+    },
+    SOCKET_userLeftToRooms(state, usersInRooms){
+      state.usersInRooms = usersInRooms;
     }
   }
 
