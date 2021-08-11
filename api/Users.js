@@ -1,7 +1,47 @@
 class Users {
-  users
+  users;
+  usersInAllRooms = [];
   constructor () {
     this.users = []
+  }
+
+  getAllUsersInRooms(){
+    return this.usersInAllRooms;
+  }
+
+  joinedToAllRooms(user){
+    let doesUserExist = false;
+    this.usersInAllRooms.forEach(userItem => {
+      if(userItem.userId === user.userId){
+        //User has been found in the array
+        doesUserExist = true;
+      }
+    });
+    //If user doesn't exist in the array add him to that array
+    if(!doesUserExist){
+      this.usersInAllRooms.push(user);
+      //Should emit socket event
+      return true;
+    }
+    //Shouldn't emit socket event
+    return false;
+  }
+
+  leftFromAllRooms(user){
+    if(this.usersInAllRooms.length > 0){
+      const newUsersInAllRooms = this.usersInAllRooms.filter(userItem => {
+        return userItem.userId !== user.userId;
+      });
+      //If true then one user has been deleted it means he left the chat
+      if(newUsersInAllRooms.length !== this.usersInAllRooms.length){
+        this.usersInAllRooms = newUsersInAllRooms;
+        //Should emit socket event
+        return true;
+      }else{
+        //Shouldn't emit socket event
+        return false;
+      }
+    }
   }
 
   add (user) {
