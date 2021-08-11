@@ -18,6 +18,12 @@ const userPresenceInChat = async (id, isInChat)=>{
 }
 
 io.on('connection', socket => {
+    //Admin or Moderator clicking on the tab pane of the user list in admin panel
+    socket.on('fromAdminPanel', (dataUser, callback) => {
+      const allUsersInRooms = users.getAllUsersInRooms();
+      // All users in all rooms go to the client side
+      callback({ allUsersInRooms });
+    });
   /* When the user first came (create new User) */
     // 1. dataUser - user Object; 2. callback - sends data to front-end
     socket.on('userJoined', (dataUser, callback) => {
@@ -49,12 +55,23 @@ io.on('connection', socket => {
       //Remove user id before adding to avoid duplications
       users.remove(dataUser.userId)
       // Add a user to the class Users
-      users.add({
+      const user = {
         userId: dataUser.userId,
         name: dataUser.name,
         room: dataUser.room,
         socketId: socket.id
-      })
+      };
+      users.add(user);
+      //Before the user join to all rooms
+      users.leftFromAllRooms(user);
+      //Add user to the all rooms array
+      const shouldEmit = users.joinedToAllRooms(user);
+      //If true then 'user' joined to the chat, a room name doesn't matter
+      if(shouldEmit){
+        const allUsersInRooms = users.getAllUsersInRooms();
+        //Send the data to all users
+        io.emit('userJoinedToRooms', allUsersInRooms );
+      }
       // If validation is good
       callback({
         // Socket ID is to define the User on the front-end
@@ -123,6 +140,13 @@ io.on('connection', socket => {
       callback()
       //Update 'inChat' user property in DB
       userPresenceInChat(userId, false);
+      //Delete the user from all rooms in the array
+      const shouldEmit = users.leftFromAllRooms(user);
+      if(shouldEmit){
+        const allUsersInRooms = users.getAllUsersInRooms();
+        //Send the data to all users
+        io.emit('userLeftToRooms', allUsersInRooms);
+      }
     })
     // User closed the chat window
     socket.on('disconnect', () => {
@@ -137,6 +161,13 @@ io.on('connection', socket => {
         })
         //Update 'inChat' user property in DB
         userPresenceInChat(user.userId, false);
+        //Delete the user from all rooms in the array
+        const shouldEmit = users.leftFromAllRooms(user);
+        if(shouldEmit){
+          const allUsersInRooms = users.getAllUsersInRooms();
+          //Send the data to all users
+          io.emit('userLeftToRooms', allUsersInRooms);
+        }
       }
     })
     //Chat ban by Admin or Moderator
@@ -163,6 +194,13 @@ io.on('connection', socket => {
         });
         //Ban state in the specified room
         io.to(userObj.room).emit('userChatBanState', dataUser);
+        //Delete the user from all rooms in the array
+        const shouldEmit = users.leftFromAllRooms(user);
+        if(shouldEmit){
+          const allUsersInRooms = users.getAllUsersInRooms();
+          //Send the data to all users
+          io.emit('userLeftToRooms', allUsersInRooms);
+        }
       }
       //Update 'inChat' user property in DB
       userPresenceInChat(dataUser.id, false);
