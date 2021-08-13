@@ -18,17 +18,17 @@
         </div>
       </el-col>
       <el-col :span="12">
-        <el-tabs style="height: 200px;">
-          <el-tab-pane label="User information">
+        <el-tabs style="height: 200px;" v-model="activeName" @tab-click="handleTabs">
+          <el-tab-pane label="User information" name="userInfo">
             <avatar :imageLink="avatar" />
           </el-tab-pane>
-          <el-tab-pane label="Blog statistics">
+          <el-tab-pane label="Blog statistics" name="blog">
             Blog statistics
           </el-tab-pane>
-          <el-tab-pane label="Chat statistics">
-            Chat statistics
+          <el-tab-pane label="Chat statistics" name="chat">
+            <rooms-with-messages-list ref="roomsMessages" />
           </el-tab-pane>
-          <el-tab-pane label="Security">
+          <el-tab-pane label="Security" name="security">
             <change-user-name />
             <change-user-password />
           </el-tab-pane>
@@ -53,6 +53,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import ChangeUserName from './../components/site/user_cabinet/ChangeUserName';
 import ChangeUserPassword from './../components/site/user_cabinet/ChangeUserPassword';
 import Avatar from '../components/site/user_cabinet/avatar/Avatar.vue';
+import RoomsWithMessagesList from '../components/site/user_cabinet/RoomsWithMessagesList.vue';
 export default {
   async asyncData ({ store, app, redirect }) {
     let jwt = store.getters['auth/isUserAuthenticated'].jwtToken;
@@ -80,11 +81,13 @@ export default {
   components: {
     ChangeUserName,
     ChangeUserPassword,
-    Avatar
+    Avatar,
+    RoomsWithMessagesList
   },
   data() {
     return {
-      result: ''
+      result: '',
+      activeName: 'userInfo'
     };
   },
   computed: {
@@ -95,6 +98,12 @@ export default {
     async testing(){
       let res = await this.$axios.$get('/api/cabinet/test');
       this.result = res;
+    },
+    handleTabs(tab, event){
+      if(tab.name === 'chat'){
+        //Calling child component method with 'ref'
+        this.$refs.roomsMessages.getAllRoomsWithMessages();
+      }
     }
   },
   mounted(){
