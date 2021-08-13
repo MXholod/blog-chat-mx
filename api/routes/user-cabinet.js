@@ -6,7 +6,8 @@ const {
   updateUserLogin,
   updateUserPassword,
   updateUserAvatar,
-  deleteUserAvatar
+  deleteUserAvatar,
+  getAllMessagesInRooms
 } = require('./../controllers/user-cabinet');
 const userPasswordMiddleware = require('./../middleware/update-user-password');
 const upload = require('./../middleware/avatar-upload');
@@ -26,5 +27,7 @@ router.patch('/user-avatar/update',
 );
 // /api/cabinet/user-avatar/delete
 router.delete('/user-avatar/delete',authCabinet, deleteUserAvatar);
+// /api/cabinet/user-chat-messages
+router.get('/user-chat-messages', authCabinet, getAllMessagesInRooms);
 
 module.exports = router;
