@@ -74,7 +74,7 @@ export default {
             });
             window.setTimeout(()=>{
               this.$nuxt.$router.replace({ path: '/cabinet' });
-              this.loading = false;
+              //this.loading = false;
             },2000);
           } catch (e) {
             this.loading = false;
