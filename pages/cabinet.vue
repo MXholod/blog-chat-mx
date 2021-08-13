@@ -35,9 +35,11 @@
         </el-tabs>
       </el-col>
       <el-col :span="6">
-        <p>Hello right</p>
-        <p>Result: {{ result }}</p>
-        <button @click="testing">Test</button>
+        <div class="chat-status">
+          <p>User ban status in chat</p>
+          <el-tag v-if="!chatBan" class="chat-tag" type="success">You may visit the chat</el-tag>
+          <el-tag v-else class="chat-tag" type="danger">The chat access is not allowed</el-tag>
+        </div>
       </el-col>
     </el-row>
     <el-row v-else>
@@ -95,10 +97,6 @@ export default {
   },
   methods: {
     ...mapMutations('auth', ['updateChatBan']),
-    async testing(){
-      let res = await this.$axios.$get('/api/cabinet/test');
-      this.result = res;
-    },
     handleTabs(tab, event){
       if(tab.name === 'chat'){
         //Calling child component method with 'ref'
@@ -167,6 +165,21 @@ export default {
         text-align: center;
       }
     }
+  }
+}
+.chat-status{
+  p{
+     width: 70%;
+     margin:0 auto .5em;
+     text-align: center;
+     font-weight: bold;
+  }
+  padding: .5em;
+  .chat-tag{
+    width: 100%;
+    height: 2.5em;
+    font-size: 1.1em;
+    margin-left: 3%;
   }
 }
 </style>
