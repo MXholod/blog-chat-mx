@@ -16,6 +16,16 @@ const userPresenceInChat = async (id, isInChat)=>{
     console.log(e);
   }
 }
+//Checking 'chatBan' if the user who is connecting is banned
+const userBannedInChat = async (id)=>{
+  //If user is banned in chat - true, if he isn't - false
+  try{
+    const { chatBan } = await User.findById(id).exec();
+    return chatBan;
+  }catch(e){
+    console.log(e);
+  }
+}
 
 io.on('connection', socket => {
     //Admin or Moderator clicking on the tab pane of the user list in admin panel
@@ -26,12 +36,13 @@ io.on('connection', socket => {
     });
   /* When the user first came (create new User) */
     // 1. dataUser - user Object; 2. callback - sends data to front-end
-    socket.on('userJoined', (dataUser, callback) => {
-      // If validation is bad
-      if (!dataUser.name || !dataUser.room) {
-        // Sends to front-end
-        return callback('Entered data is incorrect!')
-      }
+    socket.on('userJoined', async (dataUser, callback) => {
+      const chatBanState = await userBannedInChat(dataUser.userId);
+        // If validation is bad
+        if (chatBanState || !dataUser.name || !dataUser.room) {
+          // Sends to front-end
+          return callback('Entered data is incorrect!')
+        }
       //Before the user join to a room
       const doesUserLeftRoom = users.users.find((el, ind, arr)=>{
         if(dataUser.userId === el.userId && el.room !== dataUser.room) {
