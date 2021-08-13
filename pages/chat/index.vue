@@ -144,22 +144,23 @@ export default {
           room: this.currentRoom,
           userId: this.id
         }
-        //
-        this.addCurrentRoom({
-          id: this.currentRoomId, //Room id
-          name: this.currentRoom, //Room name
-          description: this.message //Room description
-        });
         // Send data by socket to the server to get an unique ID of the user connection
         this.$socket.emit('userJoined', user, (data) => {
           // Server response if request was bad
           if (typeof data === 'string') {
-            console.error(data);
+            this.$router.push('/cabinet?message=chatDenied');
+            //console.error(data);
           } else {
             // Good response
             // Sets the user id according to the socket
             //user.userSocketId = data.userSocketId
             user.userId = this.id;
+            //Room mutation from Vuex
+            this.addCurrentRoom({
+              id: this.currentRoomId, //Room id
+              name: this.currentRoom, //Room name
+              description: this.message //Room description
+            });
             // Use mutation from Vuex
             this.addUser(user);
             // Redirect User to the Chat
@@ -216,6 +217,9 @@ export default {
     }else{
       //Use Mutation
       this.updateChatBan(this.chatBan);
+      if(this.chatBan){
+        this.$router.push('/cabinet?message=chatDenied');
+      }
       //Get User name from store
       this.currentName = this.isUserAuthenticated.login;
       //
