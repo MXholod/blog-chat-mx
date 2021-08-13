@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
-const { User } = require('./../helpers/db');
+const { User, ChatRoom ,ChatMessage } = require('./../helpers/db');
 const createSalt = require("./../helpers/salt");
 const { compare: comparePasswords } = require("./../helpers/salt");
 
@@ -123,10 +123,59 @@ const removeFile = (file)=>{
   });
 }
 
+async function getAllMessagesInRooms(req, res){
+  const { id } = req.user;
+  try{
+    // allMessages - [ {user: 'id', room: 'id', ..}, .. ]
+    const allMessages = await ChatMessage.find({ user: id });
+    if(allMessages.length > 0){
+      //Make all room properties as string from ChatMessage Model
+      const idRooms = allMessages.map( message => {
+        return message.room.toString();
+      });
+      //Get only unique room properties to make a correct DB request
+      let roomsDbRequest = idRooms.filter( (roomId, index) => {
+        return index === idRooms.indexOf(roomId);
+      });
+      //Get all unique rooms from ChatRoom Model
+      const uniqueRoomsFromDb = await ChatRoom.find({ _id: { $in: roomsDbRequest } });
+      //Object where key - id, value - amount
+      let hashObj = {};
+			for(let i = 0;i < idRooms.length;i++){
+				if(!(idRooms[i] in hashObj)){
+					hashObj[ idRooms[i] ] = 1;
+				}else{
+					hashObj[ idRooms[i] ] += 1;
+				}
+			}
+      //Rooms with amount of messages
+      const roomsData = [];
+      for(let i = 0;uniqueRoomsFromDb.length > i;i++){
+        for(obj in hashObj){
+          //Compare ids
+          if(uniqueRoomsFromDb[i]._id.toString() === obj){
+            roomsData.push({
+              roomName: uniqueRoomsFromDb[i].name,
+              roomDescription: uniqueRoomsFromDb[i].description,
+              totalMessages: hashObj[obj]
+            });
+          }
+        }
+      }
+      return res.status(200).json({ message: "All messages", roomsData });
+    }else{
+      return res.status(200).json({ message: "There are no messages", roomsData: [] });
+    }
+  }catch(e){
+    return res.status(400).json({ message: "There are no messages", roomsData: null });
+  }
+}
+
 module.exports = {
   //test,
   updateUserLogin,
   updateUserPassword,
   updateUserAvatar,
-  deleteUserAvatar
+  deleteUserAvatar,
+  getAllMessagesInRooms
 };
