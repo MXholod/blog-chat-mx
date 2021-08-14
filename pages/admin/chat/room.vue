@@ -70,12 +70,20 @@ export default {
           };
           try{
               const result = await this.$axios.post('/api/chat_room/create',formData);
-              if(result.data && result.data.room){
+              if(result?.response?.status == 400){
+                let msg = result.response.data?.message[0].msg;
+                this.$message({
+                  showClose: true,
+                  message: msg,
+                  type: 'error'
+                });
+              }
+              if(result.data && result.data?.room){
                 this.ruleForm.name = '';
                 this.ruleForm.description = '';
                 this.$message({
                   showClose: true,
-                  message: 'The form data has sent!',
+                  message: 'New room created!',
                   type: 'success'
                 });
               }
