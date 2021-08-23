@@ -25,9 +25,9 @@ async function getAllRooms(req, res){
     if(rooms && !!rooms.length){
       return res.status(200).json({ message: "Rooms list", rooms });
     }
-    return res.status(400).json({ message: "Rooms are absent", rooms: [] });
+    return res.status(200).json({ message: "Rooms are absent", rooms: [] });
   }catch(e){
-    return res.status(400).json({ message: "Rooms are absent", room: [] });
+    return res.status(400).json({ message: "Rooms are absent", rooms: [] });
   }
 }
 // Admin section
