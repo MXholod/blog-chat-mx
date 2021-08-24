@@ -19,5 +19,7 @@ router.get('/rooms', authCabinet, getAllRooms);
 router.get('/rooms_messages', authCabinetAdmin, getAllRoomsWithMessages);
 // '/api/chat_room/rooms_messages'
 router.delete('/rooms_messages', authCabinetAdmin, deleteRoomWithMessages);
+// '/api/chat_room/admin/rooms'
+router.get('/admin/rooms', authCabinetAdmin, getAllRooms);
 
 module.exports = router;
