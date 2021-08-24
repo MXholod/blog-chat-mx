@@ -43,6 +43,17 @@ class Users {
       }
     }
   }
+  //It checks if a user is in a room
+  findUserInAllRooms(roomName){
+    let isRoom = false;
+    this.usersInAllRooms.forEach(userItem => {
+      if(userItem.room === roomName){
+        //Room was found
+        isRoom = true;
+      }
+    });
+    return isRoom;
+  }
 
   add (user) {
     this.users.push(user)
