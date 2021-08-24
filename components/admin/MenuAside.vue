@@ -40,6 +40,7 @@
         </el-menu-item-group>
         <el-menu-item-group class="admin-chat__title" title="Admin messages">
           <el-menu-item index="/admin/chat/messages">Message management</el-menu-item>
+          <el-menu-item index="/admin/chat/message">System message to chat</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
