@@ -6,7 +6,7 @@ const httpServer = require('http').createServer(app)
 const io = require('socket.io')(httpServer)
 //
 const users = require('./Users')()
-const { User, ChatMessage } = require('./helpers/db');
+const { User, ChatMessage, SystemMessage } = require('./helpers/db');
 
 const userPresenceInChat = async (id, isInChat)=>{
   //If user is in chat - true, if he left chat - false
@@ -215,6 +215,42 @@ io.on('connection', socket => {
       }
       //Update 'inChat' user property in DB
       userPresenceInChat(dataUser.id, false);
+    });
+    //System message as a notification from Admin or Moderator. Sends from admin panel
+    socket.on('notificationFromAdminPanel', (dataUser, callback) => {
+      if(!dataUser.id || !dataUser.title || !dataUser.text || !dataUser.roomName){
+        // Sends to front-end
+        return callback('Data to send a notification is incorrect!');
+      }
+      //Find a user in the room to send a system message
+      let isUserInRoom = users.findUserInAllRooms(dataUser.roomName);
+      if(!isUserInRoom) return callback(`There are no users in the room ${dataUser.roomName}`);
+      //Save message into DB
+      try{
+        const NewSystemMessage = new SystemMessage({
+          userId: dataUser.id,
+          title: dataUser.title,
+          text: dataUser.text,
+          roomName: dataUser.roomName,
+          userName: dataUser.userName,
+          userRole: dataUser.userRole
+        });
+        //Save current message into MongoDB
+        NewSystemMessage.save(function(err){
+          if(err) return callback('Data couldn\'t be save in DB');
+          //Data already saved in DB. Emit response from socket
+          io.to(dataUser.roomName).emit('systemMessage',{
+            title: `-- ${dataUser.userRole} ${dataUser.userName} -- '${dataUser.title}'`,
+            text: dataUser.text
+          });
+          //System message sent successfully
+          return callback({
+            'success': `System message sent successfully to room ${dataUser.roomName}`
+          });
+        });
+      }catch(e){
+        //console.log(e);
+      }
     });
 
 })
