@@ -104,9 +104,89 @@ async function deleteRoomWithMessages(req, res){
   }
 }
 
+async function getAllRoomsWithChatMessages(req, res){
+  try{
+    //Get all rooms [ {name:'', description: ''} ]
+    const allRooms = await ChatRoom.find({});
+    //If rooms are absent
+    if(allRooms && (allRooms.length === 0)){
+      return res.status(200).json({ message: "Rooms are absent", rooms: [] });
+    }
+    // allMessagesWithRooms - [ {user: 'id', room: 'id', ..}, .. ] Get rooms that have messages
+    const allMessagesWithRooms = await ChatMessage.find({}).populate('room');
+    //Result of rooms with their messages and amount of messages
+    let rooms = [];
+    //1. Get all rooms from messages with duplicates
+    let roomsWithDuplicates = [];
+    for(let i = 0; i < allMessagesWithRooms.length; i++){
+      //Current message
+      const room = {
+        "id": allMessagesWithRooms[i].room._id,
+        "roomName": allMessagesWithRooms[i].room.name,
+        "currentPage": 1,
+        "totalMessages": 0,
+        "messages": []
+      };
+      roomsWithDuplicates.push(room);
+    }
+    //2. Delete rooms duplications
+    const uniqueRooms = roomsWithDuplicates.reduce((acc, item)=>{
+      return acc.find(e => e.id === item.id) ? acc : [...acc, item];
+    },[]);
+    //3. Add messages to unique rooms and count those messages. Create object
+    let mapRooms = {};
+    //Create object where key is room 'id', value is an object 'message'
+    for(let i = 0; i < uniqueRooms.length; i++){
+      //Key as room 'id' and value 'message' object
+      mapRooms[uniqueRooms[i].id.toString()] = uniqueRooms[i];
+    }
+    //
+    if(allMessagesWithRooms.length > 0){
+      //Add message to the room and count messages
+      for(let j = 0;j < allMessagesWithRooms.length; j++){
+        //"totalMessages": 0, "messages": []
+        let roomId = allMessagesWithRooms[j].room._id.toString();
+        //Room 'id' in message is equal to room 'id'
+        if(roomId in mapRooms){
+          //Increase by one 'totalMessages'
+          mapRooms[roomId].totalMessages += 1;
+          //Add message without 'room' property to the parent room
+          //const { room, ...message } = allMessagesWithRooms[j];
+          const { userName, role, text, date, _id: id } = allMessagesWithRooms[j];
+          if(!Array.isArray(mapRooms[roomId].messages)){
+            mapRooms[roomId].messages = new Array();
+          }
+          //Add room message into the array of messages
+          mapRooms[roomId].messages.push({ id, userName, role, text, date });
+        }
+      }
+    }
+    //Add into the array only values which are rooms. Keys are skipped
+    for(let key in mapRooms){
+      rooms.unshift(mapRooms[key]);
+    }
+    return res.status(200).json({ message: "Room list with messages", rooms });
+  }catch(e){
+    return res.status(400).json({ message: "Rooms are absent", err: e });
+  }
+}
+
+async function deleteChatMessage(req, res){
+  const { messageId } = req.body;
+  if(!messageId) return res.status(400).json({ message: "Room is absent", deleted: false });
+  try{
+    const result = await ChatMessage.findByIdAndDelete(messageId);
+    return res.status(204).json({ message: "Room has been deleted", deleted: result });
+  }catch(e){
+    return res.status(400).json({ message: "Room can't be deleted", deleted: false });
+  }
+}
+
 module.exports = {
   createRoom,
   getAllRooms,
   getAllRoomsWithMessages,
-  deleteRoomWithMessages
+  deleteRoomWithMessages,
+  getAllRoomsWithChatMessages,
+  deleteChatMessage
 };
