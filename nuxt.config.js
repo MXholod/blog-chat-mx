@@ -50,7 +50,8 @@ export default {
     '@/plugins/axios-handler',
     { src: '@/plugins/pages-menu-recursive', mode: 'client'  },
     { src: '~/plugins/user-role' },
-    { src: '~/plugins/admin-settings' }
+    { src: '~/plugins/admin-settings' },
+    { src: '~/plugins/directive.date', ssr: false }
   ],
 
   /*
