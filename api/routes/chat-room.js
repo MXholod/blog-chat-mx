@@ -8,7 +8,9 @@ const {
   createRoom,
   getAllRooms,
   getAllRoomsWithMessages,
-  deleteRoomWithMessages
+  deleteRoomWithMessages,
+  getAllRoomsWithChatMessages,
+  deleteChatMessage
  } = require('./../controllers/chat-room');
 
 // '/api/chat_room/create'
@@ -21,5 +23,9 @@ router.get('/rooms_messages', authCabinetAdmin, getAllRoomsWithMessages);
 router.delete('/rooms_messages', authCabinetAdmin, deleteRoomWithMessages);
 // '/api/chat_room/admin/rooms'
 router.get('/admin/rooms', authCabinetAdmin, getAllRooms);
+// '/api/chat_room/admin/rooms/chat_messages'
+router.get('/admin/rooms/chat_messages', authCabinetAdmin, getAllRoomsWithChatMessages);
+// '/api/chat_room/admin/rooms/chat_message'
+router.delete('/admin/rooms/chat_message', authCabinetAdmin, deleteChatMessage);
 
 module.exports = router;
