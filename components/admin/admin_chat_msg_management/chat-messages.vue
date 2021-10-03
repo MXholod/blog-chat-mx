@@ -8,6 +8,11 @@
         label="User name"
         width="150">
       </el-table-column>
+      <el-table-column label="Title" width="150" v-if="!hideTitleColumn">
+        <template slot-scope="scope">
+          <span>{{ scope.row.title }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="text"
         label="Chat message text"
@@ -58,6 +63,7 @@ export default {
       //Prop into Model
       allMessages: this.messages,
       portionMessages: [],
+      hideTitleColumn: true,
       limit: 5,
       displayPagination: false,
       currentPage: 1,
@@ -150,6 +156,8 @@ export default {
       }//Pagination will be shown.
       //Grab the first few according to the 'limit' to display on the first page
       this.portionMessages = this.allMessages.slice(0, this.limit);
+      //Should display 'title' column
+      if(this.portionMessages[0]?.title) this.hideTitleColumn = false;
     }
   },
   mounted(){
