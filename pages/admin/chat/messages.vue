@@ -9,7 +9,7 @@
         <el-button v-if="!Array.isArray(rooms)" size="mini" @click="loadRoomsAgain">
           Load messages again
         </el-button>
-        <el-alert v-else-if="Array.isArray(rooms) && rooms.length == 0"
+        <el-alert v-else-if="Array.isArray(rooms) && rooms.length === 0"
           title="Rooms with messages are absent"
           type="warning"
           :closable="false">
@@ -33,6 +33,31 @@
         </el-collapse>
       </el-tab-pane>
       <el-tab-pane v-if="isUserAuthenticated.role == 'admin'" label="System messages" name="system">
+        <el-button v-if="!Array.isArray(systemRooms)" size="mini" @click="loadSystemRoomsAgain">
+          Load system messages again
+        </el-button>
+        <el-alert v-else-if="Array.isArray(systemRooms) && systemRooms.length === 0"
+          title="Rooms with messages are absent"
+          type="warning"
+          :closable="false">
+        </el-alert>
+        <el-collapse v-else @change="()=>{}">
+          <el-collapse-item
+            v-for="systemRoom in systemRooms"
+            :key="systemRoom.id"
+            :title="'Room: '+systemRoom.roomName+' / Total messages: '+systemRoom.totalMessages+' / Current page: '+systemRoom.currentPage"
+            :name="systemRoom.roomName"
+            class="chat-system-messages-collapse"
+          >
+            <chat-messages
+              :roomId="systemRoom.id"
+              :messages="systemRoom.messages"
+              :deleteChosenMessage="deleteChosenSystemMessage"
+              @onCurrentPage="setCurrentSystemPage"
+              class="chat-system-messages"
+            />
+          </el-collapse-item>
+        </el-collapse>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -56,7 +81,11 @@ export default {
       context.redirect('/');
     }
     let rooms = null;
+    let systemRooms = null;
     try{
+      const system = await context.$axios.$get('/api/chat_system/messages');
+      //console.log("System ",system);
+      systemRooms = system.rooms;
       const result = await context.$axios.$get('/api/chat_room/admin/rooms/chat_messages');
       rooms = result.rooms;
       //console.log(result.rooms);
@@ -65,7 +94,8 @@ export default {
     }
     return {
       userLogoutRefresh: userData.sessionEnd ? true : false,
-      rooms
+      rooms,
+      systemRooms
     };
   },
   layout: 'admin',
@@ -89,8 +119,20 @@ export default {
     handleChangeRoom(val) {
       //console.log(val);
     },
+    //Set the current page in the header of table
     setCurrentPage(dataRoom){
       this.rooms = this.rooms.map( room => {
+        if(dataRoom.roomId === room.id){
+          return { ...room, currentPage: dataRoom.currentPage }
+        }
+        return room;
+      });
+      //Update template by force
+      this.$forceUpdate();
+    },
+    //Set the current system page in the header of table
+    setCurrentSystemPage(dataRoom){
+      this.systemRooms = this.systemRooms.map( room => {
         if(dataRoom.roomId === room.id){
           return { ...room, currentPage: dataRoom.currentPage }
         }
@@ -104,7 +146,7 @@ export default {
         await this.$axios.$delete('/api/chat_room/admin/rooms/chat_message',{
           data: { messageId }
         });
-        //
+        //Recount all messages in room after deletion
         let tempRooms = [];
         this.rooms.forEach( room => {
           if(room.id === roomId){
@@ -118,6 +160,39 @@ export default {
         });
         this.rooms = tempRooms;
         this.$forceUpdate();
+        this.$message({
+          showClose: true,
+          message: 'The message was successfully deleted',
+          type: 'success'
+        });
+      }catch(e){
+        console.log("Error ",e);
+      }
+    },
+    async deleteChosenSystemMessage(roomId, messageId){
+      try{
+        await this.$axios.$delete('/api/chat_system/message',{
+          data: { messageId }
+        });
+        //Recount all messages in room after deletion
+        let tempRooms = [];
+        this.systemRooms.forEach( room => {
+          if(room.id === roomId){
+            //Edit messages in this component
+            room.messages = room.messages.filter( msg => {
+              return msg.id !== messageId;
+            });
+            room.totalMessages = room.messages.length;
+          }
+          tempRooms.push(room);
+        });
+        this.systemRooms = tempRooms;
+        this.$forceUpdate();
+        this.$message({
+          showClose: true,
+          message: 'The system message was successfully deleted',
+          type: 'success'
+        });
       }catch(e){
         console.log("Error ",e);
       }
@@ -126,6 +201,14 @@ export default {
       try{
         const result = await this.$axios.$get('/api/chat_room/admin/rooms/chat_messages');
         this.rooms = result.rooms;
+      }catch(e){
+        console.log(e);
+      }
+    },
+    async loadSystemRoomsAgain(){
+      try{
+        const result = await this.$axios.$get('/api/chat_system/messages');
+        this.systemRooms = result.rooms;
       }catch(e){
         console.log(e);
       }
@@ -160,12 +243,18 @@ export default {
 .chat-messages-collapse:nth-child(2n+2){
   background-color: #cfb7f6;
 }
+.chat-system-messages-collapse:nth-child(2n+1){
+  background-color: #b8c2e7;
+}
+.chat-system-messages-collapse:nth-child(2n+2){
+  background-color: #ad7cfb;
+}
 /* Override background color */
 .el-collapse-item__header{
   background-color: transparent;
   padding-left: .5em;
 }
-.chat-messages{
+.chat-messages, .chat-system-messages{
   background-color: #f6f6f6;
   border: 2px solid #c3bebe;
 }
