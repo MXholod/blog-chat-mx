@@ -1,9 +1,12 @@
 <template>
     <div>
-      <NuxtLink to="/">Home</NuxtLink>
       <el-tabs type="card" @tab-click="handleTabs">
         <el-tab-pane label="Admin info">
           <h1>Welcome to the admin page</h1>
+          <p class="to-cabinet">Go to the cabinet on the client side
+            <br />
+            <NuxtLink to="/cabinet" :class="'to-cabinet__btn'">My cabinet</NuxtLink>
+          </p>
         </el-tab-pane>
         <el-tab-pane v-if="user.role === 'admin'" label="Site logo">
           <logo :imageLink="logo" :key="reloadLogo" />
@@ -76,3 +79,30 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.to-cabinet{
+  max-width: 40%;
+  margin: 1em 0 0 .5em;
+  border: 2px solid lightgray;
+  padding: 4px;
+  border-radius: 5px;
+  background-color: #f6f6f6;
+}
+.to-cabinet__btn{
+  display: inline-block;
+  margin-top:1em;
+  padding: .5em 1em;
+  background-color: #409eff;
+  color:#000;
+  text-decoration: none;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: .9em;
+  font-weight: bold;
+  border-radius: 5px;
+  &:hover, &:active{
+    background-color: darken(#409eff, 10%);
+    color:#f6f6f6;
+  }
+}
+</style>
