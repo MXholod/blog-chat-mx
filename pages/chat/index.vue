@@ -122,7 +122,7 @@ export default {
     ...mapGetters('auth', ['isUserAuthenticated'])
   },
   methods: {
-    ...mapMutations('chat', ['addUser', 'addCurrentRoom']),
+    ...mapMutations('chat', ['addUser', 'addCurrentRoom', 'clearData']),
     ...mapMutations('auth', ['updateChatBan']),
     selectRoom (roomName) {
       // roomName - current selected room as a String
@@ -228,6 +228,8 @@ export default {
         this.message = 'User data is incomplete'
       } else if (message === 'leftChat') {
         this.message = 'You\'ve left the chat'
+        //Call mutation from Vuex 'chat'
+        this.clearData();
       }
       // If 'message' is nothing - then snackbar is false, but if string - true
       this.snackbar = !!this.message;
