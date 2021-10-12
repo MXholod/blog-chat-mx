@@ -25,6 +25,7 @@ const chatRoom = require('./routes/chat-room');
 const chatMessage = require('./routes/chat-message');
 const siteSettings = require('./routes/site-settings');
 const systemMessage = require('./routes/chat-system-messages');
+const chartStatistics = require('./routes/chart-statistics');
 
 //Mongo connection
 connectDB();
@@ -49,6 +50,7 @@ app.use('/chat_room', chatRoom);
 app.use('/chat_message', chatMessage);
 app.use('/settings', siteSettings);
 app.use('/chat_system', systemMessage);
+app.use('/chart_statistics', chartStatistics);
 
 //Create server for Socket.IO
 const port = process.env.PORT_API || 3001;
