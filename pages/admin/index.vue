@@ -11,6 +11,9 @@
         <el-tab-pane v-if="user.role === 'admin'" label="Site logo">
           <logo :imageLink="logo" :key="reloadLogo" />
         </el-tab-pane>
+        <el-tab-pane label="Blog and chat info charts">
+          <info-chart-statistics :allStatistics="allStatistics" />
+        </el-tab-pane>
       </el-tabs>
     </div>
 </template>
@@ -18,6 +21,7 @@
 <script>
 import { mapState } from 'vuex'
 import Logo from './../../components/admin/site_logo/Logo.vue';
+import InfoChartStatistics from './../../components/admin/charts/InfoChartStatistics.vue';
 export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
@@ -32,26 +36,36 @@ export default {
       }
       context.redirect('/');
     }
+    let allStatistics = null;
+    try{
+      const result = await context.$axios.$get('/api/chart_statistics/all_statistics');
+      allStatistics = result.allStatistics;
+    }catch(e){
+      //console.log(e);
+    }
     let siteOptions;
     if(userData.role === 'admin'){
       siteOptions = await context.app.$getAllSiteOptions(jwt);
       if(siteOptions){
         return {
           userLogoutRefresh: userData.sessionEnd ? true : false,
-          logo: siteOptions?.options?.siteLogo
+          logo: siteOptions?.options?.siteLogo,
+          allStatistics
         };
       }
     }else{
       return {
       userLogoutRefresh: userData.sessionEnd ? true : false,
-      logo: siteOptions
+      logo: siteOptions,
+      allStatistics
     };
     }
   },
   layout: 'admin',
   name: 'admin',
   components: {
-    Logo
+    Logo,
+    InfoChartStatistics
   },
   computed: mapState('auth', ['user']),
   data(){
