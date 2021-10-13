@@ -5,30 +5,51 @@
     <el-table-column
       prop="title"
       label="Post name"
+      min-width="150"
     >
     </el-table-column>
     <el-table-column
+      label="User name"
+      min-width="100"
+      align="center">
+      <template slot-scope="{row: {user}}">
+        <span style="margin-left: 5px">{{ user.name }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="User role"
+      min-width="100"
+      align="center">
+      <template slot-scope="{row: {user}}">
+        <span style="margin-left: 5px">{{ user.role }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column
       label="Date"
-      width="180">
+      min-width="130"
+      align="center">
       <template slot-scope="{row: {date}}">
         <i class="el-icon-time"></i>
         <span style="margin-left: 10px">{{ new Date(date).toLocaleDateString() }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Amount of views">
+    <el-table-column label="Amount of views" min-width="140" align="center">
       <template slot-scope="{row: {views}}">
         <i class="el-icon-view"></i>
         <span style="margin-left: 10px">{{ views }}</span>
       </template>
     </el-table-column>
-    <el-table-column label="Comments">
+    <el-table-column label="Comments" min-width="140" align="center">
       <template slot-scope="{row: {comments}}">
         <i class="el-icon-chat-line-square"></i>
         <span style="margin-left: 10px">{{ comments.length }}</span>
       </template>
     </el-table-column>
     <el-table-column
-      label="Actions">
+      v-if="role === 'admin'"
+      label="Actions"
+      width="160"
+      align="center">
       <template slot-scope="{row}">
         <el-button
           size="mini"
@@ -71,7 +92,8 @@ export default {
     // It will be merged with 'data' if 'data' is present
     return {
       posts,
-      userLogoutRefresh: userData.sessionEnd ? true : false
+      userLogoutRefresh: userData.sessionEnd ? true : false,
+      role: userData.role
     }
   },
   methods: {
