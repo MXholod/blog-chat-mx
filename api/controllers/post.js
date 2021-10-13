@@ -4,11 +4,13 @@ const { Post, Comment } = require('./../helpers/db');
 
 // Create new Post - in Admin
 module.exports.createPost = async (request, response) => {
+  const { id:userId } = request.user;
   const post = new Post({
     title: request.body.title,
     text: request.body.text,
     // Get the file path of an uploaded image by Multer
-    imageUrl: `${request.file.filename}`
+    imageUrl: `${request.file.filename}`,
+    user: userId
   })
   try {
     await post.save();
@@ -21,10 +23,35 @@ module.exports.createPost = async (request, response) => {
 
 // Get all Posts in Admin and Public
 module.exports.getPosts = async (request, response) => {
+  const role = request.user ? request.user.role : undefined;
   try {
-    const posts = await Post.find({});
-    if(!posts.length){
-      return response.status(200).json({ message: "No posts", posts: [] });
+    let posts;
+    //On admin side
+    if((role && role === 'admin') || (role && role === 'moderator')){
+      posts = await Post.find({}).populate('user');
+      if(!posts.length){
+        return response.status(400).json({ message: "No posts", posts: [] });
+      }
+      posts = posts.map( post =>{
+        let newPost = {
+          _id: post._id,
+          views: post.views,
+          comments: post.comments,
+          title: post.title,
+          date: post.date,
+          user: {
+            name: post.user.login,
+            role: post.user.role
+          }
+        }
+        return newPost;
+      });
+    }else{
+    //On client side
+      posts = await Post.find({});
+      if(!posts.length){
+        return response.status(200).json({ message: "No posts", posts: [] });
+      }
     }
     // Sort posts in reverse order
     posts.sort(function(a,b){
@@ -117,25 +144,6 @@ module.exports.deletePost = async (request, response) => {
     }
   } catch (e) {
     return response.status(400).json({ message: e.message });
-  }
-}
-
-//Get all client side Posts
-module.exports.getPosts = async (request, response) => {
-  try{
-    const posts = await Post.find({});
-    if(!posts.length){
-      return response.status(400).json({ message: "No posts", posts: [] });
-    }
-    // Sort posts in reverse order
-    posts.sort(function(a,b){
-      // Turn your strings into dates, and then subtract them
-      // to get a value that is either negative, positive, or zero.
-      return new Date(b.date) - new Date(a.date);
-    });
-    return response.status(200).json({ message: "All posts", posts });
-  }catch(e){
-    return response.status(400).json({ message: e.message, posts: [] });
   }
 }
 
