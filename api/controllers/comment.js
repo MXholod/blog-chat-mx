@@ -2,9 +2,10 @@ const Comment = require('./../models/comment')
 const Post = require('./../models/post')
 
 module.exports.createComment = async (request, response) => {
+  const { id:userId } = request.user;
   try {
     const { name, text, postId } = request.body
-    const comment = new Comment({ name, text, postId })
+    const comment = new Comment({ name, text, postId, user: userId })
     await comment.save()
     // Save Comment ID to the Post
     const post = await Post.findById(postId)
