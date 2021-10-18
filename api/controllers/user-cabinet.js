@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
-const { User, ChatRoom ,ChatMessage } = require('./../helpers/db');
+const { User, ChatRoom ,ChatMessage, Post, Comment } = require('./../helpers/db');
 const createSalt = require("./../helpers/salt");
 const { compare: comparePasswords } = require("./../helpers/salt");
 
@@ -171,11 +171,47 @@ async function getAllMessagesInRooms(req, res){
   }
 }
 
+async function getAllCommentsToPosts(req, res){
+  const { id:userId } = req.user;
+  try{
+    //
+    const allUserComments = await Comment.find({ user: userId });
+    const allUserPostsComments = await Post.find().populate('comments');
+    //
+    const postsWithComments = {totalComments: 0};
+    if(!allUserComments.length){
+      return res.status(200).json({ message: "There are no posts with comments", arrComments: [], totalComments: 0 });
+    }
+    for(let i = 0; i < allUserPostsComments.length; i++){
+      let post = { title: '', comments: 0 };
+      let curPost = allUserPostsComments[i]._id.toString();
+      for(let j = 0; j < allUserComments.length; j++){
+        let curComment = allUserComments[j].postId.toString();
+        if(curPost === curComment){
+          post.title = allUserPostsComments[i].title;
+          post.comments += 1;
+          postsWithComments[post.title] = post;
+          postsWithComments.totalComments += 1;
+        }
+      }
+    }
+    //Save 'totalComments' before deletion
+    const totalComments = postsWithComments.totalComments;
+    //Deleting 'totalComments'
+    delete postsWithComments.totalComments;
+    let arrComments = Object.keys(postsWithComments).map(objKey => postsWithComments[objKey] );
+    return res.status(200).json({ message: "Posts with comments", arrComments, totalComments });
+  }catch(e){
+    return res.status(400).json({ message: "There are no posts with comments", arrComments: null, totalComments: 0 });
+  }
+}
+
 module.exports = {
   //test,
   updateUserLogin,
   updateUserPassword,
   updateUserAvatar,
   deleteUserAvatar,
-  getAllMessagesInRooms
+  getAllMessagesInRooms,
+  getAllCommentsToPosts
 };
