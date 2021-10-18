@@ -16,7 +16,8 @@
         </el-table-column>
         <el-table-column
           prop="totalMessages"
-          label="Total messages in the room">
+          label="Total messages in the room"
+          align="center">
         </el-table-column>
       </el-table>
     </div>
