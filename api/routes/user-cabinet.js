@@ -7,6 +7,7 @@ const {
   updateUserPassword,
   updateUserAvatar,
   deleteUserAvatar,
+  getAllCommentsToPosts,
   getAllMessagesInRooms
 } = require('./../controllers/user-cabinet');
 const userPasswordMiddleware = require('./../middleware/update-user-password');
@@ -27,6 +28,8 @@ router.patch('/user-avatar/update',
 );
 // /api/cabinet/user-avatar/delete
 router.delete('/user-avatar/delete',authCabinet, deleteUserAvatar);
+// '/api/cabinet/posts/comments'
+router.get('/posts/comments', authCabinet, getAllCommentsToPosts);
 // /api/cabinet/user-chat-messages
 router.get('/user-chat-messages', authCabinet, getAllMessagesInRooms);
 
