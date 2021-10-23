@@ -22,6 +22,9 @@ export default {
   methods:{
     ...mapMutations('chat',{
       userClearChatDataMethod: 'clearData'
+    }),
+    ...mapMutations('auth',{
+      userClearAuthDataMethod: 'userLogOut'
     })
   },
   mounted(){
@@ -34,6 +37,8 @@ export default {
       });
       //Clear chat state
       this.userClearChatDataMethod();
+      //Clear blog auth state
+      this.userClearAuthDataMethod();
     }
     //Just site log out
     if(message === 'unauthenticated'){
@@ -41,6 +46,8 @@ export default {
         message: 'The user has logged out of the personal account',
         duration: 4000
       });
+      //Clear blog auth state
+      this.userClearAuthDataMethod();
     }
   }
 }
