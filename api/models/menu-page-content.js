@@ -11,6 +11,10 @@ const MenuPageContentSchema = new Schema({
   contentBlockThree: { type: String, default: undefined },
   singleImage: String,
   date: { type: Date, default: Date.now },
+  views: { type: Number, default: 0 },
+  likes: [
+    { type: Schema.Types.ObjectId, ref: 'User' }
+  ]
   //page: { type: Schema.Types.ObjectId, ref: 'Menu-page' }
 });
 

@@ -13,8 +13,10 @@ const postSchema = new Schema({
   comments: [
     { type: Schema.Types.ObjectId, ref: 'Comment' }
   ],
-  user: { type: Schema.Types.ObjectId, ref: 'User' }
-
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  likes: [
+    { type: Schema.Types.ObjectId, ref: 'User' }
+  ]
 })
 
 module.exports = model('Post', postSchema)
