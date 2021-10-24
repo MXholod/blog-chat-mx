@@ -1,8 +1,14 @@
 <template>
   <section class="container">
     <el-row>
-      <el-col :span="16">
+      <el-col :span="12">
         <h1 class="header-content">{{ result.pageHeader }}</h1>
+      </el-col>
+      <el-col :span="4">
+        <small class="views-content">Total views
+          <i class="el-icon-view"></i>
+          {{ result.views+1 }}
+        </small>
       </el-col>
       <el-col :span="8">
         <span class="date-content">Published on: {{ new Date(result.date).toLocaleString() }}</span>
@@ -52,6 +58,8 @@ export default {
   async asyncData({ $axios, route, redirect }){
     try{
       const result = await $axios.get(`/api/menu_page/page/${route.params.pathMatch}`);
+      //Query "put" to add one view of the page
+      await $axios.$put(`/api/menu_page/page/${route.params.pathMatch}/${result.data.pageContent.views}`);
       return { result: result.data.pageContent }
     }catch(e){
       return redirect('/');
@@ -84,6 +92,13 @@ $container-width: 960px;
   color: #12128f;
   font-size: 1.2em;
   font-family: Tahoma, Verdana, sans-serif;
+}
+.views-content{
+  font-size: .8em;
+  font-weight: bold;
+  & i{
+    margin-left: 5%;
+  }
 }
 .date-content{
   font-size: .8em;
