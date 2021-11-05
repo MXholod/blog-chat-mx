@@ -1,16 +1,17 @@
 const { Router } = require('express');
 const router = Router();
 const passport = require('passport');
+const authCabinet = passport.authenticate('jwt-cabinet', {session: false});
 const authCabinetAdmin = passport.authenticate('jwt-cabinet-admin', {session: false});
 const validationParamPageContent = require('./../middleware/page-content');
 const upload = require('./../middleware/file-uploads');
 const uploadOptimized = require('./../middleware/file-uploads-optimized');
-const { getMenuPages, getMenuPageContent, createPage, getFullPageContent, updatePage, deleteImage, deletePageData, addViewToPage } = require('./../controllers/menu-page');
+const { getMenuPages, getMenuPageContent, createPage, getFullPageContent, updatePage, deleteImage, deletePageData, addViewToPage, changeLikeState } = require('./../controllers/menu-page');
 
 // '/api/menu_page/page'
 router.get('/page', getMenuPages);
 // '/api/menu_page/page/:reference'
-router.get('/page/:reference', validationParamPageContent(), getMenuPageContent);
+router.get('/page/:reference/:jwt?', validationParamPageContent(), getMenuPageContent);
 // '/api/menu_page/create'
 router.post('/create', authCabinetAdmin, upload.single('singleImage'), uploadOptimized, createPage);
 // '/api/menu_page/full_page/:reference'
@@ -23,5 +24,7 @@ router.patch('/delete/:collectionId/:imgName', authCabinetAdmin, deleteImage);
 router.delete('/page/delete', authCabinetAdmin, deletePageData);
 // '/api/menu_page/:reference/:views'
 router.put('/page/:reference/:views', validationParamPageContent(), addViewToPage);
+// '/api/menu_page/page/likes/like_update/:reference'
+router.put('/page/likes/like_update/:reference', authCabinet, validationParamPageContent(), changeLikeState);
 
 module.exports = router;
