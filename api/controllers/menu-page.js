@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { MenuPage, MenuPageContent } = require('./../helpers/db');
+const jwtDecode = require('jwt-decode');
+const { MenuPage, MenuPageContent, isValidId } = require('./../helpers/db');
 const { validationResult } = require('express-validator');
 const { createPageItemIdV4, createReferenceV5 } = require('./../helpers/uuid');
 
@@ -28,7 +29,29 @@ async function getMenuPageContent(req, res){
      }).populate('pageContent');
     if(currentPageContent){
       const { title, pageHeader, singleImage, date, views, likes } = currentPageContent.pageContent;
-      const newPageContent = { title,pageHeader,singleImage,date,views,likes };
+      // We send 'likeState' to the client as response
+      let likeState = true;
+      //User authenticated
+      if(req.params.jwt !== undefined){
+        let jwtDecoded = jwtDecode(req.params.jwt) || {};
+        //Difine current time
+        const currentTime = new Date().getTime() / 1000;
+        const expired = jwtDecoded.exp || 0;
+        //Access Token is valid
+        if(currentTime < expired){
+          let userId = jwtDecoded.id;
+          //Check is the page liked
+          const index = likes.findIndex(id => {
+            return String(id) === String(userId);
+          });
+          //If a person has not liked the post yet
+          if(index === -1){
+            //The page is not liked
+            likeState = false;
+          }
+        }
+      }
+      const newPageContent = { title,pageHeader,singleImage,date,views,likes,likeState };
       if(currentPageContent.pageContent.isBlockOne){
         newPageContent.headerBlockOne = currentPageContent.pageContent.headerBlockOne;
         newPageContent.contentBlockOne = currentPageContent.pageContent.contentBlockOne;
@@ -235,6 +258,51 @@ async function addViewToPage(req, res){
   }
 }
 
+async function changeLikeState(req, res){
+  const { id: _id } = req.user;
+  const referencePage = req.params.reference;
+  //'isValidId' checks if '_id' is mongoose id: mongoose.Types.ObjectId.isValid(_id)
+  if(!isValidId(_id)) return res.status(404).send('There is no page');
+  try{
+    //Get likes from related document collection
+    const pageWithContent = await MenuPage.find({
+      reference: referencePage
+    }).populate('pageContent');
+    //
+    if(!pageWithContent.length) res.status(404).json({ message: "Page is absent" });
+    //Check if user is already liked the page
+    let likes = pageWithContent[0].pageContent.likes;
+    //Check is the page liked
+    const index = likes.findIndex(id => {
+      return String(id) === String(_id);
+    });
+    // We send 'likeState' to the client as response
+    let likeState = false;
+    //If a person has not liked the post yet
+    if(index === -1){
+      likes.push(_id);
+      //The page is liked
+      likeState = true;
+    }else{
+      //Remove person's like
+      likes = likes.filter(id => {
+        return String(id) !== String(_id);
+      });
+    }
+    //Like updated in the array of likes
+    //The 'page' beneath is instead of this - { likes: (page.likes + 1) }
+    const pageUpdated = await MenuPageContent.findByIdAndUpdate(
+      { _id: pageWithContent[0].pageContent._id },
+      { likes },
+      { new: true });
+    if(pageUpdated){
+      return res.status(200).json({ message: "Likes state changed", likeState });
+    }
+  }catch(e){
+    res.status(404).json({ message: "Can't find the page", error: e });
+  }
+}
+
 module.exports = {
   getMenuPages,
   getMenuPageContent,
@@ -243,5 +311,6 @@ module.exports = {
   updatePage,
   deleteImage,
   deletePageData,
-  addViewToPage
+  addViewToPage,
+  changeLikeState
 };
