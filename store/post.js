@@ -97,9 +97,9 @@ export const actions = {
       throw e
     }
   },
-  async getPost({ commit }, id){
+  async getPost({ commit }, id, jwt = ''){
     try{
-      const result = await this.$axios.get('/api/post/'+id);
+      const result = await this.$axios.get('/api/post/'+id+'/'+jwt);
       if(result.data && result.data.post){
         return result.data.post;
       }
