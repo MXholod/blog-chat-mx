@@ -269,7 +269,7 @@ async function changeLikeState(req, res){
       reference: referencePage
     }).populate('pageContent');
     //
-    if(!pageWithContent.length) res.status(404).json({ message: "Page is absent" });
+    if(!pageWithContent.length) return res.status(404).json({ message: "Page is absent" });
     //Check if user is already liked the page
     let likes = pageWithContent[0].pageContent.likes;
     //Check is the page liked
@@ -278,7 +278,7 @@ async function changeLikeState(req, res){
     });
     // We send 'likeState' to the client as response
     let likeState = false;
-    //If a person has not liked the post yet
+    //If a person has not liked the page yet
     if(index === -1){
       likes.push(_id);
       //The page is liked
