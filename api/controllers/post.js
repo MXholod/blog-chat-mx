@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { Post, Comment } = require('./../helpers/db');
+const jwtDecode = require('jwt-decode');
+const { Post, Comment, isValidId } = require('./../helpers/db');
 
 // Create new Post - in Admin
 module.exports.createPost = async (request, response) => {
@@ -157,7 +158,29 @@ module.exports.getClientPostById = (request, response) => {
         return response.status(400).json({ message: e.message, post: null });
       }
       if(post){
-        return response.status(200).json({ message: "The post data" , post });
+        // We send 'likeState' to the client as response
+        let likeState = true;
+        //User authenticated
+        if(request.params.jwt !== undefined){
+          let jwtDecoded = jwtDecode(request.params.jwt) || {};
+          //Difine current time
+          const currentTime = new Date().getTime() / 1000;
+          const expired = jwtDecoded.exp || 0;
+          //Access Token is valid
+          if(currentTime < expired){
+            let userId = jwtDecoded.id;
+            //Check is the page liked
+            const index = post.likes.findIndex(id => {
+              return String(id) === String(userId);
+            });
+            //If a person has not liked the post yet
+            if(index === -1){
+              //The page is not liked
+              likeState = false;
+            }
+          }
+        }
+        return response.status(200).json({ message: "The post data" , post, likeState });
       }
     });
   } catch (e) {
@@ -197,4 +220,47 @@ const removeFile = (file)=>{
       console.error(err);
     }
   });
+}
+
+module.exports.changeLikeState = async function(req, res){
+  const { id: _id } = req.user;
+  const postId = req.params.id;
+  //'isValidId' checks if '_id' is mongoose id: mongoose.Types.ObjectId.isValid(_id)
+  if(!isValidId(_id)) return res.status(404).send('There is no post');
+  try{
+    //Get likes from related document collection
+    const post = await Post.findById(postId);
+    //
+    if(!post) return res.status(404).json({ message: "Post is absent" });
+    //Check if user is already liked the page
+    let likes = post.likes;
+    //Check is the post liked
+    const index = likes.findIndex(id => {
+      return String(id) === String(_id);
+    });
+    // We send 'likeState' to the client as response
+    let likeState = false;
+    //If a person has not liked the post yet
+    if(index === -1){
+      likes.push(_id);
+      //The post is liked
+      likeState = true;
+    }else{
+      //Remove person's like
+      likes = likes.filter(id => {
+        return String(id) !== String(_id);
+      });
+    }
+    //Like updated in the array of likes
+    //The 'post' beneath is instead of this - { likes: (post.likes + 1) }
+    const postUpdated = await Post.findByIdAndUpdate(
+      { _id: post._id },
+      { likes },
+      { new: true });
+    if(postUpdated){
+      return res.status(200).json({ message: "Likes state changed", likeState });
+    }
+  }catch(e){
+    res.status(404).json({ message: "Can't find the post", error: e });
+  }
 }
