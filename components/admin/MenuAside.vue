@@ -21,6 +21,10 @@
             <i class="el-icon-tickets"></i>
             <span>List of posts</span>
         </el-menu-item>
+        <el-menu-item index="/admin/sidebar">
+            <i class="el-icon-copy-document"></i>
+            <span>Sidebar</span>
+        </el-menu-item>
         <el-menu-item index="/admin/user">
             <i class="el-icon-user"></i>
             <span>Users</span>
