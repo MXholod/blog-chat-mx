@@ -45,3 +45,16 @@ module.exports.changeSidebarVisibility = async function(req, res){
     return res.status(400).json({message: "Sidebar visible", sidebarVisibility: true });
   }
 }
+
+module.exports.displaySidebar = async function(req, res){
+  try{
+    //Get the settings object
+    const settings = await SiteSettings.find({});
+    if(!settings || !settings[0]){
+      return res.status(400).json({message: "Sidebar", sidebar: null });
+    }
+    return res.status(200).json({message: "Sidebar", sidebar: settings[0].sidebarVisibility });
+  }catch(e){
+    return res.status(400).json({message: "Sidebar", sidebar: null });
+  }
+}
