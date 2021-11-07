@@ -7,9 +7,9 @@ const {
   changeSidebarVisibility
  } = require('./../controllers/sidebar');
 
-// 'api/sidebar/visibility'
-router.get('/visibility',authCabinetAdmin, getSidebarVisibility);
-// 'api/sidebar/visibility:state'
-router.patch('/visibility/:state',authCabinetAdmin, changeSidebarVisibility);
+// 'api/sidebar/admin/visibility'
+router.get('/admin/visibility',authCabinetAdmin, getSidebarVisibility);
+// 'api/sidebar/admin/visibility:state'
+router.patch('/admin/visibility/:state',authCabinetAdmin, changeSidebarVisibility);
 
 module.exports = router;

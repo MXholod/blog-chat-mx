@@ -63,7 +63,7 @@ export default {
     let sidebarVisibility = true;
     try{
       //Get sidebar visibility
-      const result = await context.$axios.$get('api/sidebar/visibility');
+      const result = await context.$axios.$get('api/sidebar/admin/visibility');
       if(result){
         //Sidebar visibility has been changed
         sidebarVisibility = result.sidebarVisibility;
@@ -94,7 +94,7 @@ export default {
       const sidebarState = Number(!this.sidebarVisibility);
       try{
         window.setTimeout(async ()=>{
-          const result = await this.$axios.$patch(`api/sidebar/visibility/${sidebarState}`);
+          const result = await this.$axios.$patch(`api/sidebar/admin/visibility/${sidebarState}`);
           if(result){
             //Sidebar visibility has been changed
             this.sidebarVisibility = result.sidebarVisibility;
