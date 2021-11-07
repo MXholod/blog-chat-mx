@@ -4,7 +4,7 @@
       <Navigation />
     </el-header>
     <el-container>
-      <el-aside width="200px">Aside</el-aside>
+      <el-aside v-if="sidebar" width="200px">Aside</el-aside>
       <el-main>
         <Nuxt />
       </el-main>
@@ -44,6 +44,24 @@ export default {
           type: 'error'
         })
       }
+    }
+  },
+  data(){
+    return {
+      sidebar: true
+    }
+  },
+  async fetch() {
+    try{
+      const result = await this.$axios.$get('/api/sidebar/visibility');
+      if(result){
+        this.sidebar = result.sidebar;
+      }else{
+        this.sidebar = true;
+      }
+    }catch(e){
+      //console.log(e);
+      this.sidebar = true;
     }
   }
 }
