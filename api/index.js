@@ -26,6 +26,7 @@ const chatMessage = require('./routes/chat-message');
 const siteSettings = require('./routes/site-settings');
 const systemMessage = require('./routes/chat-system-messages');
 const chartStatistics = require('./routes/chart-statistics');
+const sidebar = require('./routes/sidebar');
 
 //Mongo connection
 connectDB();
@@ -51,6 +52,7 @@ app.use('/chat_message', chatMessage);
 app.use('/settings', siteSettings);
 app.use('/chat_system', systemMessage);
 app.use('/chart_statistics', chartStatistics);
+app.use('/sidebar', sidebar);
 
 //Create server for Socket.IO
 const port = process.env.PORT_API || 3001;
