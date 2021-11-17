@@ -29,23 +29,68 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="Popular posts" name="second">
-
+          <h3>Set the number of posts displayed on the sidebar</h3>
+          <block-list :dataList="popularPosts.dataToPopularPosts"
+            parentBlock="popular_posts"
+            :settings="popularPosts.settings"
+            :loadAgainButton="popularPosts.loadAgainButton"
+            @blockType="loadDataAgain"
+            @blockUpdateData="blockUpdateData"
+            :loadingStatus="popularPosts.loading">
+            <template v-slot:title>
+              <h3>Popular 10 posts</h3>
+            </template>
+          </block-list>
         </el-tab-pane>
         <el-tab-pane label="Popular pages" name="third">
-
+          <h3>Set the number of pages displayed on the sidebar</h3>
+          <block-list :dataList="popularPages.dataToPopularPages"
+            parentBlock="popular_pages"
+            :settings="popularPages.settings"
+            :loadAgainButton="popularPages.loadAgainButton"
+            @blockType="loadDataAgain"
+            @blockUpdateData="blockUpdateData"
+            :loadingStatus="popularPages.loading">
+            <template v-slot:title>
+              <h3>Popular 10 pages</h3>
+            </template>
+          </block-list>
         </el-tab-pane>
         <el-tab-pane label="Recently created posts" name="fourth">
-
+          <h3>Set the number of recently created posts displayed on the sidebar</h3>
+          <block-list :dataList="recentPosts.dataToRecentPosts"
+            parentBlock="recent_posts"
+            :settings="recentPosts.settings"
+            :loadAgainButton="recentPosts.loadAgainButton"
+            @blockType="loadDataAgain"
+            @blockUpdateData="blockUpdateData"
+            :loadingStatus="recentPosts.loading">
+            <template v-slot:title>
+              <h3>Recent 10 posts</h3>
+            </template>
+          </block-list>
         </el-tab-pane>
         <el-tab-pane label="Recently created pages" name="fifth">
-
+          <h3>Set the number of recently created pages displayed on the sidebar</h3>
+          <block-list :dataList="recentPages.dataToRecentPages"
+            parentBlock="recent_pages"
+            :settings="recentPages.settings"
+            :loadAgainButton="recentPages.loadAgainButton"
+            @blockType="loadDataAgain"
+            @blockUpdateData="blockUpdateData"
+            :loadingStatus="recentPages.loading">
+            <template v-slot:title>
+              <h3>Recent 10 pages</h3>
+            </template>
+          </block-list>
         </el-tab-pane>
       </el-tabs>
     </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from 'vuex';
+import BlockList from './../../components/admin/sidebar/BlockList.vue';
 export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
@@ -60,24 +105,65 @@ export default {
       }
       context.redirect('/');
     }
+    let sidebarSettings = null;
     let sidebarVisibility = true;
     try{
       //Get sidebar visibility
-      const result = await context.$axios.$get('api/sidebar/admin/visibility');
+      const result = await context.$axios.$get('api/sidebar/admin/settings');
       if(result){
         //Sidebar visibility has been changed
-        sidebarVisibility = result.sidebarVisibility;
+        sidebarVisibility = result.sidebarSettings.sidebarVisibility;
+        sidebarSettings = result.sidebarSettings;
       }
     }catch(e){
       console.log(e);
     }
     return {
       userLogoutRefresh: userData.sessionEnd ? true : false,
-      sidebarVisibility
+      sidebarVisibility,
+      popularPosts: {
+        settings: {
+          limit: sidebarSettings?.popularPostsLimit,
+          visibility: sidebarSettings?.popularPostsVisibility
+        },
+        dataToPopularPosts: null,
+        loadAgainButton: false,
+        loading: false
+      },
+      popularPages: {
+        settings: {
+          limit: sidebarSettings?.popularPagesLimit,
+          visibility: sidebarSettings?.popularPagesVisibility
+        },
+        dataToPopularPages: null,
+        loadAgainButton: false,
+        loading: false
+      },
+      recentPosts: {
+        settings: {
+          limit: sidebarSettings?.recentlyCreatedPostsLimit,
+          visibility: sidebarSettings?.recentlyCreatedPostsVisibility
+        },
+        dataToRecentPosts: null,
+        loadAgainButton: false,
+        loading: false
+      },
+      recentPages: {
+        settings: {
+          limit: sidebarSettings?.recentlyCreatedPagesLimit,
+          visibility: sidebarSettings?.recentlyCreatedPagesVisibility
+        },
+        dataToRecentPages: null,
+        loadAgainButton: false,
+        loading: false
+      }
     };
   },
   layout: 'admin',
   name: 'sidebar',
+  components:{
+    BlockList
+  },
   computed: mapState('auth', ['user']),
   data(){
     return {
@@ -86,7 +172,80 @@ export default {
     }
   },
   methods:{
-    async handleTabs(tab, event) {},
+    async handleTabs(tab, event) {
+      if(tab.name === 'second'){
+        this.requestApi('popular_posts');
+      }
+      if(tab.name === 'third'){
+        this.requestApi('popular_pages');
+      }
+      if(tab.name === 'fourth'){
+        this.requestApi('recent_posts');
+      }
+      if(tab.name === 'fifth'){
+        this.requestApi('recent_pages');
+      }
+    },
+    requestApi(partUrl){
+      //Reset 'loadAgainButton' to default value
+      this.popularPosts.loadAgainButton = false;
+      this.popularPages.loadAgainButton = false;
+      this.recentPosts.loadAgainButton = false;
+      this.recentPages.loadAgainButton = false;
+        try{
+          window.setTimeout(async ()=>{
+            let url, result;
+            switch(partUrl){
+              case 'popular_posts' :
+                url = `api/sidebar/admin/posts/${partUrl}`;
+                result = await this.$axios.$get(url);
+                if(result){
+                  this.popularPosts.dataToPopularPosts = result.posts;
+                }
+                //401. try to load data again
+                if(result === undefined){
+                  this.popularPosts.loadAgainButton = true;
+                }
+                break;
+              case 'popular_pages' :
+                url = `api/sidebar/admin/pages/${partUrl}`;
+                result = await this.$axios.$get(url);
+                if(result){
+                  this.popularPages.dataToPopularPages = result.pages;
+                }
+                //401 try to load data again
+                if(result === undefined){
+                  this.popularPages.loadAgainButton = true;
+                }
+                break;
+              case 'recent_posts' :
+                url = `api/sidebar/admin/posts/${partUrl}`;
+                result = await this.$axios.$get(url);
+                if(result){
+                  this.recentPosts.dataToRecentPosts = result.posts;
+                }
+                //401 try to load data again
+                if(result === undefined){
+                  this.recentPosts.loadAgainButton = true;
+                }
+                break;
+              case 'recent_pages' :
+                url = `api/sidebar/admin/pages/${partUrl}`;
+                result = await this.$axios.$get(url);
+                if(result){
+                  this.recentPages.dataToRecentPages = result.pages;
+                }
+                //401 try to load data again
+                if(result === undefined){
+                  this.recentPages.loadAgainButton = true;
+                }
+                break;
+              }
+          },2000);
+        }catch(e){
+          console.log(e);
+        }
+    },
     handleSidebarVisibility(){
       //Start pre-loading
       this.sidebarLoading = true;
@@ -103,6 +262,38 @@ export default {
         },2000);
       }catch(e){
         console.log("Error ",e);
+      }
+    },
+    //Event from child
+    loadDataAgain(blockName){
+      this.requestApi(blockName);
+    },
+    //Event from child
+    blockUpdateData(dataUpdating){
+      try{
+        //Creating dynamically object property from the string
+        let blockTypesArr = dataUpdating.blockType.split('_');
+        let upper = blockTypesArr[1][0].toUpperCase();
+        let upperRest = blockTypesArr[1].substr(1);
+        const blockProperty = blockTypesArr[0]+upper+upperRest;
+        window.setTimeout(async ()=>{
+          const result = await this.$axios.$put('api/sidebar/admin/block',{
+            data:{
+              ...dataUpdating
+            }
+          });
+          if(result){
+            //Updating 'settings' object of the current block
+            this[blockProperty].settings = {
+              limit: result.updatedSettings.newLimit,
+              visibility: result.updatedSettings.newVisibility
+            };
+          }
+          //Release 'Submit' button in child component
+          this[blockProperty].loading = !dataUpdating.loadingStatus;
+        },3000);
+      }catch(e){
+        //console.log(e);
       }
     }
   },
