@@ -5,7 +5,7 @@ import Vue from "vue";
 if (!Vue.__page_menu_recursive_mixin__) {
   Vue.__page_menu_recursive_mixin__ = true
   Vue.mixin({ methods: {
-      createNestedMenuStructure(pages){
+      createNestedMenuStructure(pages, isOnClient = true){
         const topArr = [];
         const pagesArr = [];
         //Only for top level parents
@@ -13,7 +13,7 @@ if (!Vue.__page_menu_recursive_mixin__) {
           let i = 0;
           while(i < pages.length){
             // If 'pageHidden' is true, the found item should not be displayed
-            if(pages[i].pageHidden){
+            if(isOnClient && pages[i].pageHidden){
               i++;
               continue;
             }

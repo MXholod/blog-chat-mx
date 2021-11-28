@@ -142,7 +142,7 @@ export default {
               //Reset item name
               this.currentPageItem = null;
             //Create tree again
-            this.createdPagesStructure = this.createNestedMenuStructure(menuItems.data.pages);
+            this.createdPagesStructure = this.createNestedMenuStructure(menuItems.data.pages, false);// false - works on admin
             //Force update component
             this.componentRerender +=1;
           }catch(e){
@@ -225,8 +225,8 @@ export default {
           try{
             const menuItems = await this.$axios.get('/api/menu_page/page');
             if(!menuItems.data.pages) throw new Error("Can't reload cascader");
-            //The 'createNestedMenuStructure' function is taken from 'plugin' adds 'childrenItems = []' to each item
-            this.createdPagesStructure = this.createNestedMenuStructure(menuItems.data.pages);
+            //The 'createNestedMenuStructure' function is taken from 'plugin' adds 'childrenItems = []' to each item, false - works on admin
+            this.createdPagesStructure = this.createNestedMenuStructure(menuItems.data.pages, false);
             //Force update component and reset 'currentPageItem' to null
             this.componentRerender +=1;
             this.currentPageItem = null;
@@ -237,8 +237,8 @@ export default {
       }
   },
   mounted(){
-    //The 'createNestedMenuStructure' function is taken from 'plugin' adds 'childrenItems = []' to each item
-    this.createdPagesStructure = this.createNestedMenuStructure(this.menuItemsTree);
+    //The 'createNestedMenuStructure' function is taken from 'plugin' adds 'childrenItems = []' to each item, false - works on admin
+    this.createdPagesStructure = this.createNestedMenuStructure(this.menuItemsTree, false);
     //Get a biggest item value
     this.biggestDepthItems = this.getBiggestItemDepth(this.menuItemsList);
     //Get the free parent item place (depends on Db data)
