@@ -4,7 +4,7 @@
       <Navigation />
     </el-header>
     <el-container>
-      <el-aside v-if="sidebar" width="200px">Aside</el-aside>
+      <side-bar v-if="sidebar" :sidebarBlocks="sidebarBlocks" />
       <el-main>
         <Nuxt />
       </el-main>
@@ -14,10 +14,12 @@
 </template>
 
 <script>
-import Navigation from './../components/site/Navigation'
+import Navigation from './../components/site/Navigation';
+import SideBar from './../components/site/sidebar/SideBar';
 export default {
   components: {
-    Navigation
+    Navigation,
+    SideBar
   },
   computed: {
     error () {
@@ -48,16 +50,20 @@ export default {
   },
   data(){
     return {
-      sidebar: true
+      sidebar: true,
+      sidebarBlocks: {}
     }
   },
   async fetch() {
     try{
       const result = await this.$axios.$get('/api/sidebar/visibility');
-      if(result){
-        this.sidebar = result.sidebar;
-      }else{
+      //'sidebar' isn't NULL
+      if(result && !!result.sidebar){
         this.sidebar = true;
+        this.sidebarBlocks = result.sidebar;
+      }else{
+        this.sidebar = false;
+        this.sidebarBlocks = {};
       }
     }catch(e){
       //console.log(e);
