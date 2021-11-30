@@ -56,6 +56,49 @@ module.exports.changeSidebarVisibility = async function(req, res){
   }
 }
 
+//A private function that displays block data on the sidebar.
+//'model' - Mongoose Model, 'propTocompare' - 'views' or 'date'
+function sidebarBlock(docs, propTocompare, modelName){
+  const modelReduced = [];
+  //Getting only the data we need
+  docs.forEach( doc => {
+    if(modelName === 'post'){
+      modelReduced.push({
+        id: doc._id,
+        title: doc.title,
+        [propTocompare] : doc[propTocompare]
+      });
+    }
+    if(modelName === 'page'){
+      if(doc.pageHidden) return true;
+      modelReduced.push({
+        id: doc._id,
+        reference: doc.reference,
+        title: doc.pageName,
+        [propTocompare] : doc.pageContent[propTocompare]
+      });
+    }
+  });
+  //Sorting posts by views
+  let sortedmodelReduced = modelReduced.sort(function(a,b){
+    if(a[propTocompare] > b[propTocompare]) return 1;
+    if(a[propTocompare] < b[propTocompare]) return -1;
+    if(a[propTocompare] === b[propTocompare]) return 0;
+  });
+  if(propTocompare === "date"){
+    sortedmodelReduced = sortedmodelReduced.map((obj)=>{
+      let currentDate = new Date(obj.date);
+      let date = currentDate.getDate() <= 9 ? '0'+currentDate.getDate() : currentDate.getDate();
+      let month = ("0"+(currentDate.getMonth()+1)).slice(-2);
+      let year = String(currentDate.getFullYear()).slice(-2);
+      obj.date = `${date}.${month}.${year}`;
+      return obj;
+    });
+  }
+  //Reverse array
+  return sortedmodelReduced.reverse();
+}
+
 module.exports.displaySidebar = async function(req, res){
   try{
     //Get the settings object
@@ -63,7 +106,62 @@ module.exports.displaySidebar = async function(req, res){
     if(!settings || !settings[0]){
       return res.status(400).json({message: "Sidebar", sidebar: null });
     }
-    return res.status(200).json({message: "Sidebar", sidebar: settings[0].sidebarVisibility });
+    //Sidebar is not visible on the site. The 'sidebarVisibility' is 'false'
+    if(!settings[0].sidebarVisibility){
+      return res.status(200).json({message: "Sidebar", sidebar: null });
+    }
+    //Sidebar is visible on the site
+    const sidebar = {
+      popularPosts: [],
+      popularPages: [],
+      recentPosts: [],
+      recentPages: []
+    };
+    //Find all posts
+    const posts = await Post.find({});
+    //Get popular posts
+    if(settings[0].popularPostsVisibility){
+      if(posts && !!posts.length) {
+        let sortedPopPosts = sidebarBlock(posts, 'views', 'post');
+        if(sortedPopPosts.length > 0 && settings[0].popularPostsLimit !== 0){
+          const popPosts = sortedPopPosts.slice(0, settings[0].popularPostsLimit);
+          sidebar.popularPosts = popPosts;
+        }
+      }
+    }
+    //Get recently created posts
+    if(settings[0].recentlyCreatedPostsVisibility){
+      if(posts && !!posts.length) {
+      let sortedRecPosts = sidebarBlock(posts, 'date', 'post');
+        if(sortedRecPosts.length > 0 && settings[0].recentlyCreatedPostsLimit !== 0){
+          const recentPosts = sortedRecPosts.slice(0, settings[0].recentlyCreatedPostsLimit);
+          sidebar.recentPosts = recentPosts;
+        }
+      }
+    }
+    //Find all pages
+    const pages = await MenuPage.find({}).populate('pageContent');
+    //Get popular pages
+    if(settings[0].popularPagesVisibility){
+      if(pages && !!pages.length) {
+        let sortedPopPages = sidebarBlock(pages, 'views', 'page');
+        if(sortedPopPages.length > 0 && settings[0].popularPagesLimit !== 0){
+          const popPages = sortedPopPages.slice(0, settings[0].popularPagesLimit);
+          sidebar.popularPages = popPages;
+        }
+      }
+    }
+    //Get recently created pages
+    if(settings[0].recentlyCreatedPagesVisibility){
+      if(pages && !!pages.length) {
+        let sortedRecPages = sidebarBlock(pages, 'date', 'page');
+        if(sortedRecPages.length > 0 && settings[0].recentlyCreatedPagesLimit !== 0){
+          const recentPages = sortedRecPages.slice(0, settings[0].recentlyCreatedPagesLimit);
+          sidebar.recentPages = recentPages;
+        }
+      }
+    }
+    return res.status(200).json({message: "Sidebar", sidebar });
   }catch(e){
     return res.status(400).json({message: "Sidebar", sidebar: null });
   }
