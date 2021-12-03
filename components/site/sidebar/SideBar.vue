@@ -48,6 +48,36 @@ export default {
   components:{
     SidebarBlock
   },
+  watch:{
+    'sidebarBlocks.popularPosts':{
+      handler: function (after, before) {
+        //console.log("Changes ", before," ",after);
+        this.popularPosts = after;
+      },
+      deep: true
+    },
+    'sidebarBlocks.popularPages':{
+      handler: function (after, before) {
+        //console.log("Changes ", before," ",after);
+        this.popularPages = after;
+      },
+      deep: true
+    },
+    'sidebarBlocks.recentPosts':{
+      handler: function (after, before) {
+        //console.log("Changes ", before," ",after);
+        this.recentPosts = after;
+      },
+      deep: true
+    },
+    'sidebarBlocks.recentPages':{
+      handler: function (after, before) {
+        //console.log("Changes ", before," ",after);
+        this.recentPages = after;
+      },
+      deep: true
+    }
+  },
   data(){
     return {
       //Get 'popularPosts', 'popularPages', 'recentPosts', 'recentPages',
@@ -55,7 +85,7 @@ export default {
     }
   },
   mounted(){
-    console.log("Sidebar blocks ",this.sidebarBlocks);
+    //console.log("Sidebar blocks ",this.sidebarBlocks);
   }
 }
 </script>

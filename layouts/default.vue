@@ -51,7 +51,12 @@ export default {
   data(){
     return {
       sidebar: true,
-      sidebarBlocks: {}
+      sidebarBlocks: {
+        popularPosts: [],
+        popularPages: [],
+        recentPosts: [],
+        recentPages: []
+      }
     }
   },
   async fetch() {
