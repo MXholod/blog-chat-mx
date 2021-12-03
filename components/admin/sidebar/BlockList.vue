@@ -15,10 +15,10 @@
       <main class="block-list__main">
         <div v-if="Array.isArray(dataList) && dataList.length > 0">
           <ul>
-            <li v-for="(item, index) of dataList" :key="item.id">
+            <li v-for="(item, index) of dataList" :key="item.id" :class="(item.views && item.pageHidden) || (item.date && item.pageHidden) ? 'block-list__hidden-page' : ''">
               <div v-if="index <= 9" class="block-list__top-ten">
                 <span>{{ item.title }}</span>
-                <span v-if="item.views">Views: {{ item.views }}</span>
+                <span v-if="item.views >= 0">Views: {{ item.views }}</span>
                 <span v-if="item.date">{{ new Date(item.date).toLocaleString() }}</span>
               </div>
               <div v-else>
@@ -164,6 +164,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@keyframes hidden-page{
+  0%{ border-color: #cc06cc; }
+  20%{ border-color: #860505; }
+  40%{ border-color: #cc06cc }
+  60%{ border-color: #860505; }
+  80%{ border-color: #cc06cc }
+  100%{ border-color: #860505; }
+}
 .block-list{
   border: 1px solid #cacaca;
   box-shadow: 0px 2px 8px 1px #adadad;
@@ -209,6 +217,29 @@ export default {
       list-style-type: none;
       li{
         padding-top:.4em;
+        position:relative;
+        &.block-list__hidden-page{
+          overflow: hidden;
+          &::before{
+            content: 'The page is hidden';
+            position:absolute;
+            display:block;
+            height:15px;
+            top:10px;
+            right:-36%;
+            padding:1px 5px;
+            border-left: 10px solid #d31111;
+            color:#b30606;
+            font-size:.8em;
+            text-align: center;
+            background-color: #ebdcdc;
+            animation: hidden-page 5s linear 1s infinite alternate backwards;
+            transition: 2s right;
+          }
+          &:active:before{
+            right:0;
+          }
+        }
         span{
           display:inline-block;
           font-size: .9em;

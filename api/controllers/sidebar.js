@@ -201,22 +201,44 @@ module.exports.getPopularPages = async function(req, res){
     //Find all pages
     const pages = await MenuPage.find({}).populate('pageContent');
     if(!pages) return res.status(400).json({message: "Bad", pages: []});
+    const pagesReduced = [];
+    const pagesHiddenReduced = [];
     //Getting only the data we need
-    const pagesReduced = pages.map( page => {
-      return {
-        id: page._id,
-        title: page.pageName,
-        views: page.pageContent.views
+    pages.forEach( page => {
+      if(!page.pageHidden){
+        pagesReduced.push({
+          id: page._id,
+          title: page.pageName,
+          views: page.pageContent.views,
+          pageHidden: page.pageHidden
+        });
+      }else{
+        pagesHiddenReduced.push({
+          id: page._id,
+          title: page.pageName,
+          views: page.pageContent.views,
+          pageHidden: page.pageHidden
+        });
       }
     });
-    //Sorting posts by views
+    //Sorting pages by views
     let sortedPages = pagesReduced.sort(function(a,b){
+      if(a.views > b.views) return 1;
+      if(a.views < b.views) return -1;
+      if(a.views === b.views) return 0;
+    });
+    //Sorting hidden pages by views
+    let sortedHiddenPages = pagesHiddenReduced.sort(function(a,b){
       if(a.views > b.views) return 1;
       if(a.views < b.views) return -1;
       if(a.views === b.views) return 0;
     });
     //Reverse array
     sortedPages = sortedPages.reverse();
+    //Reverse hidden array
+    sortedHiddenPages = sortedHiddenPages.reverse();
+    //Merge arrays of pages and hiiden pages
+    sortedPages = sortedPages.concat(sortedHiddenPages);
     return res.status(200).json({message: "Ok", pages: sortedPages });
   }catch(e){
     return res.status(400).json({message: "Bad", pages: []});
@@ -257,22 +279,44 @@ module.exports.getRecentlyCreatedPages = async function(req, res){
     //Find all pages
     const pages = await MenuPage.find({}).populate('pageContent');
     if(!pages) return res.status(400).json({message: "Bad", pages: []});
+    const pagesReduced = [];
+    const pagesHiddenReduced = [];
     //Getting only the data we need
-    const pagesReduced = pages.map( page => {
-      return {
-        id: page._id,
-        title: page.pageName,
-        date: page.pageContent.date
+    pages.forEach( page => {
+      if(!page.pageHidden){
+        pagesReduced.push({
+          id: page._id,
+          title: page.pageName,
+          date: page.pageContent.date,
+          pageHidden: page.pageHidden
+        });
+      }else{
+        pagesHiddenReduced.push({
+          id: page._id,
+          title: page.pageName,
+          date: page.pageContent.date,
+          pageHidden: page.pageHidden
+        });
       }
     });
-    //Sorting posts by views
+    //Sorting pages by date
     let sortedPages = pagesReduced.sort(function(a,b){
+      if(a.date > b.date) return 1;
+      if(a.date < b.date) return -1;
+      if(a.date === b.date) return 0;
+    });
+    //Sorting hidden pages by date
+    let sortedHiddenPages = pagesHiddenReduced.sort(function(a,b){
       if(a.date > b.date) return 1;
       if(a.date < b.date) return -1;
       if(a.date === b.date) return 0;
     });
     //Reverse array
     sortedPages = sortedPages.reverse();
+    //Reverse array
+    sortedHiddenPages = sortedHiddenPages.reverse();
+    //Merge arrays of pages and hiiden pages
+    sortedPages = sortedPages.concat(sortedHiddenPages);
     return res.status(200).json({message: "Ok", pages: sortedPages });
   }catch(e){
     return res.status(400).json({message: "Bad", pages: []});
