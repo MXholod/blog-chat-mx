@@ -360,3 +360,63 @@ module.exports.updateBlockSettings = async function(req, res){
     return res.status(400).json({message: "Bad", updatedSettings: false});
   }
 }
+
+module.exports.searching = async function(req, res){
+  function stringToBool(v){ return v === "false" ? false : !!v; }
+  let searchstring = req.params.searchstring.trim().toLowerCase();
+  let posts = stringToBool(req.query.posts);
+  let pages = stringToBool(req.query.pages);
+
+  let dataPosts = [];
+  let dataPages = [];
+  try{
+    if(searchstring.length && searchstring.length > 0){
+      //Search by posts and pages
+      if(posts && pages){
+        const posts = await Post.find({});
+        if(posts && posts.length > 0){
+          posts.forEach(post =>{
+            if(post.title.toLowerCase().indexOf(searchstring, 0) !== -1){
+              dataPosts.push({ id: post._id, title: post.title });
+            }
+          });
+        }
+        const pages = await MenuPage.find({});
+        if(pages && pages.length > 0){
+          pages.forEach(page =>{
+            if(!page.pageHidden && (page.pageName.toLowerCase().indexOf(searchstring, 0) !== -1)){
+              dataPages.push({ id: page.reference, title: page.pageName });
+            }
+          });
+        }
+        return res.status(200).json({ message: "Ok", data: { posts: dataPosts, pages: dataPages } });
+      }
+      //Search by posts
+      if(posts){
+        const posts = await Post.find({});
+        if(posts && posts.length > 0){
+          posts.forEach(post =>{
+            if(post.title.toLowerCase().indexOf(searchstring, 0) !== -1){
+              dataPosts.push({ id: post._id, title: post.title });
+            }
+          });
+        }
+        return res.status(200).json({ message: "Ok", data: { posts: dataPosts, pages: dataPages } });
+      }
+      //Search by pages
+      if(pages){
+        const pages = await MenuPage.find({});
+        if(pages && pages.length > 0){
+          pages.forEach(page =>{
+            if(!page.pageHidden && (page.pageName.toLowerCase().indexOf(searchstring, 0) !== -1)){
+              dataPages.push({ id: page.reference, title: page.pageName });
+            }
+          });
+        }
+        return res.status(200).json({ message: "Ok", data: { posts: dataPosts, pages: dataPages } });
+      }
+    }
+  }catch(e){
+    return res.status(400).json({message: "Bad", data: { posts: dataPosts, pages: dataPages }});
+  }
+}
