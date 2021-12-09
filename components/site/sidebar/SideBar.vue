@@ -1,5 +1,6 @@
 <template>
   <el-aside class="sidebar">
+    <Search />
     <sidebar-block v-if="!!popularPosts.length"
       :blockData="popularPosts"
       blockType="posts"
@@ -41,12 +42,14 @@
 
 <script>
 import SidebarBlock from './SidebarBlock';
+import Search from './Search';
 export default {
   props: {
     sidebarBlocks: { type: Object }
   },
   components:{
-    SidebarBlock
+    SidebarBlock,
+    Search
   },
   watch:{
     'sidebarBlocks.popularPosts':{
