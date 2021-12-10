@@ -11,7 +11,10 @@ const schemaSiteSettings = new Schema({
   recentlyCreatedPostsLimit: { type: Number, default: 0 },
   recentlyCreatedPostsVisibility: { type: Boolean, default: true },
   recentlyCreatedPagesLimit: { type: Number, default: 0 },
-  recentlyCreatedPagesVisibility: { type: Boolean, default: true }
+  recentlyCreatedPagesVisibility: { type: Boolean, default: true },
+  searchVisibility: { type: Boolean, default: true },
+  searchByPosts: { type: Boolean, default: true },
+  searchByPages: { type: Boolean, default: true }
 });
 
 
