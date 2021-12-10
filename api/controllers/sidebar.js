@@ -22,6 +22,9 @@ module.exports.getSidebarSettings = async function(req, res){
         sidebarSettings.recentlyCreatedPostsVisibility = settings.recentlyCreatedPostsVisibility;
         sidebarSettings.recentlyCreatedPagesLimit = settings.recentlyCreatedPagesLimit;
         sidebarSettings.recentlyCreatedPagesVisibility = settings.recentlyCreatedPagesVisibility;
+        sidebarSettings.searchVisibility = settings.searchVisibility;
+        sidebarSettings.searchByPosts = settings.searchByPosts;
+        sidebarSettings.searchByPages = settings.searchByPages;
       return res.status(200).json({message: "Sidebar settings", sidebarSettings });
     }
     return res.status(400).json({message: "Sidebar settings", sidebarSettings: {} });
@@ -418,5 +421,32 @@ module.exports.searching = async function(req, res){
     }
   }catch(e){
     return res.status(400).json({message: "Bad", data: { posts: dataPosts, pages: dataPages }});
+  }
+}
+
+module.exports.setSearchSettings = async function(req, res){
+  let { id: userId, role } = req.user;
+  //If moderator then get admin _id to get access to the settings for the moderator
+  if(role !== 'admin'){
+    const admin = await User.findOne({ role: 'admin' });
+    if(!admin) return res.status(400).json({message: "Search settings", settings: null });
+    userId = admin._id;
+  }
+  if(!req.body.data) return res.status(400).json({message: "Bad", settings: null });
+  //Prepare data for updating
+  const data = {
+    searchByPosts: req.body.data.searchByPosts,
+    searchByPages: req.body.data.searchByPages,
+    searchVisibility: req.body.data.searchVisibility
+  };
+  try{
+    const updatedSettings = await SiteSettings.findOneAndUpdate({
+      adminId: userId
+    }, data, { new: true });
+    if(updatedSettings){
+      return res.status(200).json({message: "Ok", settings: data });
+    }
+  }catch(e){
+    return res.status(400).json({message: "Bad", settings: null });
   }
 }
