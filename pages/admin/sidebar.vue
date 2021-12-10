@@ -84,6 +84,11 @@
             </template>
           </block-list>
         </el-tab-pane>
+        <el-tab-pane label="Search settings" name="sixth">
+          <search-settings
+            :sidebarSearchBlock="sidebarSearchBlock"
+          />
+        </el-tab-pane>
       </el-tabs>
     </div>
 </template>
@@ -91,6 +96,7 @@
 <script>
 import { mapState } from 'vuex';
 import BlockList from './../../components/admin/sidebar/BlockList.vue';
+import SearchSettings from './../../components/admin/sidebar/SearchSettings.vue';
 export default {
   async asyncData(context){
     let jwt = context.store.getters['auth/isUserAuthenticated'].jwtToken;
@@ -107,6 +113,7 @@ export default {
     }
     let sidebarSettings = null;
     let sidebarVisibility = true;
+    let sidebarSearchBlock = null;
     try{
       //Get sidebar visibility
       const result = await context.$axios.$get('api/sidebar/admin/settings');
@@ -114,6 +121,11 @@ export default {
         //Sidebar visibility has been changed
         sidebarVisibility = result.sidebarSettings.sidebarVisibility;
         sidebarSettings = result.sidebarSettings;
+        sidebarSearchBlock = {
+          searchVisibility: result.sidebarSettings.searchVisibility,
+          searchByPosts: result.sidebarSettings.searchByPosts,
+          searchByPages: result.sidebarSettings.searchByPages
+        };
       }
     }catch(e){
       console.log(e);
@@ -121,6 +133,7 @@ export default {
     return {
       userLogoutRefresh: userData.sessionEnd ? true : false,
       sidebarVisibility,
+      sidebarSearchBlock,
       popularPosts: {
         settings: {
           limit: sidebarSettings?.popularPostsLimit,
@@ -162,7 +175,8 @@ export default {
   layout: 'admin',
   name: 'sidebar',
   components:{
-    BlockList
+    BlockList,
+    SearchSettings
   },
   computed: mapState('auth', ['user']),
   data(){
