@@ -11,7 +11,8 @@ const {
   getRecentlyCreatedPosts,
   getRecentlyCreatedPages,
   updateBlockSettings,
-  searching
+  searching,
+  setSearchSettings
  } = require('./../controllers/sidebar');
 
 // 'api/sidebar/admin/settings'
@@ -32,5 +33,7 @@ router.get('/admin/pages/recent_pages',authCabinetAdmin, getRecentlyCreatedPages
 router.put('/admin/block',authCabinetAdmin, updateBlockSettings);
 // 'api/sidebar/search/:searchstring'
 router.get('/search/:searchstring', searching);
+// 'api/sidebar/admin/search/searchsettings'
+router.put('/admin/search/searchsettings',authCabinetAdmin, setSearchSettings);
 
 module.exports = router;
