@@ -52,6 +52,7 @@ export default {
     return {
       sidebar: true,
       sidebarBlocks: {
+        searchSettings: null,
         popularPosts: [],
         popularPages: [],
         recentPosts: [],
