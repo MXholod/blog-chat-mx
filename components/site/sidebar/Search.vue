@@ -1,13 +1,21 @@
 <template>
   <div class="search">
-    <span class="search__header">Search by posts or pages</span>
+    <span v-if="searchByPosts && searchByPages" class="search__header">
+      Search by posts or pages
+    </span>
+    <span v-else-if="searchByPosts && !searchByPages" class="search__header">
+      Search by posts
+    </span>
+    <span v-else-if="!searchByPosts && searchByPages" class="search__header">
+      Search by pages
+    </span>
     <input type="text"
       v-on:input="(e)=> search = e.target.value"
       :value="search"
       class="search__field" />
     <div class="search_options">
-      <el-checkbox v-model="posts">Posts</el-checkbox>
-      <el-checkbox v-model="pages">Pages</el-checkbox>
+      <el-checkbox v-if="searchByPosts" v-model="posts">Posts</el-checkbox>
+      <el-checkbox v-if="searchByPages" v-model="pages">Pages</el-checkbox>
     </div>
     <button class="search__button"
       :class="loading ? 'search_disabled' : ''"
@@ -20,6 +28,8 @@
       v-if="searchResultVisibilityComputed"
       :postSearchResults="postSearchResults"
       :pageSearchResults="pageSearchResults"
+      :searchByPosts="searchByPosts"
+      :searchByPages="searchByPages"
       :clearSearchResults="clearSearchResults"
     >
       <template v-slot:header>
@@ -32,6 +42,10 @@
 <script>
 import SearchResults from './SearchResults';
 export default {
+  props: {
+    searchByPosts: { type: Boolean },
+    searchByPages: { type: Boolean }
+  },
   components:{
     SearchResults
   },
@@ -59,8 +73,17 @@ export default {
     startSearching(e){
       e.preventDefault();
       if(!this.posts && !this.pages){
+        let message = "You must select posts or pages, or both, to perform a search";
+        //Only for posts
+        if(this.searchByPosts && !this.searchByPages){
+          message = "You must select posts to perform a search"
+        }
+        //Only for pages
+        if(!this.searchByPosts && this.searchByPages){
+          message = "You must select pages to perform a search"
+        }
         this.$message({
-          message: "You must select posts or pages, or both, to perform a search",
+          message,
           type: 'warning'
         });
         return true;
