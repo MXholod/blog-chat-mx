@@ -115,6 +115,11 @@ module.exports.displaySidebar = async function(req, res){
     }
     //Sidebar is visible on the site
     const sidebar = {
+      searchSettings:{
+        searchVisibility: settings[0].searchVisibility,
+        searchByPosts: settings[0].searchByPosts,
+        searchByPages: settings[0].searchByPages
+      },
       popularPosts: [],
       popularPages: [],
       recentPosts: [],
