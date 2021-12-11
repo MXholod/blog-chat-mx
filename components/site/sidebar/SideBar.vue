@@ -1,6 +1,9 @@
 <template>
   <el-aside class="sidebar">
-    <Search />
+    <Search v-if="(searchSettings !== null) && (searchSettings.searchVisibility)"
+      :searchByPosts="searchSettings.searchByPosts"
+      :searchByPages="searchSettings.searchByPages"
+    />
     <sidebar-block v-if="!!popularPosts.length"
       :blockData="popularPosts"
       blockType="posts"
@@ -52,6 +55,13 @@ export default {
     Search
   },
   watch:{
+    'sidebarBlocks.searchSettings':{
+      handler: function (after, before) {
+        //console.log("Changes ", before," ",after);
+        this.searchSettings = after;
+      },
+      deep: true
+    },
     'sidebarBlocks.popularPosts':{
       handler: function (after, before) {
         //console.log("Changes ", before," ",after);
@@ -83,7 +93,7 @@ export default {
   },
   data(){
     return {
-      //Get 'popularPosts', 'popularPages', 'recentPosts', 'recentPages',
+      //Get 'searchSettings', 'popularPosts', 'popularPages', 'recentPosts', 'recentPages'
       ...this.sidebarBlocks
     }
   },
