@@ -34,7 +34,8 @@ export default {
   */
   css: [
     'element-ui/lib/theme-chalk/index.css',
-    '@/assets/index.scss'
+    '@/assets/index.scss',
+    '@fortawesome/fontawesome-svg-core/styles.css'
   ],
 
   /*
@@ -51,7 +52,8 @@ export default {
     { src: '@/plugins/pages-menu-recursive', mode: 'client'  },
     { src: '~/plugins/user-role' },
     { src: '~/plugins/admin-settings' },
-    { src: '~/plugins/directive.date', ssr: false }
+    { src: '~/plugins/directive.date', ssr: false },
+    '~/plugins/fontawesome.js'
   ],
 
   /*
@@ -84,7 +86,8 @@ export default {
     // Doc: https://http.nuxtjs.org
     '@nuxt/http',
     '@nuxtjs/axios',
-    '@nuxtjs/markdownit'
+    '@nuxtjs/markdownit',
+    'vue-social-sharing/nuxt'
   ],
 
   /*
@@ -120,5 +123,9 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
-  }
+  },
+  publicRuntimeConfig: {
+    baseURL: 'http://localhost:3000'
+  },
+  privateRuntimeConfig: {}
 }
