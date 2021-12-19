@@ -13,6 +13,10 @@
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/vue-fontawesome": "^2.0.6",
     "@nuxt/http": "^0.6.2",
     "@nuxtjs/axios": "^5.12.4",
     "@nuxtjs/markdownit": "^1.2.10",
@@ -38,6 +42,7 @@
     "socket.io": "^2.0.3",
     "uuid": "^8.3.2",
     "vue-chartjs": "^3.5.1",
+    "vue-social-sharing": "^3.0.8",
     "vue-socket.io": "^3.0.10"
   },
   "devDependencies": {}
