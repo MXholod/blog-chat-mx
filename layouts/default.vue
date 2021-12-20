@@ -9,17 +9,24 @@
         <Nuxt />
       </el-main>
     </el-container>
-    <el-footer class="el-footer-base-layout">Footer</el-footer>
+    <el-footer class="el-footer-base-layout">
+      <social-buttons />
+      <div class="el-footer-base-layout__date">
+        All rights reserved. MX &copy; {{ String(new Date().getFullYear()) }}
+      </div>
+    </el-footer>
   </el-container>
 </template>
 
 <script>
 import Navigation from './../components/site/Navigation';
 import SideBar from './../components/site/sidebar/SideBar';
+import SocialButtons from './../components/site/footer/SocialButtons.vue';
 export default {
   components: {
     Navigation,
-    SideBar
+    SideBar,
+    SocialButtons
   },
   computed: {
     error () {
@@ -79,7 +86,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 html {
   font-family:
     Roboto,
@@ -101,7 +108,14 @@ html {
   padding:0;
 }
 .el-footer-base-layout{
-  padding:0;
+  height:auto!important;
+  padding:.5em 1em .5em;
   background-color:#225AA4;
+  .el-footer-base-layout__date{
+    padding:.5em 1em .5em;
+    font-size:.9em;
+    color:#f6f6f6;
+    text-align: center;
+  }
 }
 </style>
