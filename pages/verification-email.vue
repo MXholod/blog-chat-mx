@@ -33,6 +33,9 @@ export default {
       return { message: e.message, isToken: false };
     }
   },
+  head: {
+    title: 'Verification email page'
+  },
   data(){
     return {
       //token: ''

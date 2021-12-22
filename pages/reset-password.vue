@@ -31,6 +31,9 @@ export default {
   async asyncData({ query }){
     return { token : query.token};
   },
+  head: {
+    title: 'Reset password page'
+  },
   data(){
     var validatePass = (rule, value, callback) => {
         this.submitToggle = true;

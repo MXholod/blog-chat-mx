@@ -20,6 +20,9 @@
 <script>
 export default {
   name: 'forgot-password',
+  head:{
+    title: 'Forgot password'
+  },
   data(){
     return {
       ruleForm: {

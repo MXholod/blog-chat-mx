@@ -94,6 +94,11 @@ export default {
       totalLikes: post.likes.length
     };
   },
+  head () {
+    return {
+      title: `${this.post.title}`
+    }
+  },
   components: {
     BlogComment,
     BlogCommentForm

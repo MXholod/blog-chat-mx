@@ -79,6 +79,11 @@ export default {
       chatBan
     };
   },
+  head () {
+    return {
+      title: `${this.isUserAuthenticated.login}'s cabinet`
+    }
+  },
   //middleware:['user-auth'],
   layout: 'user-cabinet',
   components: {
