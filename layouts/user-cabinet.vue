@@ -8,7 +8,11 @@
         <Nuxt />
       </el-main>
     </el-container>
-    <el-footer class="el-footer-base-layout">Footer</el-footer>
+    <el-footer class="el-footer-base-layout">
+      <div class="el-footer-base-layout__date">
+        All rights reserved. MX &copy; {{ String(new Date().getFullYear()) }}
+      </div>
+    </el-footer>
   </el-container>
 </template>
 
@@ -48,7 +52,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scope>
 html {
   font-family:
     Roboto,
@@ -70,7 +74,14 @@ html {
   padding:0;
 }
 .el-footer-base-layout{
-  padding:0;
+  height:auto!important;
+  padding:.5em 1em .5em;
   background-color:#225AA4;
+  .el-footer-base-layout__date{
+    padding:.5em 1em .5em;
+    font-size:.9em;
+    color:#f6f6f6;
+    text-align: center;
+  }
 }
 </style>
