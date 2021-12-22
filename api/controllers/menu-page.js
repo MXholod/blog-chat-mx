@@ -28,6 +28,7 @@ async function getMenuPageContent(req, res){
       reference
      }).populate('pageContent');
     if(currentPageContent){
+      const { pageName: tabTitle } = currentPageContent;
       const { title, pageHeader, singleImage, date, views, likes } = currentPageContent.pageContent;
       // We send 'likeState' to the client as response
       let likeState = true;
@@ -51,7 +52,7 @@ async function getMenuPageContent(req, res){
           }
         }
       }
-      const newPageContent = { title,pageHeader,singleImage,date,views,likes,likeState };
+      const newPageContent = { tabTitle,title,pageHeader,singleImage,date,views,likes,likeState };
       if(currentPageContent.pageContent.isBlockOne){
         newPageContent.headerBlockOne = currentPageContent.pageContent.headerBlockOne;
         newPageContent.contentBlockOne = currentPageContent.pageContent.contentBlockOne;

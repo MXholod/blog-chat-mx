@@ -92,7 +92,7 @@ export default {
   },
   head () {
     return {
-      title: `${this.result.title}`
+      title: `${this.result.tabTitle}`
     }
   },
   computed:{
