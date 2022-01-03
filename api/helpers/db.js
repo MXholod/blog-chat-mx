@@ -10,6 +10,7 @@ const ChatRoom = require('./../models/chat-room');
 const ChatMessage = require('./../models/chat-message');
 const SiteSettings = require('./../models/site-settings');
 const SystemMessage = require('./../models/system-message');
+const StaticPage = require('./../models/static-pages');
 // Config keys
 const keys = require('./../config/keys');
 
@@ -44,5 +45,6 @@ module.exports = {
   ChatMessage,
   SiteSettings,
   SystemMessage,
+  StaticPage,
   isValidId
 };
