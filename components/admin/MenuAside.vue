@@ -21,6 +21,10 @@
             <i class="el-icon-tickets"></i>
             <span>List of posts</span>
         </el-menu-item>
+        <el-menu-item index="/admin/static">
+            <i class="el-icon-document"></i>
+            <span>Static pages</span>
+        </el-menu-item>
         <el-menu-item index="/admin/sidebar">
             <i class="el-icon-copy-document"></i>
             <span>Sidebar</span>
