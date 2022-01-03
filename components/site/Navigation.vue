@@ -13,8 +13,11 @@
               <template slot="title">A sportsman life</template>
               <parent-item :parentData="createdPagesStructure" />
             </el-submenu>
-            <el-menu-item index="/about" class="el-menu-sport__item">About me</el-menu-item>
-            <el-menu-item index="/contacts" class="el-menu-sport__item">Contacts</el-menu-item>
+            <!--<el-menu-item index="/about" class="el-menu-sport__item">About me</el-menu-item>-->
+            <el-menu-item v-for="staticPage in staticPages" :key="staticPage.name"
+              :index="`/${staticPage.name.toLowerCase()}`" class="el-menu-sport__item">
+              {{ staticPage.name }}
+            </el-menu-item>
             <el-menu-item index="5"
               :style="{ backgroundImage: siteLogo ? `url(/logo/${siteLogo})`: '' }"
               class="el-menu-sport__item el-menu-sport__item_hover"
@@ -43,7 +46,8 @@ import { mapState } from 'vuex';
         activeIndex1: '2',
         isAuth: false,
         createdPagesStructure:null,
-        siteLogo: ''
+        siteLogo: '',
+        staticPages: []
       };
     },
     computed: {
@@ -83,6 +87,16 @@ import { mapState } from 'vuex';
         }catch(e){
           throw e;
         }
+      },
+      async getStaticPages(){
+        try{
+          const result = await this.$axios.$get('/api/static_page/pages');
+          if(result){
+            return result.static;
+          }
+        }catch(e){
+          throw e;
+        }
       }
     },
     created(){
@@ -113,6 +127,12 @@ import { mapState } from 'vuex';
         this.siteLogo =  data;
       }).catch(e => {
         //console.log(e);
+      });
+      this.getStaticPages().then(data =>{
+        //All static pages
+        this.staticPages = data
+      }).catch(e => {
+        console.log(e);
       });
     }
   }
