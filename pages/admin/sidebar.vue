@@ -3,29 +3,40 @@
       <el-tabs type="card" v-model="activeName" @tab-click="handleTabs">
         <el-tab-pane label="Sidebar management of blocks" name="first">
           <p>Here you can control the visibility of the blocks. The blocks represent information on the sidebar.</p>
-          <h3>Turn the sidebar on / off (by default its on)</h3>
-          <div class="sidibar-visibility-switcher">
-            <button v-if="!sidebarLoading"
-              class="sidibar-visibility-switcher__btn"
-              @click="handleSidebarVisibility">
-              <i v-if="sidebarVisibility" class="el-icon-open"></i>
-              <i v-else class="el-icon-turn-off"></i>
-            </button>
-            <button v-else type="button"
-              class="sidibar-visibility-switcher__btn-default">
-              <i v-if="sidebarVisibility" class="el-icon-open"></i>
-              <i v-else class="el-icon-turn-off"></i>
-            </button>
-            <span v-if="sidebarVisibility"
-              class="sidibar-visibility-switcher__on">
-              On
-            </span>
-            <span v-else class="sidibar-visibility-switcher__off">
-              Off
-            </span>
-            <span v-show="sidebarLoading"
-              class="el-icon-loading sidibar-visibility-switcher__preloading">
-            </span>
+          <div v-if="sidebarVisibility !== null">
+            <h3>Turn the sidebar on / off (by default its on)</h3>
+            <div class="sidibar-visibility-switcher">
+              <button v-if="!sidebarLoading"
+                class="sidibar-visibility-switcher__btn"
+                @click="handleSidebarVisibility">
+                <i v-if="sidebarVisibility" class="el-icon-open"></i>
+                <i v-else class="el-icon-turn-off"></i>
+              </button>
+              <button v-else type="button"
+                class="sidibar-visibility-switcher__btn-default">
+                <i v-if="sidebarVisibility" class="el-icon-open"></i>
+                <i v-else class="el-icon-turn-off"></i>
+              </button>
+              <span v-if="sidebarVisibility"
+                class="sidibar-visibility-switcher__on">
+                On
+              </span>
+              <span v-else class="sidibar-visibility-switcher__off">
+                Off
+              </span>
+              <span v-show="sidebarLoading"
+                class="el-icon-loading sidibar-visibility-switcher__preloading">
+              </span>
+            </div>
+          </div>
+          <div v-else>
+            <el-button @click="loadSidebarVisibilityAndSearch"
+              size="mini"
+              :loading="loading"
+              :disabled="loading"
+            >
+              Load data again
+            </el-button>
           </div>
         </el-tab-pane>
         <el-tab-pane label="Popular posts" name="second">
@@ -85,9 +96,20 @@
           </block-list>
         </el-tab-pane>
         <el-tab-pane label="Search settings" name="sixth">
-          <search-settings
-            :sidebarSearchBlock="sidebarSearchBlock"
-          />
+          <div v-if="sidebarSearchBlock !== null">
+            <search-settings
+              :sidebarSearchBlock="sidebarSearchBlock"
+            />
+          </div>
+          <div v-else>
+            <el-button @click="loadSidebarVisibilityAndSearch"
+              size="mini"
+              :loading="loading"
+              :disabled="loading"
+            >
+              Load data again
+            </el-button>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -111,8 +133,8 @@ export default {
       }
       context.redirect('/');
     }
+    let sidebarVisibility = null;
     let sidebarSettings = null;
-    let sidebarVisibility = true;
     let sidebarSearchBlock = null;
     try{
       //Get sidebar visibility
@@ -128,12 +150,13 @@ export default {
         };
       }
     }catch(e){
-      console.log(e);
+      //console.log(e);
     }
     return {
       userLogoutRefresh: userData.sessionEnd ? true : false,
       sidebarVisibility,
       sidebarSearchBlock,
+      loading: false, //For the first and last Tabs
       popularPosts: {
         settings: {
           limit: sidebarSettings?.popularPostsLimit,
@@ -214,7 +237,14 @@ export default {
                 url = `api/sidebar/admin/posts/${partUrl}`;
                 result = await this.$axios.$get(url);
                 if(result){
-                  this.popularPosts.dataToPopularPosts = result.posts;
+                  const settings = await this.$axios.$get('api/sidebar/admin/settings');
+                  if(settings){
+                    this.popularPosts.dataToPopularPosts = result.posts;
+                    this.popularPosts.settings = {
+                      limit: settings.sidebarSettings?.popularPostsLimit,
+                      visibility: settings.sidebarSettings?.popularPostsVisibility
+                    }
+                  }
                 }
                 //401. try to load data again
                 if(result === undefined){
@@ -225,7 +255,14 @@ export default {
                 url = `api/sidebar/admin/pages/${partUrl}`;
                 result = await this.$axios.$get(url);
                 if(result){
-                  this.popularPages.dataToPopularPages = result.pages;
+                  const settings = await this.$axios.$get('api/sidebar/admin/settings');
+                  if(settings){
+                    this.popularPages.dataToPopularPages = result.pages;
+                    this.popularPages.settings = {
+                      limit: settings.sidebarSettings.popularPagesLimit,
+                      visibility: settings.sidebarSettings.popularPagesVisibility
+                    }
+                  }
                 }
                 //401 try to load data again
                 if(result === undefined){
@@ -236,7 +273,14 @@ export default {
                 url = `api/sidebar/admin/posts/${partUrl}`;
                 result = await this.$axios.$get(url);
                 if(result){
-                  this.recentPosts.dataToRecentPosts = result.posts;
+                  const settings = await this.$axios.$get('api/sidebar/admin/settings');
+                  if(settings){
+                    this.recentPosts.dataToRecentPosts = result.posts;
+                    this.recentPosts.settings = {
+                      limit: settings.sidebarSettings?.recentlyCreatedPostsLimit,
+                      visibility: settings.sidebarSettings?.recentlyCreatedPostsVisibility
+                    }
+                  }
                 }
                 //401 try to load data again
                 if(result === undefined){
@@ -247,7 +291,14 @@ export default {
                 url = `api/sidebar/admin/pages/${partUrl}`;
                 result = await this.$axios.$get(url);
                 if(result){
-                  this.recentPages.dataToRecentPages = result.pages;
+                  const settings = await this.$axios.$get('api/sidebar/admin/settings');
+                  if(settings){
+                    this.recentPages.dataToRecentPages = result.pages;
+                    this.recentPages.settings = {
+                      limit: settings.sidebarSettings?.recentlyCreatedPagesLimit,
+                      visibility: settings.sidebarSettings?.recentlyCreatedPagesVisibility
+                    }
+                  }
                 }
                 //401 try to load data again
                 if(result === undefined){
@@ -257,7 +308,7 @@ export default {
               }
           },2000);
         }catch(e){
-          console.log(e);
+          //console.log(e);
         }
     },
     handleSidebarVisibility(){
@@ -275,7 +326,7 @@ export default {
           this.sidebarLoading = false;
         },2000);
       }catch(e){
-        console.log("Error ",e);
+        //console.log("Error ",e);
       }
     },
     //Event from child
@@ -308,6 +359,31 @@ export default {
         },3000);
       }catch(e){
         //console.log(e);
+      }
+    },
+    async loadSidebarVisibilityAndSearch(){
+      this.loading = true;
+      try{
+        //Get sidebar visibility
+        const result = await this.$axios.$get('api/sidebar/admin/settings');
+        if(result){
+          window.setTimeout(()=>{
+            //Sidebar visibility has been changed
+            this.sidebarVisibility = result.sidebarSettings.sidebarVisibility;
+            //Sidebar search settings
+            this.sidebarSearchBlock = {
+              searchVisibility: result.sidebarSettings.searchVisibility,
+              searchByPosts: result.sidebarSettings.searchByPosts,
+              searchByPages: result.sidebarSettings.searchByPages
+            };
+            this.loading = false;
+          },2000);
+        }else{
+          this.loading = false;
+        }
+      }catch(e){
+        console.log(e);
+        this.loading = false;
       }
     }
   },
