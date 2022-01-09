@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const jwtDecode = require('jwt-decode');
-const { SiteSettings, JwtRefresh } = require('./../helpers/db');
+const { SiteSettings, JwtRefresh, StaticPage } = require('./../helpers/db');
 
 async function getAllOptions(req, res){
   if(!req.params.jwt) return res.status(400).json({ message: "Can't get options", options: null });
@@ -129,10 +129,51 @@ async function getSiteLogo(req, res){
   }
 }
 
+async function getStaticPagesLimit(req, res){
+  //Get amount of static pages
+  //Get limit of static pages from settings
+  try{
+    const staticPages = await StaticPage.find({});
+    const siteSettings = await SiteSettings.find({});
+    if(staticPages && siteSettings && siteSettings[0]){
+      return res.status(200).json({
+        message: 'Limit of static pages',
+        staticPagesLimit: siteSettings[0].staticPagesLimit,
+        totalPages: staticPages.length
+      });
+    }else{
+      return res.status(500).json({ message: "Can't get amount and limit of static pages" });
+    }
+  }catch(e){
+    return res.status(500).json({ message: "Can't get amount and limit of static pages" });
+  }
+}
+
+async function updateStaticPagesLimit(req, res){
+  const { role, id } = req.user;
+  if(role !== 'admin') return res.status(400).json({ message: "Can't update limit of static pages" });
+  let limit = req.body.limit;
+    limit = Number(limit);
+  if(limit === 0 || limit > 0){
+    try{
+      const siteSettings = await SiteSettings.findOneAndUpdate({ adminId: id }, { staticPagesLimit: limit }, { new: true });
+      if(siteSettings){
+        return res.status(200).json({ message: 'Static pages updated', staticPagesLimit: siteSettings.staticPagesLimit });
+      }
+    }catch(e){
+      return res.status(400).json({ message: "Can't update limit of static pages" });
+    }
+  }else{
+    return res.status(400).json({ message: "Limit of static pages is absent" });
+  }
+}
+
 module.exports = {
   getAllOptions,
   updateLogo,
   deleteLogo,
   getLogo,
-  getSiteLogo
+  getSiteLogo,
+  getStaticPagesLimit,
+  updateStaticPagesLimit
 };
