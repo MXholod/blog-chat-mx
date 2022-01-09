@@ -14,7 +14,8 @@ const schemaSiteSettings = new Schema({
   recentlyCreatedPagesVisibility: { type: Boolean, default: true },
   searchVisibility: { type: Boolean, default: true },
   searchByPosts: { type: Boolean, default: true },
-  searchByPages: { type: Boolean, default: true }
+  searchByPages: { type: Boolean, default: true },
+  staticPagesLimit: { type: Number, default: 0 }
 });
 
 
