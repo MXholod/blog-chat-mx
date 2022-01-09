@@ -5,7 +5,7 @@ const authCabinetAdmin = passport.authenticate('jwt-cabinet-admin', {session: fa
 const upload = require('./../middleware/logo-upload');
 const uploadOptimized = require('./../middleware/logo-upload-optimize');
 const {
-  getAllOptions, getLogo, updateLogo, deleteLogo, getSiteLogo
+  getAllOptions, getLogo, updateLogo, deleteLogo, getSiteLogo, getStaticPagesLimit, updateStaticPagesLimit
 } = require('./../controllers/site-settings');
 
 // /api/settings/admin/options/:jwt
@@ -23,5 +23,9 @@ router.patch('/admin/logo/update',
 router.delete('/admin/logo/delete',authCabinetAdmin, deleteLogo);
 // /api/settings/logo
 router.get('/logo',getSiteLogo);
+// '/api/settings/admin/limit'
+router.get('/admin/limit', authCabinetAdmin, getStaticPagesLimit);
+// '/api/settings/admin/limit'
+router.put('/admin/limit', authCabinetAdmin, updateStaticPagesLimit);
 
 module.exports = router;
