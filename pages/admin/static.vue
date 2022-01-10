@@ -3,7 +3,7 @@
     <el-tabs type="card" @tab-click="handleTabs">
         <el-tab-pane :label="tab1.label">
           <p class="static-page__tab-header">Here you can manage static pages</p>
-          <div v-if="limit !== null">
+          <div v-if="role && limit !== null">
             <p v-if="limitPagesCollision" class="static-page__collision">
               <b>Warning!!! If you see this.</b>
               The limit of pages is bigger than the amount of pages.
@@ -209,6 +209,8 @@ export default {
       //Check current 'tab'
       switch(tab.label){
         case this.tab1.label : this.currentTab = tab.label;
+          //Save current tab
+          this.currentTabClicked = tab.label;
         break;
         case this.tab2.label :
           if(this.currentTabClicked === tab.label){
@@ -227,6 +229,8 @@ export default {
             this.pageText = '';
             //Re-render component
             this.creationUpdate += 1;
+            //Save current tab
+            this.currentTabClicked = tab.label;
         break;
         case this.tab4.label :
           if(this.currentTabClicked === tab.label){
