@@ -7,10 +7,14 @@ const {
   getStaticPage,
   createStaticPage,
   updateStaticPage,
-  deleteStaticPage } = require('./../controllers/static-page');
+  deleteStaticPage,
+  getAllStaticPagesLimited
+} = require('./../controllers/static-page');
 
 // '/api/static_page/pages'
 router.get('/pages', getAllStaticPages);
+// '/api/static_page/pages/limited'
+router.get('/pages/limited', getAllStaticPagesLimited);
 // '/api/static_page/admin/pages'
 router.get('/admin/pages', authCabinetAdmin, getAllStaticPages);
 // '/api/static_page/page/:pageName'
