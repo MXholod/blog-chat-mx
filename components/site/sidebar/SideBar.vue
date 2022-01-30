@@ -104,15 +104,16 @@ export default {
 </script>
 
 <style lang="scss">
-@keyframes sidebar{
+/*@keyframes sidebar{
   0% { left: -250px; }
   90% { left: 10px; }
   100% { left: 0px; }
-}
+}*/
 .sidebar{
   max-width: 250px;
   padding: .5em .8em;
   position:relative;
+  background-color: #f6f6f6;
   top:3%;
   left:-250px;
   height: 94%;
@@ -122,7 +123,7 @@ export default {
   border-right: 1px solid #000;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  animation: sidebar 3s ease-out 3s 1 normal forwards;
+  //animation: sidebar 3s ease-out 3s 1 normal forwards;
   &:hover, &:active{
     box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
   }
