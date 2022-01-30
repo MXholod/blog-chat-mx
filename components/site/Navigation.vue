@@ -18,7 +18,7 @@
               :index="`/${staticPage.name.toLowerCase()}`" class="el-menu-sport__item">
               {{ staticPage.name }}
             </el-menu-item>
-            <el-menu-item index="5"
+            <el-menu-item index="/"
               :style="{ backgroundImage: siteLogo ? `url(/logo/${siteLogo})`: '' }"
               class="el-menu-sport__item el-menu-sport__item_hover"
             ></el-menu-item>
