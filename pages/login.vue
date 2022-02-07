@@ -1,10 +1,12 @@
 <template>
+  <div class="sport-login">
     <el-card shadow="always" :style="{width:'400px',marginLeft:'25%'}">
         <admin-login />
         <div class="sport-login__forgot-password">
           <NuxtLink to="/forgot-password">Forgot your password?</NuxtLink>
         </div>
     </el-card>
+  </div>
 </template>
 
 <script>
