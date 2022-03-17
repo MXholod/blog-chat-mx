@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="cabinet">
     <el-row v-if="role">
       <el-col :span="6">
         <div class="user-cabinet">

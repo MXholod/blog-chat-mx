@@ -3,7 +3,7 @@
     <el-header height="80px" class="el-header-base-layout">
       <Navigation />
     </el-header>
-    <el-container>
+    <el-container class="el-container-base-cabinet-layout">
       <el-main>
         <Nuxt />
       </el-main>
