@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <v-main class="pre-chat">
     <v-row justify="center" align="center">
         <v-col xs="12" md="8" lg="6">
             <v-card v-if="tryAgainMessage" max-width="50%" color="#AFD7F2" style="margin:0px auto">

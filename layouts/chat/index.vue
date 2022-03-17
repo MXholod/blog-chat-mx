@@ -10,8 +10,10 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-footer app :padless="true" color="#225AA4" :height="60">
-          <p>Footer</p>
+        <v-footer app :padless="true" color="#225AA4" :height="60" class="el-footer-base-layout">
+          <div class="el-footer-base-layout__date">
+            All rights reserved. MX &copy; {{ String(new Date().getFullYear()) }}
+          </div>
         </v-footer>
     </v-app>
 </template>
@@ -56,5 +58,11 @@ export default {
 .el-footer-base-layout{
   padding:0;
   background-color:#225AA4;
- }
+  .el-footer-base-layout__date{
+    padding:.5em 1em .5em;
+    font-size:.9em;
+    color:#f6f6f6;
+    text-align: center;
+  }
+}
 </style>
