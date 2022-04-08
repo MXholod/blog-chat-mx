@@ -10,8 +10,8 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-footer app :padless="true" color="#225AA4" :height="60" class="el-footer-base-layout">
-          <div class="el-footer-base-layout__date">
+        <v-footer app :padless="true" color="#225AA4" :height="60" class="v-footer-base-layout">
+          <div class="v-footer-base-layout__date">
             All rights reserved. MX &copy; {{ String(new Date().getFullYear()) }}
           </div>
         </v-footer>
@@ -55,14 +55,15 @@ export default {
 </script>
 
 <style lang="scss">
-.el-footer-base-layout{
+.v-footer-base-layout{
   padding:0;
   background-color:#225AA4;
-  .el-footer-base-layout__date{
+  .v-footer-base-layout__date{
     padding:.5em 1em .5em;
     font-size:.9em;
     color:#f6f6f6;
     text-align: center;
+    width:100%;
   }
 }
 </style>
