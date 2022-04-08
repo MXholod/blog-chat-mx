@@ -1,15 +1,19 @@
 <template>
-    <v-app>
-        <v-container class="container-chat" fluid>
+    <v-app :style="{ overflowX: 'clip' }">
+        <v-container class="container-chat chat" fluid>
             <header-chat></header-chat>
             <v-row v-bind:no-gutters="true" style="position:relative;">
                 <v-col xs="3" sm="3" md="12" lg="3" xl="3">
-                    <v-navigation-drawer absolute v-model="drawer" :width="330" :height="400" mobile-breakpoint="650">
+                    <v-navigation-drawer absolute v-model="drawer" :width="320" :height="400" mobile-breakpoint="320">
                         <v-alert
                             border="bottom"
                             color="#38588E"
                             dark
                             class="sport-text-center"
+                            @click="()=>{
+                              drawer = !drawer
+                              drawer ? cols = 9 : cols = 12
+                            }"
                         >
                             List of people in the room
                         </v-alert>
@@ -61,7 +65,7 @@
                                                     :absolute="true"
                                                     style="right:25px;top:5px;background:aliceblue;"
                                                     @click="exit"
-                                                    class="hidden-xs-only">
+                                                    >
                                                     <v-icon>mdi-run-fast</v-icon>
                                                 </v-btn>
                                             </v-col>
@@ -114,8 +118,10 @@
                 </v-col>
             </v-row>
         </v-container>
-        <v-footer app :padless="true" color="#225AA4" :height="60">
-            <p>Footer</p>
+        <v-footer app :padless="true" color="#225AA4" :height="60" class="v-footer-base-layout">
+          <div class="v-footer-base-layout__date">
+            All rights reserved. MX &copy; {{ String(new Date().getFullYear()) }}
+          </div>
         </v-footer>
     </v-app>
 </template>
@@ -167,10 +173,17 @@ export default {
   background-color:#225AA4;
   padding-bottom: 0px !important;
  }
-.el-footer-base-layout{
+.v-footer-base-layout{
   padding:0;
   background-color:#225AA4;
- }
+  .v-footer-base-layout__date{
+    padding:.5em 1em .5em;
+    font-size:.9em;
+    color:#f6f6f6;
+    text-align: center;
+    width:100%;
+  }
+}
  .sport-text-center{
    text-align: center;
  }
