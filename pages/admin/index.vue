@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main-page">
       <el-tabs type="card" @tab-click="handleTabs">
         <el-tab-pane label="Admin info">
           <h1>Welcome to the admin page</h1>
