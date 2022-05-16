@@ -1,24 +1,394 @@
+$asideWidth: 180px;
+@keyframes aside-block-forward{
+  0%{ left: ($asideWidth * -1); }
+  90%{ left: 10px; }
+  100%{ left: 0; }
+}
+@keyframes sandwich-forward{
+  0%{ left: 0; }
+  90%{ left: ($asideWidth + 10px); }
+  100%{ left: $asideWidth; }
+}
+@keyframes aside-block-back{
+  0%{ left: 0 }
+  90%{ left: (($asideWidth * -1) - -10px); }
+  100%{ left: ($asideWidth * -1); }
+}
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
-  .admin{
+  .admin.el-wrapper-base-layout{
+    $header-footer-height:50px;
     background-color: #c4cc7e;
+    /*Header*/
+    .el-header-base-layout{
+      height:$header-footer-height!important;
+    }
+    /*Aside and Main*/
+    .el-aside-main-base-layout{
+      position: relative;
+      /*input*/
+      #sandwich{
+        visibility:visible;
+        position:absolute;
+        left:-15px;
+      }
+      /*label*/
+      #sandwich ~ label[for="sandwich"]{
+        position: absolute;
+        top:0;
+        left: 0px;
+        height: 20px;
+        width: 20px;
+        border: 1px solid #f6f6f6;
+        background-color: #409eff;
+        span{
+          width: 75%;
+          height:2%;
+          border-radius:3px;
+          background-color: #f6f6f6;
+          display: block;
+          margin: 0 auto;
+        }
+      }
+      /*Label element when input unchecked*/
+      #sandwich:checked ~ label[for="sandwich"]{
+        /*left: $asideWidth;*/
+        animation: sandwich-forward 1.5s linear 0s 1 normal forwards;
+        /*Sandwich children*/
+        i:first-child{
+          span{
+            width: 85%;
+          }
+          span:nth-of-type(1){
+            transform: rotate(45deg);
+            transform-origin: -2px 6px;
+          }
+          span:nth-of-type(2){
+            transform: rotate(135deg);
+            transform-origin: 6px 4.7px;
+          }
+        }
+        i:last-child{
+          display:none;
+        }
+      }
+      /*Label element when input checked*/
+      #sandwich:not(:checked) ~ label[for="sandwich"]{
+        i:first-child{
+          display:none;
+        }
+        i:last-child{
+          span:nth-of-type(1){
+            transform: translateY(3px);
+          }
+          span:nth-of-type(2){
+            transform: translateY(8px);
+          }
+          span:nth-of-type(3){
+            transform: translateY(13px);
+          }
+        }
+      }
+      /*Aside*/
+      #sandwich:checked ~ .el-aside-base-layout{
+        left: 0px;
+        animation: aside-block-forward 1.5s linear 0s 1 normal forwards;
+      }
+      #sandwich:not(:checked):focus ~ .el-aside-base-layout{
+        left: ($asideWidth * -1);
+        animation: aside-block-back 1.5s linear 0s 1 normal forwards;
+      }
+      .el-aside-base-layout{
+        position: relative;
+        z-index: 999;
+        top:0;
+        left: ($asideWidth * -1);
+        width:$asideWidth!important;
+        & .el-menu-item{
+          font-size: .8em!important;
+        }
+      }
+      /*Main*/
+      .el-main-base-layout{
+        width:310px!important;
+        margin-left: ($asideWidth * -1);
+        .main-page{
+          #pane-0{
+            p{
+              max-width: 94%;
+              font-size: .9em;
+            }
+          }
+          #pane-1{
+            .logo{
+              width: 100%;
+              .image-loader{
+                .image-loader__single-image{
+                  width: 100%;
+                }
+                .image-loader__preview{
+                  width: 100%;
+                  .image-loader__warning-block{
+                    width:50%;
+                    h4{
+                      text-align:center;
+                      font-size:.8em;
+                    }
+                  }
+                  .logo__delete{
+                    font-size: .7em;
+                    padding: 2px 1px;
+                    width:30%;
+                    margin-right:2%;
+                  }
+                }
+              }
+            }
+          }
+          #pane-2{
+            & > div{
+              .el-collapse-item{
+                & > div{
+                  & > div{
+                    padding-left: .4em;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    /*Footer*/
+    .el-footer-base-layout{
+      height:$header-footer-height!important;
+    }
   }
 }
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 601px) and (max-width: 768px) {
-  .admin{
+  .admin.el-wrapper-base-layout{
+    $header-footer-height:50px;
     background-color: #a06ffa;
+    /*Header*/
+    .el-header-base-layout{
+      height:$header-footer-height!important;
+    }
+    /*Aside and Main*/
+    .el-aside-main-base-layout{
+      position: relative;
+      /*input*/
+      #sandwich{
+        visibility:visible;
+        position:absolute;
+        left:-15px;
+      }
+      /*label*/
+      #sandwich ~ label[for="sandwich"]{
+        position: absolute;
+        top:0;
+        left: 0px;
+        height: 20px;
+        width: 20px;
+        border: 1px solid #f6f6f6;
+        background-color: #409eff;
+        span{
+          width: 75%;
+          height:2%;
+          border-radius:3px;
+          background-color: #f6f6f6;
+          display: block;
+          margin: 0 auto;
+        }
+      }
+      /*Label element when input unchecked*/
+      #sandwich:checked ~ label[for="sandwich"]{
+        /*left: $asideWidth;*/
+        animation: sandwich-forward 1.5s linear 0s 1 normal forwards;
+        /*Sandwich children*/
+        i:first-child{
+          span{
+            width: 85%;
+          }
+          span:nth-of-type(1){
+            transform: rotate(45deg);
+            transform-origin: -2px 6px;
+          }
+          span:nth-of-type(2){
+            transform: rotate(135deg);
+            transform-origin: 6px 4.7px;
+          }
+        }
+        i:last-child{
+          display:none;
+        }
+      }
+      /*Label element when input checked*/
+      #sandwich:not(:checked) ~ label[for="sandwich"]{
+        i:first-child{
+          display:none;
+        }
+        i:last-child{
+          span:nth-of-type(1){
+            transform: translateY(3px);
+          }
+          span:nth-of-type(2){
+            transform: translateY(8px);
+          }
+          span:nth-of-type(3){
+            transform: translateY(13px);
+          }
+        }
+      }
+      /*Aside*/
+      #sandwich:checked ~ .el-aside-base-layout{
+        left: 0px;
+        animation: aside-block-forward 1.5s linear 0s 1 normal forwards;
+      }
+      #sandwich:not(:checked):focus ~ .el-aside-base-layout{
+        left: ($asideWidth * -1);
+        animation: aside-block-back 1.5s linear 0s 1 normal forwards;
+      }
+      .el-aside-base-layout{
+        position: relative;
+        z-index: 999;
+        top:0;
+        left: ($asideWidth * -1);
+        width:$asideWidth!important;
+        & .el-menu-item{
+          font-size: .8em!important;
+        }
+      }
+      /*Main*/
+      .el-main-base-layout{
+        margin-left: ($asideWidth * -1);
+      }
+    }
+    /*Footer*/
+    .el-footer-base-layout{
+      height:$header-footer-height!important;
+    }
   }
 }
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 769px) and (max-width: 992px){
-  .admin{
+  .admin.el-wrapper-base-layout{
+    $header-footer-height:50px;
     background-color: #e22b9c;
+    /*Header*/
+    .el-header-base-layout{
+      height:$header-footer-height!important;
+    }
+    /*Aside and Main*/
+    .el-aside-main-base-layout{
+      position: relative;
+      /*input*/
+      #sandwich{
+        visibility:visible;
+        position:absolute;
+        left:-15px;
+      }
+      /*label*/
+      #sandwich ~ label[for="sandwich"]{
+        position: absolute;
+        top:0;
+        left: 0px;
+        height: 20px;
+        width: 20px;
+        border: 1px solid #f6f6f6;
+        background-color: #409eff;
+        span{
+          width: 75%;
+          height:2%;
+          border-radius:3px;
+          background-color: #f6f6f6;
+          display: block;
+          margin: 0 auto;
+        }
+      }
+      /*Label element when input unchecked*/
+      #sandwich:checked ~ label[for="sandwich"]{
+        /*left: $asideWidth;*/
+        animation: sandwich-forward 1.5s linear 0s 1 normal forwards;
+        /*Sandwich children*/
+        i:first-child{
+          span{
+            width: 85%;
+          }
+          span:nth-of-type(1){
+            transform: rotate(45deg);
+            transform-origin: -2px 6px;
+          }
+          span:nth-of-type(2){
+            transform: rotate(135deg);
+            transform-origin: 6px 4.7px;
+          }
+        }
+        i:last-child{
+          display:none;
+        }
+      }
+      /*Label element when input checked*/
+      #sandwich:not(:checked) ~ label[for="sandwich"]{
+        i:first-child{
+          display:none;
+        }
+        i:last-child{
+          span:nth-of-type(1){
+            transform: translateY(3px);
+          }
+          span:nth-of-type(2){
+            transform: translateY(8px);
+          }
+          span:nth-of-type(3){
+            transform: translateY(13px);
+          }
+        }
+      }
+      /*Aside*/
+      #sandwich:checked ~ .el-aside-base-layout{
+        left: 0px;
+        animation: aside-block-forward 1.5s linear 0s 1 normal forwards;
+      }
+      #sandwich:not(:checked):focus ~ .el-aside-base-layout{
+        left: ($asideWidth * -1);
+        animation: aside-block-back 1.5s linear 0s 1 normal forwards;
+      }
+      .el-aside-base-layout{
+        position: relative;
+        z-index: 999;
+        top:0;
+        left: ($asideWidth * -1);
+        width:$asideWidth!important;
+        & .el-menu-item{
+          font-size: .8em!important;
+        }
+      }
+      /*Main*/
+      .el-main-base-layout{
+        margin-left: ($asideWidth * -1);
+      }
+    }
+    /*Footer*/
+    .el-footer-base-layout{
+      height:$header-footer-height!important;
+    }
   }
 }
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 993px) {
-  .admin{
+  .admin.el-wrapper-base-layout{
     background-color: #e4e99b;
+    /*Header*/
+    .el-header-base-layout{}
+    /*Aside and Main*/
+    .el-aside-main-base-layout{
+      /*input*/
+      #sandwich{
+        display:none;
+      }
+    }
+    /*Footer*/
+    .el-footer-base-layout{}
   }
 }
