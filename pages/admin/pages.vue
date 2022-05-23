@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div class="pages-page">
     <h1>You may add new menu items with the page content</h1>
     <div v-if="createdPagesStructure" class="each-time-item">
       <div class="display-menu-items">
         <span class="demonstration">Select any level of menu items (Single selection)</span>
         <el-cascader
+          popper-class="admin-popper-pages"
           :options="createdPagesStructure"
           :props="{ checkStrictly: true , value: 'id', label: 'pageName', children: 'childrenItems'}"
           clearable
