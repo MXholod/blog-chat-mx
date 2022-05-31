@@ -262,6 +262,20 @@ $asideWidth: 180px;
             }
           }
         }
+        /*Post-create page*/
+        .post-create{
+          .el-tabs__content{
+            #pane-2{
+              div:nth-of-type(2){
+                .el-upload{
+                  & > div{
+                    width:280px;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
     /*Footer*/
