@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="sidebar-page">
       <el-tabs type="card" v-model="activeName" @tab-click="handleTabs">
         <el-tab-pane label="Sidebar management of blocks" name="first">
           <p>Here you can control the visibility of the blocks. The blocks represent information on the sidebar.</p>
