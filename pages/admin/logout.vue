@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="logout-page">
     <h1>If you click on this button you will leave the blog and also the chat if you are in it</h1>
     <el-button @click="logoutFromBlogAndChat" size="mini">
       Leave blog and chat
