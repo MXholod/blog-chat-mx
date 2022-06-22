@@ -370,6 +370,52 @@ $asideWidth: 180px;
             @include posts-and-pages;
           }
         }
+        /*User page*/
+        .user-page{
+          #pane-0{
+            font-size: .9em;
+          }
+          #pane-1{
+            .admin-user-list{
+              width:95%;
+              font-size: .8em;
+              .el-collapse-item{
+                .el-collapse-item__header{
+                  .admin-user-header-role{
+                    width:25%;
+                  }
+                  .admin-user-header-created{
+                    font-size:.8em;
+                    position: absolute;
+                    left: 55%;
+                    width: 25%;
+                    line-height: 13px;
+                    text-align: center;
+                  }
+                }
+              }
+            }
+          }
+          #pane-2{
+            font-size: .9em;
+            .user-creation-form-email{
+              flex-direction: column;
+              div:first-child{
+                width:90%;
+                margin-left:5%;
+                label{
+                  text-align:left;
+                  line-height: 20px;
+                  padding: 0 2px 0 0;
+                }
+              }
+              .user-creation-form-email__btn{
+                width:50%;
+                margin:0 0 2% 10%;
+              }
+            }
+          }
+        }
       }
     }
     /*Footer*/
@@ -686,6 +732,49 @@ $asideWidth: 180px;
             @include posts-and-pages;
           }
         }
+        /*User page*/
+        .user-page{
+          #pane-0{
+            font-size: .9em;
+          }
+          #pane-1{
+            font-size: .8em;
+            .el-collapse-item{
+              .el-collapse-item__header{
+                .admin-user-header-role{
+                  width:25%;
+                }
+                .admin-user-header-created{
+                  font-size:.8em;
+                  position: absolute;
+                  left: 55%;
+                  width: 25%;
+                  line-height: 13px;
+                  text-align: center;
+                }
+              }
+            }
+          }
+          #pane-2{
+            font-size: .9em;
+            .user-creation-form-email{
+              flex-direction: column;
+              div:first-child{
+                width:90%;
+                margin-left:5%;
+                label{
+                  text-align:left;
+                  line-height: 20px;
+                  padding: 0 2px 0 0;
+                }
+              }
+              .user-creation-form-email__btn{
+                width:30%;
+                margin:0 0 2% 10%;
+              }
+            }
+          }
+        }
       }
     }
     /*Footer*/
@@ -999,6 +1088,49 @@ $asideWidth: 180px;
           }
           #pane-fifth{
             @include posts-and-pages;
+          }
+        }
+        /*User page*/
+        .user-page{
+          #pane-0{
+            font-size: .9em;
+          }
+          #pane-1{
+            font-size: .8em;
+            .el-collapse-item{
+              .el-collapse-item__header{
+                .admin-user-header-role{
+                  width:25%;
+                }
+                .admin-user-header-created{
+                  font-size:.8em;
+                  position: absolute;
+                  left: 55%;
+                  width: 25%;
+                  line-height: 13px;
+                  text-align: center;
+                }
+              }
+            }
+          }
+          #pane-2{
+            font-size: .9em;
+            .user-creation-form-email{
+              flex-direction: column;
+              div:first-child{
+                width:90%;
+                margin-left:5%;
+                label{
+                  text-align:left;
+                  line-height: 20px;
+                  padding: 0 2px 0 0;
+                }
+              }
+              .user-creation-form-email__btn{
+                width:30%;
+                margin:0 0 2% 10%;
+              }
+            }
           }
         }
       }
