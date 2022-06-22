@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chat-rooms-page">
     <h1>List of rooms</h1>
     <span class="warning-deletion">A room or rooms can only be deleted if you mark checkbox and click the confirm button!</span>
     <div v-if="Array.isArray(allRooms)">
@@ -45,7 +45,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div style="margin-top: 20px">
+      <div style="margin-top: 20px" class="chat-rooms-page__buttons">
         <el-button @click="deleteSelected()">Delete selected</el-button>
         <el-button @click="toggleSelection()">Clear selection</el-button>
         <div class="loader-list" v-if="loaderList">
