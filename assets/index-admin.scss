@@ -416,6 +416,14 @@ $asideWidth: 180px;
             }
           }
         }
+        /*Logout page*/
+        .logout-page{
+          font-size:.8em;
+          margin: 10px 5px;
+          button:last-child{
+            margin-top: 10px;
+          }
+        }
       }
     }
     /*Footer*/
@@ -773,6 +781,14 @@ $asideWidth: 180px;
                 margin:0 0 2% 10%;
               }
             }
+          }
+        }
+        /*Logout page*/
+        .logout-page{
+          font-size:.9em;
+          margin: 10px 5px;
+          button:last-child{
+            margin-top: 10px;
           }
         }
       }
@@ -1133,6 +1149,13 @@ $asideWidth: 180px;
             }
           }
         }
+        /*Logout page*/
+        .logout-page{
+          margin: 10px 5px;
+          button:last-child{
+            margin-top: 10px;
+          }
+        }
       }
     }
     /*Footer*/
@@ -1156,6 +1179,13 @@ $asideWidth: 180px;
       /*input*/
       #sandwich{
         display:none;
+      }
+      /*Logout page*/
+      .logout-page{
+        margin: 10px 5px;
+        button:last-child{
+          margin-top: 10px;
+        }
       }
     }
     /*Footer*/
