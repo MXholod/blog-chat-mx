@@ -1,5 +1,7 @@
 <template>
-  <admin-user-management v-if="showUsers" />
+  <div class="user-page">
+    <admin-user-management v-if="showUsers" />
+  </div>
 </template>
 
 <script>
