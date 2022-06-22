@@ -424,6 +424,48 @@ $asideWidth: 180px;
             margin-top: 10px;
           }
         }
+        /*Chat rooms page*/
+        .chat-rooms-page{
+          .el-table{
+            .el-table__header-wrapper{
+              font-size:.8em;
+            }
+            .el-table__body-wrapper{
+              font-size:.8em;
+              .el-table__row{
+                td:nth-of-type(5){
+                  .cell{
+                    padding-left: 0px;
+                    &.el-tooltip{
+                      white-space: normal;
+                      width: 78px!important;
+                    }
+                    .el-button{
+                      padding: 2px 2px 7px 2px;
+                      font-size: 9.5px;
+                      height: 30px;
+                      position: relative;
+                      i{
+                        position: absolute;
+                        top: 17px;
+                        left: 35px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          .chat-rooms-page__buttons{
+            text-align: center;
+            .el-button{
+              width: 40%;
+              height:25px;
+              padding: 5px;
+              font-size: .8em;
+            }
+          }
+        }
       }
     }
     /*Footer*/
@@ -789,6 +831,42 @@ $asideWidth: 180px;
           margin: 10px 5px;
           button:last-child{
             margin-top: 10px;
+          }
+        }
+        /*Chat rooms page*/
+        .chat-rooms-page{
+          .el-table{
+            .el-table__header-wrapper{
+              font-size:.8em;
+            }
+            .el-table__body-wrapper{
+              font-size:.8em;
+              .el-table__row{
+                td:nth-of-type(5){
+                  .cell{
+                    padding-left: 0px;
+                    &.el-tooltip{
+                      white-space: normal;
+                      font-size: 10px;
+                    }
+                    .el-button{
+                      padding: 5px;
+                      font-size: 10px;
+                      height: 30px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          .chat-rooms-page__buttons{
+            text-align: center;
+            .el-button{
+              width: 30%;
+              height:25px;
+              padding: 5px;
+              font-size: .8em;
+            }
           }
         }
       }
