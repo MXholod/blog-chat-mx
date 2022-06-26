@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="root-chat-messages">
     <h1>List of messages</h1>
     <el-tabs type="card" v-model="activeName" @tab-click="handleClickTab">
       <el-tab-pane label="Info about messages" name="info">
