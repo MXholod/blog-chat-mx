@@ -1,5 +1,5 @@
 <template>
-  <div class="room-creation">
+  <div class="system-message">
     <h1>System message from admin or moderator to the chat</h1>
     <div v-if="!Array.isArray(rooms)">
       <el-button @click="loadRoomsAgain">Try load rooms again</el-button>
